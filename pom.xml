@@ -5,18 +5,46 @@
 	<parent>
 		<groupId>net.imglib2</groupId>
 		<artifactId>pom-imglib2</artifactId>
-		<version>2.0.0-SNAPSHOT</version>
+		<version>3.1</version>
 	</parent>
 
 	<artifactId>imglib2-realtransform</artifactId>
+	<version>2.0.0-beta-27-SNAPSHOT</version>
 
 	<name>ImgLib2 Real Transform</name>
 	<description>Real space coordinate transformations.</description>
 
+	<scm>
+		<connection>scm:git:git://github.com/imglib/imglib2-realtransform</connection>
+		<developerConnection>scm:git:git@github.com:imglib/imglib2-realtransform</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/imglib/imglib2-realtransform</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/imglib/imglib2-realtransform/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://jenkins.imagej.net/job/ImgLib2-Real-Transform/</url>
+	</ciManagement>
+
+	<properties>
+		<imglib2.version>2.0.0-beta-26</imglib2.version>
+	</properties>
+
+	<repositories>
+		<!-- NB: for SciJava dependencies -->
+		<repository>
+			<id>imagej.public</id>
+			<url>http://code.imagej.net/maven2/releases</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<!-- Project dependencies -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
 		</dependency>
 
@@ -24,7 +52,6 @@
 		<dependency>
 			<groupId>gov.nist.math</groupId>
 			<artifactId>jama</artifactId>
-			<version>${jama.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
@@ -49,13 +76,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<!-- NB: for project parent, in case of partial checkout -->
-		<repository>
-			<id>imagej.public</id>
-			<url>http://code.imagej.net/maven2/releases</url>
-		</repository>
-	</repositories>
 
 </project>
