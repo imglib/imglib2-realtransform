@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>net.imglib2</groupId>
 		<artifactId>pom-imglib2</artifactId>
-		<version>3.1</version>
+		<version>3.2</version>
 	</parent>
 
 	<artifactId>imglib2-realtransform</artifactId>
@@ -28,10 +28,6 @@
 		<system>Jenkins</system>
 		<url>http://jenkins.imagej.net/job/ImgLib2-Real-Transform/</url>
 	</ciManagement>
-
-	<properties>
-		<imglib2.version>2.0.0-beta-26</imglib2.version>
-	</properties>
 
 	<repositories>
 		<!-- NB: for SciJava dependencies -->
