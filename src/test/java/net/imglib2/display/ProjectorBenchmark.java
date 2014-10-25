@@ -91,7 +91,7 @@ public class ProjectorBenchmark
 
 		final AffineTransform3D t = new AffineTransform3D();
 		final RandomAccessibleInterval< FloatType > view = Views.interval(
-				RealViews.constantAffine(
+				RealViews.affine(
 						Views.interpolate( source, new NearestNeighborInterpolatorFactory< FloatType >() ),
 						t ),
 				source );
@@ -121,10 +121,10 @@ public class ProjectorBenchmark
 			System.out.println( "IterableIntervalProjector2D Affine" );
 			benchmarkIterableIntervalProjector2D( view, target, converter );
 
-			System.out.println( "RandomAccessibleProjector2D Img" );
-			benchmarkRandomAccessibleProjector2D( source, target, converter );
-			System.out.println( "RandomAccessibleProjector2D Affine" );
-			benchmarkRandomAccessibleProjector2D( view, target, converter );
+//			System.out.println( "RandomAccessibleProjector2D Img" );
+//			benchmarkRandomAccessibleProjector2D( source, target, converter );
+//			System.out.println( "RandomAccessibleProjector2D Affine" );
+//			benchmarkRandomAccessibleProjector2D( view, target, converter );
 
 //			System.out.println( "XYRandomAccessibleProjector Img" );
 //			benchmarkXYRandomAccessibleProjector( source, target, converter );
