@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ScaleAndTransformTest {
+public class ScaleAndTranslationTest {
 	
 	private final double sc1 = 1.0, sc2 = 1.5, sc3 = 2.0;
 	private final double sh1 = 1.0, sh2 = 1.0, sh3 = 1.3;
@@ -33,7 +33,7 @@ public class ScaleAndTransformTest {
 	private final double[] result        = new double[ sourceCoordinate.length ];
 	private final float[] resultFloat    = new float[ sourceCoordinate.length ];
 	private final RealPoint resultPoint   = new RealPoint( result.clone() );
-	private final ScaleAndTranslate transform = new ScaleAndTranslate( scales, shifts );
+	private final ScaleAndTranslation transform = new ScaleAndTranslation( scales, shifts );
 
 	@Before
 	public void setUp() throws Exception {
@@ -41,14 +41,14 @@ public class ScaleAndTransformTest {
 
 	@Test
 	public void test() {
-		final ScaleAndTranslate[] transforms = new ScaleAndTranslate[] { 
+		final ScaleAndTranslation[] transforms = new ScaleAndTranslation[] { 
 				transform, 
 				transform.copy(), 
 				transform.inverse().inverse() 
 				};
 
 		
-		for ( final ScaleAndTranslate t : transforms ) {
+		for ( final ScaleAndTranslation t : transforms ) {
 			t.apply( sourceCoordinate, result );
 			t.apply( sourceCoordinateFloat, resultFloat );
 			t.apply( sourcePoint, resultPoint );

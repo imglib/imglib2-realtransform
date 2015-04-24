@@ -14,10 +14,10 @@ import net.imglib2.realtransform.InvertibleRealTransform;
  * entries on the diagonal only.
  *
  */
-public class ScaleAndTranslate implements InvertibleRealTransform 
+public class ScaleAndTranslation implements InvertibleRealTransform 
 {
 	
-	private final ScaleAndTranslate inverse;
+	private final ScaleAndTranslation inverse;
 	private final double[] scales;
 	private final double[] translations;
 	private final int nDim;
@@ -28,7 +28,7 @@ public class ScaleAndTranslate implements InvertibleRealTransform
 	 * @param scales Array containing scales
 	 * @param translations Array containing translations
 	 */
-	public ScaleAndTranslate( final double[] scales, final double[] translations ) 
+	public ScaleAndTranslation( final double[] scales, final double[] translations ) 
 	{
 		super();
 		assert translations.length == scales.length;
@@ -47,8 +47,8 @@ public class ScaleAndTranslate implements InvertibleRealTransform
 	 * @param shifts Array containing translations
 	 * @param nDim Number of Dimensions
 	 */
-	private ScaleAndTranslate(
-			final ScaleAndTranslate inverse, 
+	private ScaleAndTranslation(
+			final ScaleAndTranslation inverse, 
 			final double[] scales,
 			final double[] shifts, 
 			final int nDim 
@@ -126,7 +126,7 @@ public class ScaleAndTranslate implements InvertibleRealTransform
 	}
 
 	@Override
-	public ScaleAndTranslate inverse() 
+	public ScaleAndTranslation inverse() 
 	{
 		final double[] invertedShifts = new double[ nDim ];
 		final double[] invertedScales = new double[ nDim ];
@@ -135,13 +135,13 @@ public class ScaleAndTranslate implements InvertibleRealTransform
 			invertedScales[i] = 1.0 /scales[i];
 			invertedShifts[i] = -translations[i] * invertedScales[i];
 		}
-		return new ScaleAndTranslate( this, invertedScales, invertedShifts, nDim );
+		return new ScaleAndTranslation( this, invertedScales, invertedShifts, nDim );
 	}
 
 	@Override
-	public ScaleAndTranslate copy() 
+	public ScaleAndTranslation copy() 
 	{
-		return new ScaleAndTranslate( inverse, scales, translations, nDim );
+		return new ScaleAndTranslation( inverse, scales, translations, nDim );
 	}
 
 }
