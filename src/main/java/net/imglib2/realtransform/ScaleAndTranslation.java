@@ -11,7 +11,7 @@ import net.imglib2.concatenate.PreConcatenable;
 
 /**
  * @author Philipp Hanslovsky <hanslovskyp@janelia.hhmi.org>
- * Transform that applies a scaling first and then shifts coordinates.
+ * An <em>m</em> Transform that applies a scaling first and then shifts coordinates.
  * This transform is faster than using an {@link AffineTransform} with 
  * entries on the diagonal only.
  *
