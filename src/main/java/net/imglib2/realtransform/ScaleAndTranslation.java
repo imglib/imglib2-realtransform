@@ -4,8 +4,10 @@
 package net.imglib2.realtransform;
 
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
-import net.imglib2.realtransform.InvertibleRealTransform;
+import net.imglib2.concatenate.Concatenable;
+import net.imglib2.concatenate.PreConcatenable;
 
 /**
  * @author Philipp Hanslovsky <hanslovskyp@janelia.hhmi.org>
@@ -14,7 +16,8 @@ import net.imglib2.realtransform.InvertibleRealTransform;
  * entries on the diagonal only.
  *
  */
-public class ScaleAndTranslation implements InvertibleRealTransform 
+public class ScaleAndTranslation implements 
+InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslationGet >, PreConcatenable< ScaleAndTranslationGet > 
 {
 	
 	private final ScaleAndTranslation inverse;
@@ -56,8 +59,8 @@ public class ScaleAndTranslation implements InvertibleRealTransform
 	{
 		super();
 		this.inverse = inverse;
-		this.scales = scales;
-		this.translations = shifts;
+		this.scales = scales.clone();
+		this.translations = shifts.clone();
 		this.nDim = nDim;
 	}
 	
@@ -65,13 +68,13 @@ public class ScaleAndTranslation implements InvertibleRealTransform
 	@Override
 	public int numSourceDimensions() 
 	{
-		return nDim;
+		return this.numDimensions();
 	}
 
 	@Override
 	public int numTargetDimensions() 
 	{
-		return nDim;
+		return this.numDimensions();
 	}
 
 	@Override
@@ -142,6 +145,112 @@ public class ScaleAndTranslation implements InvertibleRealTransform
 	public ScaleAndTranslation copy() 
 	{
 		return new ScaleAndTranslation( inverse, scales, translations, nDim );
+	}
+
+
+	@Override
+	public double getScale( int d ) {
+		return this.scales[ d ];
+	}
+
+
+	@Override
+	public double[] getScaleCopy() {
+		return this.scales.clone();
+	}
+
+
+	@Override
+	public double get( final int row, final int column ) {
+			
+		if ( column == row )
+			return this.scales[ row ];
+		else if ( column == scales.length )
+			return this.translations[ row ];
+		else
+			return 0.0;
+		
+	}
+
+
+	@Override
+	public double[] getRowPackedCopy() {
+		int m = this.scales.length;
+		int n = m + 1;
+		double[] result = new double[ m*n ];
+		for ( int i = 0; i < m; ++i ) {
+			int firstElementInRowIndex      = i*n;
+			int lastElementInRowIndex       = firstElementInRowIndex + n - 1;
+			int diagonalIndex               = firstElementInRowIndex + i;
+			result[ diagonalIndex ]         = this.scales[ i ];
+			result[ lastElementInRowIndex ] = this.translations[ i ];
+		}
+		return result;
+	}
+
+
+	@Override
+	public RealPoint d( int d ) {
+		RealPoint rp = new RealPoint( nDim );
+		rp.setPosition( this.scales[d], d );
+		return rp;
+	}
+
+
+	@Override
+	public int numDimensions() {
+		return this.nDim;
+	}
+
+
+	@Override
+	public double getTranslation( int d ) {
+		return this.translations[ d ];
+	}
+
+
+	@Override
+	public double[] getTranslationCopy() {
+		return this.translations.clone();
+	}
+
+
+	@Override
+	public ScaleAndTranslation preConcatenate(
+			ScaleAndTranslationGet a ) {
+		assert a.numDimensions() == this.nDim: "Dimensions do not match.";
+		for ( int d = 0; d < this.nDim; ++d ) {
+			double scale            = a.getScale( d );
+			double translation      = this.translations[ d ];
+			this.scales[ d ]       *= scale;
+			this.translations[ d ]  = a.getTranslation( d ) + scale*translation;
+		}
+		return this;
+	}
+
+
+	@Override
+	public Class< ScaleAndTranslationGet > getPreConcatenableClass() {
+		return ScaleAndTranslationGet.class;
+	}
+
+
+	@Override
+	public ScaleAndTranslation concatenate(
+			ScaleAndTranslationGet a) {
+		assert a.numDimensions() == this.nDim: "Dimensions do not match.";
+		for ( int d = 0; d < this.nDim; ++d ) {
+			double scale            = this.scales[ d ];
+			this.scales[ d ]       *= a.getScale( d );
+			this.translations[ d ] += a.getTranslation( d )*scale;
+		}
+		return this;
+	}
+
+
+	@Override
+	public Class< ScaleAndTranslationGet > getConcatenableClass() {
+		return ScaleAndTranslationGet.class;
 	}
 
 }
