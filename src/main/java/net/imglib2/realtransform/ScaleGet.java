@@ -40,23 +40,8 @@ package net.imglib2.realtransform;
  * 
  * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
  */
-public interface ScaleGet extends AffineGet
+public interface ScaleGet extends ScaleAndTranslationGet
 {
-	/**
-	 * Get a field of the <em>n</em>-dimensional scale vector.
-	 * 
-	 * @param d
-	 * @return
-	 */
-	public double getScale( final int d );
-
-	/**
-	 * Get a copy of the <em>n</em>-dimensional scale vector.
-	 * 
-	 * @return
-	 */
-	public double[] getScaleCopy();
-
 	@Override
 	ScaleGet inverse();
 }

@@ -172,7 +172,23 @@ public class ScaleAndTranslationTest {
 					Assert.assertEquals( 0.0, transform.get( m, n ), 0.0 );
 			}
 		}
+	}
+	
+	@Test
+	public void testChained() {
+		InvertibleRealTransformSequence seq = new InvertibleRealTransformSequence();
+		seq.add( new Scale3D( scales ) );
+		seq.add( new Translation3D( shifts ) );
 		
+		double[] dummy = new double[ result.length ];
+		
+		transform.apply( sourceCoordinate, result );
+		seq.apply( sourceCoordinate, dummy );
+		Assert.assertArrayEquals( result, dummy, 0.0 );
+		
+		transform.applyInverse( sourceCoordinate, result );
+		seq.applyInverse( sourceCoordinate, dummy );
+		Assert.assertArrayEquals( result, dummy, 0.0 );
 	}
 
 }
