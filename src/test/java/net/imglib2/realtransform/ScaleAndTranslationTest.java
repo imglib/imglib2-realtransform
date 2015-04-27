@@ -6,6 +6,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Unit tests for {@link ScaleAndTranslation}
+ * 
+ * @author Philipp Hanslovsky <hanslovskyp@janelia.hhmi.org>
+ *
+ */
 public class ScaleAndTranslationTest {
 	
 	private final double sc1 = 1.0, sc2 = 1.5, sc3 = 2.0;
