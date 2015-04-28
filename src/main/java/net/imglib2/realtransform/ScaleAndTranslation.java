@@ -28,17 +28,19 @@ InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslati
 	
 
 	/**
-	 * @param scales Array containing scales
-	 * @param translations Array containing translations
+	 * @param scales Array containing scales, will be cloned.
+	 * @param translations Array containing translations, will be cloned.
 	 */
 	public ScaleAndTranslation( final double[] scales, final double[] translations ) 
 	{
 		super();
+		
 		assert translations.length == scales.length;
-		this.scales = scales.clone(); // clone?
+		
+		this.scales       = scales.clone(); // clone?
 		this.translations = translations.clone(); // clone?
-		this.nDim   = translations.length;
-		this.inverse = this.inverse();
+		this.nDim         = translations.length;
+		this.inverse      = this.createInverse();
 	}
 	
 	
@@ -46,22 +48,23 @@ InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslati
 	 * private constructor that takes inverse to avoid object creation when calling
 	 * {@link #inverse}
 	 * @param inverse 
-	 * @param scales Array containing scales
-	 * @param shifts Array containing translations
+	 * @param scales Array containing scales, will be cloned.
+	 * @param translations Array containing translations, will be cloned.
 	 * @param nDim Number of Dimensions
 	 */
 	private ScaleAndTranslation(
 			final ScaleAndTranslation inverse, 
 			final double[] scales,
-			final double[] shifts, 
+			final double[] translations, 
 			final int nDim 
 			) 
 	{
 		super();
-		this.inverse = inverse;
-		this.scales = scales.clone();
-		this.translations = shifts.clone();
-		this.nDim = nDim;
+		assert translations.length == scales.length;
+		this.inverse      = inverse;
+		this.scales       = scales.clone();
+		this.translations = translations.clone();
+		this.nDim         = nDim;
 	}
 	
 
@@ -127,9 +130,15 @@ InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslati
 		// target is the source for the inverse transform, thus switch order in call of this.inverse.apply
 		this.inverse.apply( target, source );
 	}
-
+	
+	
 	@Override
 	public ScaleAndTranslation inverse() 
+	{
+		return this.inverse;
+	}
+	
+	public ScaleAndTranslation createInverse() 
 	{
 		final double[] invertedShifts = new double[ nDim ];
 		final double[] invertedScales = new double[ nDim ];
@@ -149,32 +158,34 @@ InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslati
 
 
 	@Override
-	public double getScale( int d ) {
+	public double getScale( int d ) 
+	{
 		return this.scales[ d ];
 	}
 
 
 	@Override
-	public double[] getScaleCopy() {
+	public double[] getScaleCopy() 
+	{
 		return this.scales.clone();
 	}
 
 
 	@Override
-	public double get( final int row, final int column ) {
-			
+	public double get( final int row, final int column ) 
+	{
 		if ( column == row )
 			return this.scales[ row ];
 		else if ( column == scales.length )
 			return this.translations[ row ];
 		else
 			return 0.0;
-		
 	}
 
 
 	@Override
-	public double[] getRowPackedCopy() {
+	public double[] getRowPackedCopy() 
+	{
 		int m = this.scales.length;
 		int n = m + 1;
 		double[] result = new double[ m*n ];
@@ -190,7 +201,8 @@ InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslati
 
 
 	@Override
-	public RealPoint d( int d ) {
+	public RealPoint d( int d ) 
+	{
 		RealPoint rp = new RealPoint( nDim );
 		rp.setPosition( this.scales[d], d );
 		return rp;
@@ -198,26 +210,30 @@ InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslati
 
 
 	@Override
-	public int numDimensions() {
+	public int numDimensions() 
+	{
 		return this.nDim;
 	}
 
 
 	@Override
-	public double getTranslation( int d ) {
+	public double getTranslation( int d ) 
+	{
 		return this.translations[ d ];
 	}
 
 
 	@Override
-	public double[] getTranslationCopy() {
+	public double[] getTranslationCopy() 
+	{
 		return this.translations.clone();
 	}
 
 
 	@Override
 	public ScaleAndTranslation preConcatenate(
-			ScaleAndTranslationGet a ) {
+			ScaleAndTranslationGet a ) 
+	{
 		assert a.numDimensions() == this.nDim: "Dimensions do not match.";
 		for ( int d = 0; d < this.nDim; ++d ) {
 			double scale            = a.getScale( d );
@@ -230,14 +246,16 @@ InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslati
 
 
 	@Override
-	public Class< ScaleAndTranslationGet > getPreConcatenableClass() {
+	public Class< ScaleAndTranslationGet > getPreConcatenableClass() 
+	{
 		return ScaleAndTranslationGet.class;
 	}
 
 
 	@Override
 	public ScaleAndTranslation concatenate(
-			ScaleAndTranslationGet a) {
+			ScaleAndTranslationGet a) 
+	{
 		assert a.numDimensions() == this.nDim: "Dimensions do not match.";
 		for ( int d = 0; d < this.nDim; ++d ) {
 			double scale            = this.scales[ d ];
@@ -249,7 +267,8 @@ InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslati
 
 
 	@Override
-	public Class< ScaleAndTranslationGet > getConcatenableClass() {
+	public Class< ScaleAndTranslationGet > getConcatenableClass() 
+	{
 		return ScaleAndTranslationGet.class;
 	}
 
