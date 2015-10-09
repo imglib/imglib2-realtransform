@@ -658,6 +658,43 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 	{
 		a.scale( s );
 	}
+	
+	/**
+	 * Translation 
+	 * 
+	 * @param translationVector
+	 * 				vector describing the translation
+	 * 	
+	 */
+	public void translate(double... translationVector)
+	{
+		a.m03 += translationVector[0];
+		a.m13 += translationVector[1];
+		a.m23 += translationVector[2];
+	}
+	
+	/**
+	 * Initialize the translation with a given vector
+	 * 
+	 * @return
+	 * 		vector with 3 elements describing the translation
+	 */
+	public double[] getTranslation()
+	{
+		return new double[] {a.m03, a.m13, a.m23};
+	}
+	
+	/**
+	 * Initialize the translation with a given vector
+	 * 
+	 * @param translationVector
+	 */
+	public void setTranslation(double... translationVector)
+	{
+		a.m03 = translationVector[0];
+		a.m13 = translationVector[1];
+		a.m23 = translationVector[2];
+	}
 
 	/**
 	 * Set to identity transform

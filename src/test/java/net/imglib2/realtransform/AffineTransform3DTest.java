@@ -135,5 +135,39 @@ public class AffineTransform3DTest
 			assertArrayEquals( dR.getRowPackedCopy(), affine.getRowPackedCopy(), 0.001 );
 		}
 	}
+	
+	@Test
+	public void testTranslation()
+	{
+		double[] translation = new double[]{rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble()};
+		double[] inverseTranslation = new double[]{-translation[0], -translation[1], -translation[2]};
+		
+		final AffineTransform3D affine = new AffineTransform3D();
+		affine.set(
+				rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), translation[0],
+				rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), translation[1],
+				rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), translation[2] );
+		
+		AffineTransform3D toBeOrigin = affine.copy();
+		double[] translationFromOrigin = affine.getTranslation();
+		
+		//Move to origin and test
+		toBeOrigin.translate(inverseTranslation);
+		assertArrayEquals( toBeOrigin.getTranslation(), new double[]{0, 0, 0}, 0.001 );
+		
+		//Move to origin the easy way
+		toBeOrigin = affine.copy();
+		toBeOrigin.setTranslation(0, 0, 0);
+		assertArrayEquals( toBeOrigin.getTranslation(), new double[]{0, 0, 0}, 0.001 );
+		
+		//Move back to initial position
+		final AffineTransform3D backToOriginal = toBeOrigin.copy();
+		backToOriginal.translate(translationFromOrigin);
+
+		assertArrayEquals( backToOriginal.getRowPackedCopy(), affine.getRowPackedCopy(), 0.001 );
+		
+		
+		
+	}
 
 }
