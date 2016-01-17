@@ -140,7 +140,7 @@ public class RealTransformRealRandomAccessible< T, R extends RealTransform > imp
 	{
 		return realRandomAccess();
 	}
-	
+
 	/**
 	 * @return target {@link RealRandomAccessible}
 	 */
@@ -156,7 +156,4 @@ public class RealTransformRealRandomAccessible< T, R extends RealTransform > imp
 	{
 		return transform;
 	}
-	
-	
-
 }
