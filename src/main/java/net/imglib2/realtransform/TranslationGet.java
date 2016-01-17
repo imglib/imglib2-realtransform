@@ -40,23 +40,10 @@ package net.imglib2.realtransform;
  * 
  * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
  */
-public interface TranslationGet extends AffineGet
+public interface TranslationGet extends ScaleAndTranslationGet
 {
-	/**
-	 * Get a field of the <em>n</em>-dimensionsional translation vector.
-	 * 
-	 * @param d
-	 * @return
-	 */
-	public double getTranslation( final int d );
-
-	/**
-	 * Get a copy of the <em>n</em>-dimensionsional translation vector.
-	 * 
-	 * @return
-	 */
-	public double[] getTranslationCopy();
-
+	
 	@Override
 	TranslationGet inverse();
+	
 }

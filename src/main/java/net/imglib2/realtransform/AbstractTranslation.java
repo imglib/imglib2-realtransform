@@ -196,6 +196,16 @@ abstract public class AbstractTranslation implements InvertibleRealTransform, Tr
 
 		return ds[ d ];
 	}
+	
+	@Override
+	public double getScale( final int d ) {
+		return 0.0;
+	}
+
+	@Override
+	public double[] getScaleCopy() {
+		return new double[ t.length ];
+	}
 
 	@Override
 	public double getTranslation( final int d )

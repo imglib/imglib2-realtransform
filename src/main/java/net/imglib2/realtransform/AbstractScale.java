@@ -186,4 +186,14 @@ abstract public class AbstractScale implements ScaleGet
 	{
 		return s.clone();
 	}
+	
+	@Override
+	public double getTranslation( final int d ) {
+		return 0.0;
+	}
+
+	@Override
+	public double[] getTranslationCopy() {
+		return new double[ s.length ];
+	}
 }
