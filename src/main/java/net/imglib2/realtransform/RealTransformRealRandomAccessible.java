@@ -140,5 +140,23 @@ public class RealTransformRealRandomAccessible< T, R extends RealTransform > imp
 	{
 		return realRandomAccess();
 	}
+	
+	/**
+	 * @return target {@link RealRandomAccessible}
+	 */
+	public RealRandomAccessible< T > getTarget()
+	{
+		return target;
+	}
+
+	/**
+	 * @return transform applied to target
+	 */
+	public R getTransform()
+	{
+		return transform;
+	}
+	
+	
 
 }
