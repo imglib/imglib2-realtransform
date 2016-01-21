@@ -56,11 +56,11 @@ import net.imglib2.RealRandomAccessible;
 public class RealTransformRandomAccessible< T, R extends RealTransform > extends RealTransformRealRandomAccessible< T, R > implements RandomAccessible< T >
 {
 	/**
-	 * {@link RealRandomAccess} that generates its samples from a target
+	 * {@link RealRandomAccess} that generates its samples from a source
 	 * {@link RealRandomAccessible} at coordinates transformed by a
 	 * {@link RealTransform}.
-	 * 
-	 * This access does not move its targetAccess while moving through space
+	 *
+	 * This access does not move its sourceAccess while moving through space
 	 * but executes {@link #apply()} on each {@link #get()} call.  This is
 	 * preferable in situations where relative moves aren't more efficient than
 	 * a full {@link #apply()} because moves execute only the integer part and
@@ -68,36 +68,36 @@ public class RealTransformRandomAccessible< T, R extends RealTransform > extends
 	 */
 	public class RealTransformRandomAccess extends Point implements RandomAccess< T >
 	{
-		final protected RealRandomAccess< T > targetAccess;
+		final protected RealRandomAccess< T > sourceAccess;
 
 		final protected R transformCopy;
 
 		@SuppressWarnings( "unchecked" )
 		protected RealTransformRandomAccess()
 		{
-			super( transform.numSourceDimensions() );
-			targetAccess = target.realRandomAccess();
-			transformCopy = ( R )transform.copy();
+			super( transformToSource.numSourceDimensions() );
+			sourceAccess = source.realRandomAccess();
+			transformCopy = ( R )transformToSource.copy();
 		}
 
 		@SuppressWarnings( "unchecked" )
 		protected RealTransformRandomAccess( final RealTransformRandomAccess a )
 		{
 			super( a );
-			targetAccess = a.targetAccess.copyRealRandomAccess();
+			sourceAccess = a.sourceAccess.copyRealRandomAccess();
 			transformCopy = ( R )a.transformCopy.copy();
 		}
 
 		final protected void apply()
 		{
-			transformCopy.apply( this, targetAccess );
+			transformCopy.apply( this, sourceAccess );
 		}
 
 		@Override
 		public T get()
 		{
 			apply();
-			return targetAccess.get();
+			return sourceAccess.get();
 		}
 
 		@Override
@@ -113,9 +113,9 @@ public class RealTransformRandomAccessible< T, R extends RealTransform > extends
 		}
 	}
 
-	public RealTransformRandomAccessible( final RealRandomAccessible< T > target, final R transform )
+	public RealTransformRandomAccessible( final RealRandomAccessible< T > source, final R transformToSource )
 	{
-		super( target, transform );
+		super( source, transformToSource );
 	}
 
 	@Override

@@ -53,48 +53,48 @@ import net.imglib2.RealRandomAccessible;
  */
 public class RealTransformRealRandomAccessible< T, R extends RealTransform > implements RealRandomAccessible< T >
 {
-	final protected RealRandomAccessible< T > target;
+	final protected RealRandomAccessible< T > source;
 
-	final protected R transform;
+	final protected R transformToSource;
 
 	/**
-	 * {@link RealRandomAccess} that generates its samples from a target
+	 * {@link RealRandomAccess} that generates its samples from a source
 	 * {@link RealRandomAccessible} at coordinates transformed by a
 	 * {@link RealTransform}.
 	 * 
 	 */
 	public class RealTransformRealRandomAccess extends RealPoint implements RealRandomAccess< T >
 	{
-		final protected RealRandomAccess< T > targetAccess;
+		final protected RealRandomAccess< T > sourceAccess;
 
 		final protected R transformCopy;
 
 		@SuppressWarnings( "unchecked" )
 		protected RealTransformRealRandomAccess()
 		{
-			super( transform.numSourceDimensions() );
-			targetAccess = target.realRandomAccess();
-			transformCopy = ( R )transform.copy();
+			super( transformToSource.numSourceDimensions() );
+			sourceAccess = source.realRandomAccess();
+			transformCopy = ( R )transformToSource.copy();
 		}
 
 		@SuppressWarnings( "unchecked" )
 		private RealTransformRealRandomAccess( final RealTransformRealRandomAccess a )
 		{
 			super( a );
-			this.targetAccess = a.targetAccess.copyRealRandomAccess();
+			this.sourceAccess = a.sourceAccess.copyRealRandomAccess();
 			transformCopy = ( R )a.transformCopy.copy();
 		}
 
 		final protected void apply()
 		{
-			transformCopy.apply( this, targetAccess );
+			transformCopy.apply( this, sourceAccess );
 		}
 
 		@Override
 		public T get()
 		{
 			apply();
-			return targetAccess.get();
+			return sourceAccess.get();
 		}
 
 		@Override
@@ -111,18 +111,18 @@ public class RealTransformRealRandomAccessible< T, R extends RealTransform > imp
 
 	}
 
-	public RealTransformRealRandomAccessible( final RealRandomAccessible< T > target, final R transform )
+	public RealTransformRealRandomAccessible( final RealRandomAccessible< T > source, final R transformToSource )
 	{
-		assert target.numDimensions() == transform.numTargetDimensions();
+		assert source.numDimensions() == transformToSource.numTargetDimensions();
 
-		this.target = target;
-		this.transform = transform;
+		this.source = source;
+		this.transformToSource = transformToSource;
 	}
 
 	@Override
 	public int numDimensions()
 	{
-		return transform.numSourceDimensions();
+		return transformToSource.numSourceDimensions();
 	}
 
 	@Override
@@ -142,18 +142,18 @@ public class RealTransformRealRandomAccessible< T, R extends RealTransform > imp
 	}
 
 	/**
-	 * @return target {@link RealRandomAccessible}
+	 * @return source {@link RealRandomAccessible}
 	 */
-	public RealRandomAccessible< T > getTarget()
+	public RealRandomAccessible< T > getSource()
 	{
-		return target;
+		return source;
 	}
 
 	/**
-	 * @return transform applied to target
+	 * @return transform applied to source
 	 */
-	public R getTransform()
+	public R getTransformToSource()
 	{
-		return transform;
+		return transformToSource;
 	}
 }
