@@ -58,7 +58,7 @@ import net.imglib2.RealRandomAccessible;
 public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransformRandomAccessible< T, R >
 {
 	/**
-	 * {@link RealRandomAccess} that generates its samples from a target
+	 * {@link RealRandomAccess} that generates its samples from a source
 	 * {@link RealRandomAccessible} at coordinates transformed by a
 	 * {@link RealTransform}.
 	 * 
@@ -89,7 +89,7 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 		public void fwd( final int d )
 		{
 			super.fwd( d );
-			targetAccess.move( transformCopy.d( d ) );
+			sourceAccess.move( transformCopy.d( d ) );
 		}
 
 		@Override
@@ -102,7 +102,7 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 			 * the access.
 			 */
 			scaleMove( -1, d );
-			targetAccess.move( move );
+			sourceAccess.move( move );
 		}
 
 		@Override
@@ -110,7 +110,7 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 		{
 			super.move( distance, d );
 			scaleMove( distance, d );
-			targetAccess.move( move );
+			sourceAccess.move( move );
 		}
 
 		@Override
@@ -177,7 +177,7 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 		@Override
 		public T get()
 		{
-			return targetAccess.get();
+			return sourceAccess.get();
 		}
 
 		@Override
@@ -193,9 +193,9 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 		}
 	}
 
-	public AffineRandomAccessible( final RealRandomAccessible< T > target, final R transform )
+	public AffineRandomAccessible( final RealRandomAccessible< T > source, final R transformToSource )
 	{
-		super( target, transform );
+		super( source, transformToSource );
 	}
 
 	@Override

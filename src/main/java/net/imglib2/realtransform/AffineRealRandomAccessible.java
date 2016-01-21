@@ -55,7 +55,7 @@ import net.imglib2.RealRandomAccessible;
 public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTransformRealRandomAccessible< T, R >
 {
 	/**
-	 * {@link RealRandomAccess} that generates its samples from a target
+	 * {@link RealRandomAccess} that generates its samples from a source
 	 * {@link RealRandomAccessible} at coordinates transformed by a
 	 * {@link RealTransform}.
 	 * 
@@ -82,7 +82,7 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		{
 			super.move( distance, d );
 			scaleMove( distance, d );
-			targetAccess.move( move );
+			sourceAccess.move( move );
 		}
 
 		@Override
@@ -90,7 +90,7 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		{
 			super.move( distance, d );
 			scaleMove( distance, d );
-			targetAccess.move( move );
+			sourceAccess.move( move );
 		}
 
 		@Override
@@ -152,7 +152,7 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		public void fwd( final int d )
 		{
 			super.fwd( d );
-			targetAccess.move( transformCopy.d( d ) );
+			sourceAccess.move( transformCopy.d( d ) );
 		}
 
 		@Override
@@ -164,7 +164,7 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		{
 			super.bck( d );
 			scaleMove( -1, d );
-			targetAccess.move( move );
+			sourceAccess.move( move );
 		}
 
 		@Override
@@ -172,7 +172,7 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		{
 			super.move( distance, d );
 			scaleMove( distance, d );
-			targetAccess.move( move );
+			sourceAccess.move( move );
 		}
 
 		@Override
@@ -180,7 +180,7 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		{
 			super.move( distance, d );
 			scaleMove( distance, d );
-			targetAccess.move( move );
+			sourceAccess.move( move );
 		}
 
 		@Override
@@ -240,7 +240,7 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		@Override
 		public T get()
 		{
-			return targetAccess.get();
+			return sourceAccess.get();
 		}
 
 		@Override
@@ -256,9 +256,9 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		}
 	}
 
-	public AffineRealRandomAccessible( final RealRandomAccessible< T > target, final R affine )
+	public AffineRealRandomAccessible( final RealRandomAccessible< T > source, final R affine )
 	{
-		super( target, affine );
+		super( source, affine );
 	}
 
 	@Override
