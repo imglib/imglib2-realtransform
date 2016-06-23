@@ -245,4 +245,10 @@ public class Translation3D extends AbstractTranslation implements Concatenable< 
 	{
 		return TranslationGet.class;
 	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		return t[ 0 ] == 0 && t[ 1 ] == 0 && t[ 2 ] == 0;
+	}
 }

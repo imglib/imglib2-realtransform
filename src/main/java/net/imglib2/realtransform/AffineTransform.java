@@ -275,4 +275,10 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 		copy.set( this );
 		return copy;
 	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		return RealViewsSimplifyUtils.isIdentity( this );
+	}
 }

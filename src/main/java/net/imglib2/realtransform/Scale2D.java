@@ -213,4 +213,10 @@ public class Scale2D extends AbstractScale
 	{
 		return new Scale2D( s );
 	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		return s[ 0 ] == 1 && s[ 1 ] == 1;
+	}
 }

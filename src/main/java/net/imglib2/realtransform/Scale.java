@@ -92,4 +92,13 @@ public class Scale extends AbstractScale
 	{
 		return new Scale( s );
 	}
+	@Override
+	public boolean isIdentity()
+	{
+		for ( int i = 0; i < s.length; i++ )
+		{
+			if ( s[ i ] != 1.0 ) { return false; }
+		}
+		return true;
+	}
 }

@@ -623,4 +623,10 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 		invert();
 		inverse.updateDs();
 	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		return RealViewsSimplifyUtils.isIdentity( this );
+	}
 }

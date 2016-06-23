@@ -137,4 +137,14 @@ public class Translation extends AbstractTranslation implements Concatenable< Tr
 	{
 		return TranslationGet.class;
 	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		for ( int i = 0; i < t.length; i++ )
+		{
+			if ( t[ i ] != 0.0 ) { return false; }
+		}
+		return true;
+	}
 }
