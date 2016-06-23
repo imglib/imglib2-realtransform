@@ -156,4 +156,44 @@ public class RealViews
 	{
 		return new AffineRandomAccessible< T, AffineGet >( source, transformFromSource.inverse() );
 	}
+
+	/**
+	 * 
+	 * Simplifies all {@link RealTransform}s which are wrapped in the source
+	 * {@link RealRandomAccessible}.
+	 * 
+	 * NB: that the resulting {@link RandomAccessible} copies all
+	 * {@link RealTransform}s when required. Former references on any
+	 * {@link RealTransform}s wrapped in the {@link RealRandomAccessible} are
+	 * invalid for the resulting {@link RandomAccessible}.
+	 * 
+	 * @param source
+	 *            {@link RealRandomAccessible} to be simplified
+	 * @return potentially simplified {@link RandomAccessible}
+	 * 
+	 */
+	public static < T > RandomAccessible< T > simplify( final RealRandomAccessible< T > source )
+	{
+		return RealViewsSimplifyUtils.simplify( source );
+	}
+
+	/**
+	 * 
+	 * Simplifies all {@link RealTransform}s which are wrapped in the source
+	 * {@link RealRandomAccessible}.
+	 * 
+	 * NB: that the resulting {@link RealRandomAccessible} copies all
+	 * {@link RealTransform}s when required. Former references on any
+	 * {@link RealTransform}s wrapped in the {@link RealRandomAccessible} are
+	 * invalid for the resulting {@link RealRandomAccessible}.
+	 * 
+	 * @param source
+	 *            {@link RealRandomAccessible} to be simplified
+	 * @return potentially simplified {@link RealRandomAccessible}
+	 * 
+	 */
+	public static < T > RealRandomAccessible< T > simplifyReal( final RealRandomAccessible< T > source )
+	{
+		return RealViewsSimplifyUtils.simplifyReal( source );
+	}
 }
