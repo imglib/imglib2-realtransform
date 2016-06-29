@@ -42,6 +42,7 @@
 		<dependency>
 			<groupId>net.imglib2</groupId>
 			<artifactId>imglib2</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 
 		<!-- Third-party dependencies -->
