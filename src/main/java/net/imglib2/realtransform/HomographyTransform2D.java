@@ -36,6 +36,7 @@ package net.imglib2.realtransform;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
+import net.imglib2.util.LinAlgHelpers;
 
 /**
  * 2D-homography {@link RealTransform} to be applied to points in 2D-space.
@@ -76,43 +77,9 @@ public class HomographyTransform2D implements InvertibleRealTransform
 			i10 = 0, i11 = 1, i12 = 0,
 			i20 = 0, i21 = 0, i22 = 1;
 
-	/**
-	 * Calculate the determinant of a 3x3 matrix.
-	 *
-	 * TODO temporary fix before imglib2-3.1.0 is released
-	 *   use LinAlgHelpers.det3x3 after release
-	 *
-	 * @param m00
-	 * @param m01
-	 * @param m02
-	 * @param m10
-	 * @param m11
-	 * @param m12
-	 * @param m20
-	 * @param m21
-	 * @param m22
-	 *
-	 * @return
-	 */
-	final static private double det3x3(
-			final double m00, final double m01, final double m02,
-			final double m10, final double m11, final double m12,
-			final double m20, final double m21, final double m22 )
-	{
-		return
-			m00 * m11 * m22 +
-			m10 * m21 * m02 +
-			m20 * m01 * m12 -
-			m02 * m11 * m20 -
-			m12 * m21 * m00 -
-			m22 * m01 * m10;
-	}
-
 	final private void invert()
 	{
-		/* TODO temporary fix before imglib2-3.1.0 is released, use LinAlgHelpers.det3x3 after release */
-//		final double det = LinAlgHelpers.det3x3(
-		final double det = det3x3(
+		final double det = LinAlgHelpers.det3x3(
 				m00, m01, m02,
 				m10, m11, m12,
 				m20, m21, m22 );
