@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,102 +34,92 @@
 
 package net.imglib2.realtransform;
 
-import net.imglib2.RealPoint;
-import net.imglib2.concatenate.Concatenable;
-import net.imglib2.concatenate.PreConcatenable;
+import jitk.spline.ThinPlateR2LogRSplineKernelTransform;
+import net.imglib2.RealLocalizable;
+import net.imglib2.RealPositionable;
 
 /**
- * <em>n</em>-d arbitrary scaling.
- * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
- * @author Christian Dietz <dietzc85@googlemail.com>
+ * An <em>n</em>-dimensional thin plate spline transform backed by John
+ * Bogovic's <a href="https://github.com/saalfeldlab/jitk-tps">jitk-tps</a>
+ * library.
+ *
+ * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
  */
-public class Scale extends AbstractScale implements Concatenable< ScaleGet >, PreConcatenable< ScaleGet >
-{
-	final protected Scale inverse;
+public class ThinplateSplineTransform implements RealTransform {
 
-	protected Scale( final double[] s, final Scale inverse, final RealPoint[] ds )
-	{
-		super( s, ds );
-		this.inverse = inverse;
+	final protected ThinPlateR2LogRSplineKernelTransform tps;
+	final protected double[] a;
+	final protected double[] b;
+
+	final static private ThinPlateR2LogRSplineKernelTransform init(
+			final double[][] p,
+			final double[][] q) {
+
+		assert p.length == q.length;
+
+		final ThinPlateR2LogRSplineKernelTransform tps =
+				new ThinPlateR2LogRSplineKernelTransform(p.length, p, q);
+
+		return tps;
 	}
 
-	public Scale( final double... s )
-	{
-		super( s.clone(), new RealPoint[ s.length ] );
-		final double[] si = new double[ s.length ];
-		final RealPoint[] dis = new RealPoint[ s.length ];
-		for ( int d = 0; d < s.length; ++d )
-		{
-			si[ d ] = 1.0 / s[ d ];
-			final RealPoint dd = new RealPoint( s.length );
-			dd.setPosition( s[ d ], d );
-			ds[ d ] = dd;
-			final RealPoint ddi = new RealPoint( s.length );
-			ddi.setPosition( si[ d ], d );
-			dis[ d ] = ddi;
-		}
-		inverse = new Scale( si, this, dis );
+	public ThinplateSplineTransform(final ThinPlateR2LogRSplineKernelTransform tps) {
+
+		this.tps = tps;
+		a = new double[tps.getNumDims()];
+		b = new double[a.length];
+	}
+
+	public ThinplateSplineTransform(
+			final double[][] p,
+			final double[][] q) {
+
+		this(init(p, q));
+	}
+
+
+	@Override
+	public void apply(double[] source, double[] target) {
+
+		tps.apply(source, target);
 	}
 
 	@Override
-	public void set( final double... s )
-	{
-		for ( int d = 0; d < s.length; ++d )
-		{
-			this.s[ d ] = s[ d ];
-			inverse.s[ d ] = 1.0 / s[ d ];
-			ds[ d ].setPosition( s[ d ], d );
-			inverse.ds[ d ].setPosition( inverse.s[ d ], d );
-		}
+	public void apply(float[] source, float[] target) {
+
+		for (int d = 0; d < a.length; ++d)
+			a[d] = source[d];
+
+		tps.apply(a, b);
+
+		for (int d = 0; d < target.length; ++d)
+			target[d] = (float)b[d];
 	}
 
 	@Override
-	public Scale inverse()
-	{
-		return inverse;
+	public void apply(RealLocalizable source, RealPositionable target) {
+
+		source.localize(a);
+		tps.apply(a, b);
+		target.setPosition(b);
 	}
 
 	@Override
-	public Scale copy()
-	{
-		return new Scale( s );
+	public ThinplateSplineTransform copy() {
+
+		/* tps is stateless and constant and can therefore be reused */
+		return new ThinplateSplineTransform(tps);
 	}
 
 	@Override
-	public Scale preConcatenate( final ScaleGet a )
-	{
-		for ( int d = 0; d < numDimensions(); ++d )
-			set( s[ d ] * a.getScale( d ) );
-		
-		return this;
+	public int numSourceDimensions() {
+
+		return tps.getNumDims();
 	}
 
 	@Override
-	public Class< ScaleGet > getPreConcatenableClass()
-	{
-		return ScaleGet.class;
-	}
+	public int numTargetDimensions() {
 
-	@Override
-	public Scale concatenate( ScaleGet a )
-	{
-		return preConcatenate( a );
-	}
-
-	@Override
-	public Class< ScaleGet > getConcatenableClass()
-	{
-		return ScaleGet.class;
-	}
-	
-	@Override
-	public boolean isIdentity()
-	{
-		for ( int i = 0; i < s.length; i++ )
-		{
-			if ( s[ i ] != 1.0 ) { return false; }
-		}
-		return true;
+		return tps.getNumDims();
 	}
 }
