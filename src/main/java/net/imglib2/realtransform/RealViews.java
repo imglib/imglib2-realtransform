@@ -36,8 +36,13 @@ package net.imglib2.realtransform;
 
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
+import net.imglib2.interpolation.InterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 
 /**
  * Convenience factory methods for {@link RealRandomAccessible
@@ -155,5 +160,38 @@ public class RealViews
 	public static < T > AffineRandomAccessible< T, AffineGet > affine( final RealRandomAccessible< T > source, final AffineGet transformFromSource )
 	{
 		return new AffineRandomAccessible< T, AffineGet >( source, transformFromSource.inverse() );
+	}
+	
+	/**
+	 * See an {@link Img} as an {@link IntervalView} scaled to the desired
+	 * dimensions using a given {@link InterpolatorFactory}. In other words,
+	 * to see an image as a smaller version of itself, define the interpolation
+	 * method to combine pixels together (e.g. a {@link NLinearInterpolatorFactory}
+	 * and the desired reduced dimensions. Also works for scaling up.
+	 * 
+	 * @param source
+	 *            the {@link RandomAccessibleInterval} to be scaled
+	 * @param factory
+	 *            the {@link InterpolatorFactory} that defines the interpolation
+	 *            method when scaling.
+	 * @param dimensions
+	 *            the dimensions of the scaled view
+	 */
+	public static < T > IntervalView< T > scale(
+			final RandomAccessibleInterval< T > source,
+			final InterpolatorFactory< T, RandomAccessibleInterval< T > > factory,
+			final long... dimensions)
+	{
+		final double[] scale = new double[dimensions.length];
+		for (int i=0; i<dimensions.length; ++i)
+		{
+			scale[i] = dimensions[i] / (double) source.dimension(i);
+		}
+		return Views.interval(
+				RealViews.affine(
+						Views.interpolate(source, factory), // TODO source ought to be Views.extendMirrorSingle(source), but fails to compile (works in jython)
+				        new Scale(scale)),
+				new long[dimensions.length],
+				dimensions);
 	}
 }
