@@ -1,56 +1,41 @@
 package net.imglib2.realtransform;
 
-
+import org.junit.Assert;
 import org.junit.Test;
 
-import net.imglib2.Cursor;
-import net.imglib2.RandomAccess;
+import net.imglib2.FinalInterval;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.view.IntervalView;
+import net.imglib2.util.Util;
+import net.imglib2.view.Views;
 
-
-public class RealViewsScaleTest {
-	
+public class RealViewsScaleTest
+{
 	@Test
 	public void testScale()
 	{
 		// Create a black image (zeroes) with a box (ones) in the middle
-		final Img< UnsignedByteType > img = new ArrayImgFactory< UnsignedByteType >().create( new long[]{100, 100, 100}, new UnsignedByteType() );
-		final RandomAccess< UnsignedByteType > ra = img.randomAccess();
-		final long[] pos = new long[img.numDimensions()];
-		for (int x=35; x<65; ++x) {
-			pos[0] = x;
-			for (int y=35; y<65; ++y) {
-				pos[1] = y;
-				for (int z=35; z<65; ++z) {
-					pos[2] = z;
-					ra.setPosition(pos);
-					ra.get().set(1);
-				}
-			}
-		}
+		final Img< UnsignedByteType > img = ArrayImgs.unsignedBytes( 100, 100, 100 );
+		final FinalInterval box = new FinalInterval( new long[]{ 35, 35, 35 }, new long[]{ 64, 64, 64 } );
+		for ( final UnsignedByteType t : Views.iterable( Views.interval( img, box ) ) )
+			t.set( 1 );
 
-		//final InterpolatorFactory<UnsignedByteType, RandomAccessible< UnsignedByteType > > factory = new NLinearInterpolatorFactory< UnsignedByteType >();
-		
-		// Scale down to 30%
-		final IntervalView< UnsignedByteType > scaled = RealViews.scale( img, new NearestNeighborInterpolatorFactory(), new long[]{30, 30, 30} ); // TODO doesn't type check
-		
-		// Count white pixels:
+		// Scale down
+		final RandomAccessibleInterval< UnsignedByteType > scaled =
+				RealViews.scale( img, new NearestNeighborInterpolatorFactory<>(), 0.4, 0.37, 0.11 );
+
+		System.out.println( "Interval: " + Util.printInterval( scaled ) );
+
+		// Count white pixels
 		long count = 0;
-		final Cursor< UnsignedByteType > c = scaled.cursor();
-		while ( c.hasNext() )
-		{
-			c.fwd();
-			count += c.get().get(); // TODO: ArrayIndexOutOfBoundsException !! Missing Views.extendMirrorSingle in RealViews.scale
-		}
-		
-		System.out.println("Number of filled pixels: " + count);
-	}
+		for ( final UnsignedByteType t : Views.iterable( scaled ) )
+			count += t.get();
 
-	static public void main(String[] args) {
-		new RealViewsScaleTest().testScale();
+		System.out.println( "Number of filled pixels: " + count );
+
+		Assert.assertEquals( 528, count );
 	}
 }
