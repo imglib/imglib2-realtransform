@@ -45,7 +45,7 @@ import net.imglib2.RealPositionable;
  * {@link InvertibleRealTransformSequence}, sequences of something that extends
  * {@link RealTransform RealTransforms}.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class AbstractRealTransformSequence< R extends RealTransform > implements RealTransform
 {

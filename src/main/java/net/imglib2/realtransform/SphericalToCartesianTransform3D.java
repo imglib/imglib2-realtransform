@@ -46,7 +46,7 @@ import net.imglib2.RealPositionable;
  * For the inverse transform (cartesian to spherical), the range of the computed
  * <em>&theta;</em> and <em>&phi;</em> is <em>-pi</em> to <em>pi</em>.
  *
- * @author Tobias Pietzsch &lt;tobias.pietzsch@gmail.com&gt;
+ * @author Tobias Pietzsch
  */
 public final class SphericalToCartesianTransform3D implements InvertibleRealTransform
 {

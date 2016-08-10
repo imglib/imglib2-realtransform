@@ -43,7 +43,7 @@ import net.imglib2.RealPositionable;
  * {@link InvertibleRealTransform} is returned on {@link #inverse()}.
  * 
  * @author Tobias Pietzsch
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public final class InverseRealTransform implements InvertibleRealTransform
 {

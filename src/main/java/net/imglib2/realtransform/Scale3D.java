@@ -43,7 +43,7 @@ import net.imglib2.concatenate.PreConcatenable;
 /**
  * 3-d arbitrary scaling.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class Scale3D extends AbstractScale implements Concatenable< ScaleGet >, PreConcatenable< ScaleGet >
 {

@@ -44,7 +44,7 @@ import net.imglib2.RealRandomAccessible;
  * RealRandomAccessibles} transformed in real coordinate space by
  * {@link InvertibleRealTransform InvertibleRealTransforms}.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class RealViews
 {

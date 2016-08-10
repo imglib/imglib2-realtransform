@@ -38,7 +38,7 @@ package net.imglib2.realtransform;
  * An <em>n</em> transform that applies a scaling first and then shifts coordinates.
  * This fields defines the necessary getters.
  * 
- * @author Philipp Hanslovsky <hanslovskyp@janelia.hhmi.org>
+ * @author Philipp Hanslovsky
  */
 public interface ScaleAndTranslationGet extends AffineGet {
 	

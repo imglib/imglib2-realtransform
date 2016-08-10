@@ -46,7 +46,7 @@ import net.imglib2.util.Util;
 /**
  * 3d-affine transformation.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< AffineGet >, PreConcatenable< AffineGet >
 {

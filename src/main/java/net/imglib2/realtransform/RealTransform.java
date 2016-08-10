@@ -52,7 +52,7 @@ import net.imglib2.RealPositionable;
  * </p>
  * 
  * @author Tobias Pietzsch
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public interface RealTransform
 {

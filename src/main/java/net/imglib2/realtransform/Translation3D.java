@@ -43,7 +43,7 @@ import net.imglib2.concatenate.PreConcatenable;
 /**
  * 3-dimensional translation.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class Translation3D extends AbstractTranslation implements Concatenable< TranslationGet >, PreConcatenable< TranslationGet >
 {

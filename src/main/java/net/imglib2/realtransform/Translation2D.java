@@ -43,7 +43,7 @@ import net.imglib2.concatenate.PreConcatenable;
 /**
  * 2-dimensional translation.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class Translation2D extends AbstractTranslation implements Concatenable< TranslationGet >, PreConcatenable< TranslationGet >
 {

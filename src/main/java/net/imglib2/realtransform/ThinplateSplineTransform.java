@@ -43,7 +43,7 @@ import net.imglib2.RealPositionable;
  * Bogovic's <a href="https://github.com/saalfeldlab/jitk-tps">jitk-tps</a>
  * library.
  *
- * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
+ * @author Stephan Saalfeld
  */
 public class ThinplateSplineTransform implements RealTransform {
 

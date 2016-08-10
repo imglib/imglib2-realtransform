@@ -47,7 +47,7 @@ import net.imglib2.concatenate.PreConcatenable;
  * This transform is faster than using an {@link AffineTransform} with 
  * entries on the diagonal only.
  * 
- * @author Philipp Hanslovsky <hanslovskyp@janelia.hhmi.org>
+ * @author Philipp Hanslovsky
  */
 public class ScaleAndTranslation implements 
 InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslationGet >, PreConcatenable< ScaleAndTranslationGet > 

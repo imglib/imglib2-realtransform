@@ -41,7 +41,7 @@ import net.imglib2.RealPositionable;
 /**
  * 2-d arbitrary scaling.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class Scale2D extends AbstractScale
 {

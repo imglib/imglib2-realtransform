@@ -41,7 +41,7 @@ import net.imglib2.RealPositionable;
  * An {@link InvertibleRealTransform} that is a sequence of
  * {@link InvertibleRealTransform InvertibleRealTransforms}.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class InvertibleRealTransformSequence extends AbstractRealTransformSequence< InvertibleRealTransform > implements InvertibleRealTransform
 {

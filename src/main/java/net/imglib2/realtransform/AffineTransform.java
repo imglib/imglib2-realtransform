@@ -43,7 +43,7 @@ import Jama.Matrix;
 /**
  * An <em>n</em>-dimensional affine transformation.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class AffineTransform extends AbstractAffineTransform implements Concatenable< AffineGet >, PreConcatenable< AffineGet >
 {

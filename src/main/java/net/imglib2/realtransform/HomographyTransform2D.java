@@ -43,7 +43,7 @@ import net.imglib2.util.LinAlgHelpers;
  *
  * Copied from https://github.com/axtimwalde/mpicbg/blob/master/mpicbg/src/main/java/mpicbg/models/HomographyModel2D.java
  *
- * @author Stephan Saalfeld &gt;saalfelds@janelia.hhmi.org&gt;
+ * @author Stephan Saalfeld
  */
 public class HomographyTransform2D implements InvertibleRealTransform
 {

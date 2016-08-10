@@ -40,7 +40,7 @@ import net.imglib2.concatenate.PreConcatenable;
 /**
  * 
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class Translation extends AbstractTranslation implements Concatenable< TranslationGet >, PreConcatenable< TranslationGet >
 {

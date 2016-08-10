@@ -45,7 +45,7 @@ import Jama.Matrix;
  * implementation is not thread safe.  Create a {@link #copy()} for each
  * consumer.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 {

@@ -41,7 +41,7 @@ import net.imglib2.RealPositionable;
 /**
  * <em>n</em>-d translation.  Abstract base implementation.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 abstract public class AbstractTranslation implements InvertibleRealTransform, TranslationGet
 {
