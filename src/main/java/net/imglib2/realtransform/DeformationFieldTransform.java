@@ -93,7 +93,7 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	{
 		RealRandomAccess< T > defFieldAccess = defFieldReal.realRandomAccess();
 		for ( int d = 0; d < target.length; d++ )
-			defFieldAccess.setPosition( target[ d ], d );
+			defFieldAccess.setPosition( source[ d ], d );
 
 		defFieldAccess.setPosition( 0.0, numDim );
 
@@ -110,7 +110,7 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	{
 		RealRandomAccess< T > defFieldAccess = defFieldReal.realRandomAccess();
 		for ( int d = 0; d < target.length; d++ )
-			defFieldAccess.setPosition( target[ d ], d );
+			defFieldAccess.setPosition( source[ d ], d );
 
 		defFieldAccess.setPosition( 0.0, numDim );
 
