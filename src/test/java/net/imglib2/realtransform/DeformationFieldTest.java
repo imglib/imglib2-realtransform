@@ -36,14 +36,18 @@ package net.imglib2.realtransform;
 import org.junit.Assert;
 import org.junit.Test;
 
+import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.img.array.ArrayCursor;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ConstantUtils;
@@ -68,12 +72,12 @@ public class DeformationFieldTest
 		Assert.assertEquals( 2, def2d.numTargetDimensions() );
 
 		// a deformation field representing a 3d transform
-		defRai = Views.interval(
-				ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 3 ),
+		IntervalView<FloatType> defRai3d = Views.interval(
+				ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 4 ),
 				new FinalInterval( 10, 10, 10, 3 ) );
 
 		DeformationFieldTransform< FloatType > def3d = new DeformationFieldTransform< FloatType >(
-				defRai );
+				defRai3d );
 
 		Assert.assertEquals( 3, def3d.numSourceDimensions() );
 		Assert.assertEquals( 3, def3d.numTargetDimensions() );
@@ -98,11 +102,56 @@ public class DeformationFieldTest
 		def2d.apply( p, q );
 		Assert.assertArrayEquals( pxfm, q, EPS );
 
+		float[] pf = new float[]{ 5.0f, 4.0f };
+		float[] pxfmf = new float[]{ 6.0f, 5.0f };
+		float[] qf = new float[ 2 ];
+
+		def2d.apply( pf, qf );
+		Assert.assertArrayEquals( pxfmf, qf, (float)EPS );
+
 		RealPoint src = new RealPoint( 5.0, 4.0 );
 		RealPoint tgt = new RealPoint( 2 );
 		def2d.apply( src, tgt );
 		Assert.assertEquals( tgt.getDoublePosition( 0 ), 6.0, EPS );
 		Assert.assertEquals( tgt.getDoublePosition( 1 ), 5.0, EPS );
+	}
+
+	@Test
+	public void testGradient()
+	{
+		final double EPS = 1e-5;
+
+		RandomAccessibleInterval<FloatType> defRai = ArrayImgs.floats( 10, 10, 2 );
+		Cursor<FloatType> c = Views.flatIterable(defRai).cursor();
+		while( c.hasNext() )
+		{
+			c.fwd();
+			if( c.getIntPosition( 2 ) == 0 )
+				c.get().set( c.getFloatPosition(0) );
+		}
+
+		DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< FloatType >(
+				Views.interpolate( defRai, new NearestNeighborInterpolatorFactory< FloatType >() ));
+
+		double[] p = new double[]{ 5.0, 4.0 };
+		double[] pxfm = new double[]{ 10.0, 4.0 };
+		double[] q = new double[ 2 ];
+
+		def2d.apply( p, q );
+		Assert.assertArrayEquals( pxfm, q, EPS );
+
+		float[] pf = new float[]{ 5.0f, 4.0f };
+		float[] pxfmf = new float[]{ 10.0f, 4.0f };
+		float[] qf = new float[ 2 ];
+
+		def2d.apply( pf, qf );
+		Assert.assertArrayEquals( pxfmf, qf, (float)EPS );
+
+		RealPoint src = new RealPoint( 10.0, 4.0 );
+		RealPoint tgt = new RealPoint( 2 );
+		def2d.apply( src, tgt );
+		Assert.assertEquals( tgt.getDoublePosition( 0 ), 10.0, EPS );
+		Assert.assertEquals( tgt.getDoublePosition( 1 ), 4.0, EPS );
 	}
 
 	@Test
