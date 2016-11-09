@@ -63,17 +63,20 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 
 	private final RealRandomAccessible< T > defFieldReal;
 
+	private final RealRandomAccess< T > defFieldAccess;
+
 	private final int numDim;
 
 	public DeformationFieldTransform( RandomAccessibleInterval< T > def )
 	{
-        this( Views.interpolate( def, new NLinearInterpolatorFactory< T >() ));
+		this( Views.interpolate( def, new NLinearInterpolatorFactory< T >() ) );
 	}
 
 	public DeformationFieldTransform( RealRandomAccessible< T > defFieldReal )
 	{
 		this.defFieldReal = defFieldReal;
 		this.numDim = defFieldReal.numDimensions() - 1;
+		defFieldAccess = defFieldReal.realRandomAccess();
 	}
 
 	@Override
@@ -91,7 +94,6 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	@Override
 	public void apply( double[] source, double[] target )
 	{
-		RealRandomAccess< T > defFieldAccess = defFieldReal.realRandomAccess();
 		for ( int d = 0; d < target.length; d++ )
 			defFieldAccess.setPosition( source[ d ], d );
 
@@ -108,7 +110,6 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	@Override
 	public void apply( float[] source, float[] target )
 	{
-		RealRandomAccess< T > defFieldAccess = defFieldReal.realRandomAccess();
 		for ( int d = 0; d < target.length; d++ )
 			defFieldAccess.setPosition( source[ d ], d );
 
@@ -125,7 +126,6 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	@Override
 	public void apply( RealLocalizable source, RealPositionable target )
 	{
-		RealRandomAccess< T > defFieldAccess = defFieldReal.realRandomAccess();
 		for ( int d = 0; d < target.numDimensions(); d++ )
 			defFieldAccess.setPosition( source.getDoublePosition( d ), d );
 
@@ -134,8 +134,7 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 		double newpos = 0;
 		for ( int d = 0; d < numDim; d++ )
 		{
-			newpos = source.getDoublePosition( d )
-					+ defFieldAccess.get().getRealDouble();
+			newpos = source.getDoublePosition( d ) + defFieldAccess.get().getRealDouble();
 			target.setPosition( newpos, d );
 
 			defFieldAccess.fwd( numDim );
