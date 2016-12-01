@@ -162,7 +162,8 @@ public class AffineTransform3DTest
 		toBeOrigin = affine.copy();
 		toBeOrigin.setTranslation(0, 0, 0);
 		assertArrayEquals( toBeOrigin.getTranslation(), new double[]{0, 0, 0}, 0.001 );
-		
+		assertArrayEquals( toBeOrigin.inverse().getTranslation(), new double[]{ 0, 0, 0 }, 0.001 );
+
 		//Move back to initial position
 		final AffineTransform3D backToOriginal = toBeOrigin.copy();
 		backToOriginal.translate(translationFromOrigin);
