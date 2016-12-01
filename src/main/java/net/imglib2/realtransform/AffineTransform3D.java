@@ -706,6 +706,10 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 		a.m03 = translationVector[0];
 		a.m13 = translationVector[1];
 		a.m23 = translationVector[2];
+
+		invert();
+		updateDs();
+		inverse.updateDs();
 	}
 
 	/**
