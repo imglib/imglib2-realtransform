@@ -319,8 +319,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		{
 			if ( d < sourceNumDimensions )
 				return sourceAccess.getFloatPosition( d );
-			else
-				return ( float )position[ d ];
+			return ( float )position[ d ];
 		}
 
 		@Override
@@ -328,8 +327,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		{
 			if ( d < sourceNumDimensions )
 				return sourceAccess.getDoublePosition( d );
-			else
-				return ( float )position[ d ];
+			return ( float )position[ d ];
 		}
 
 		@Override
