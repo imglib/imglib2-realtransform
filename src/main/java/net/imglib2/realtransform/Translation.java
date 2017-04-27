@@ -68,7 +68,7 @@ public class Translation extends AbstractTranslation implements Concatenable< Tr
 	 * Set the translation vector.
 	 * 
 	 * @param t
-	 *            t.length <= the number of dimensions of this
+	 *            t.length &lt;= the number of dimensions of this
 	 *            {@link Translation}
 	 */
 	@Override
@@ -87,7 +87,7 @@ public class Translation extends AbstractTranslation implements Concatenable< Tr
 	 * Set one value of the translation vector.
 	 * 
 	 * @param t
-	 *            t.length <= the number of dimensions of this
+	 *            t.length &lt;= the number of dimensions of this
 	 *            {@link Translation}
 	 */
 	@Override

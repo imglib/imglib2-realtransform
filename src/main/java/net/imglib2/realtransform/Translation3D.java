@@ -98,7 +98,7 @@ public class Translation3D extends AbstractTranslation implements Concatenable< 
 	 * Set the translation vector.
 	 * 
 	 * @param t
-	 *            t.length <= the number of dimensions of this
+	 *            t.length &lt;= the number of dimensions of this
 	 *            {@link Translation3D}
 	 */
 	@Override

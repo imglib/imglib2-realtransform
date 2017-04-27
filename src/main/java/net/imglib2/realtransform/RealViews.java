@@ -72,7 +72,7 @@ public class RealViews
 	 */
 	public static < T > RealTransformRealRandomAccessible< T, InverseRealTransform > transformReal( final RealRandomAccessible< T > source, final InvertibleRealTransform transformFromSource )
 	{
-		return new RealTransformRealRandomAccessible< T, InverseRealTransform >( source, new InverseRealTransform( transformFromSource ) );
+		return new RealTransformRealRandomAccessible< >( source, new InverseRealTransform( transformFromSource ) );
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class RealViews
 	 */
 	public static < T > RealTransformRandomAccessible< T, InverseRealTransform > transform( final RealRandomAccessible< T > source, final InvertibleRealTransform transformFromSource )
 	{
-		return new RealTransformRandomAccessible< T, InverseRealTransform >( source, new InverseRealTransform( transformFromSource ) );
+		return new RealTransformRandomAccessible< >( source, new InverseRealTransform( transformFromSource ) );
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class RealViews
 	 */
 	public static < T > AffineRealRandomAccessible< T, AffineGet > affineReal( final RealRandomAccessible< T > source, final AffineGet transformFromSource )
 	{
-		return new AffineRealRandomAccessible< T, AffineGet >( source, transformFromSource.inverse() );
+		return new AffineRealRandomAccessible< >( source, transformFromSource.inverse() );
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class RealViews
 	 */
 	public static < T > AffineRandomAccessible< T, AffineGet > affine( final RealRandomAccessible< T > source, final AffineGet transformFromSource )
 	{
-		return new AffineRandomAccessible< T, AffineGet >( source, transformFromSource.inverse() );
+		return new AffineRandomAccessible< >( source, transformFromSource.inverse() );
 	}
 
 	/**
@@ -166,11 +166,11 @@ public class RealViews
 	 * is created for an XY source. When accessing an XYZ sample in the view,
 	 * the final coordinate is discarded and the source XY sample is accessed.
 	 *
-	 * @param randomAccessible
+	 * @param source
 	 *            the source
 	 */
 	public static < T > RealRandomAccessible< T > addDimension( final RealRandomAccessible< T > source )
 	{
-		return new StackingRealRandomAccessible< T >( source, 1 );
+		return new StackingRealRandomAccessible< >( source, 1 );
 	}
 }
