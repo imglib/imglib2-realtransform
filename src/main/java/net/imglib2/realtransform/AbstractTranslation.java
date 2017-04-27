@@ -43,7 +43,7 @@ import net.imglib2.RealPositionable;
  * 
  * @author Stephan Saalfeld
  */
-abstract public class AbstractTranslation implements InvertibleRealTransform, TranslationGet
+abstract public class AbstractTranslation implements TranslationGet
 {
 	final protected double[] t;
 

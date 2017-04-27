@@ -50,7 +50,7 @@ import net.imglib2.concatenate.PreConcatenable;
  * @author Philipp Hanslovsky
  */
 public class ScaleAndTranslation implements 
-InvertibleRealTransform, ScaleAndTranslationGet, Concatenable< ScaleAndTranslationGet >, PreConcatenable< ScaleAndTranslationGet > 
+ScaleAndTranslationGet, Concatenable< ScaleAndTranslationGet >, PreConcatenable< ScaleAndTranslationGet > 
 {
 	
 	private final ScaleAndTranslation inverse;
