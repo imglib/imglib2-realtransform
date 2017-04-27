@@ -49,7 +49,7 @@ import net.imglib2.RealPositionable;
  */
 public class AbstractRealTransformSequence< R extends RealTransform > implements RealTransform
 {
-	final protected ArrayList< R > transforms = new ArrayList< >();;
+	final protected ArrayList< R > transforms = new ArrayList< >();
 
 	protected double[] tmp = new double[ 0 ];
 
