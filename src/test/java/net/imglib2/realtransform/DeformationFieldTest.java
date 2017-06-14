@@ -33,7 +33,11 @@
  */
 package net.imglib2.realtransform;
 
+import java.util.Arrays;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import net.imglib2.Cursor;
@@ -55,6 +59,8 @@ import net.imglib2.view.Views;
 
 public class DeformationFieldTest
 {
+	DeformationFieldTransform< FloatType > defgrad;
+	final double EPS = 1e-5;
 
 	@Test
 	public void testNumSourceTargetDimensions()
@@ -82,12 +88,9 @@ public class DeformationFieldTest
 		Assert.assertEquals( 3, def3d.numTargetDimensions() );
 	}
 
-	@SuppressWarnings( "deprecation" )
 	@Test
 	public void testTranslation()
 	{
-		final double EPS = 1e-5;
-
 		IntervalView< FloatType > defRai = Views.interval(
 				ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 3 ),
 				new FinalInterval( 10, 10, 2 ) );
@@ -102,12 +105,12 @@ public class DeformationFieldTest
 		def2d.apply( p, q );
 		Assert.assertArrayEquals( pxfm, q, EPS );
 
-		float[] pf = new float[]{ 5.0f, 4.0f };
-		float[] pxfmf = new float[]{ 6.0f, 5.0f };
-		float[] qf = new float[ 2 ];
-
-		def2d.apply( pf, qf );
-		Assert.assertArrayEquals( pxfmf, qf, (float)EPS );
+//		float[] pf = new float[]{ 5.0f, 4.0f };
+//		float[] pxfmf = new float[]{ 6.0f, 5.0f };
+//		float[] qf = new float[ 2 ];
+//
+//		def2d.apply( pf, qf );
+//		Assert.assertArrayEquals( pxfmf, qf, (float)EPS );
 
 		RealPoint src = new RealPoint( 5.0, 4.0 );
 		RealPoint tgt = new RealPoint( 2 );
@@ -116,45 +119,30 @@ public class DeformationFieldTest
 		Assert.assertEquals( tgt.getDoublePosition( 1 ), 5.0, EPS );
 	}
 
-	@SuppressWarnings( "deprecation" )
 	@Test
 	public void testGradient()
 	{
-		final double EPS = 1e-5;
-
-		RandomAccessibleInterval<FloatType> defRai = ArrayImgs.floats( 10, 10, 2 );
-		Cursor<FloatType> c = Views.flatIterable(defRai).cursor();
-		while( c.hasNext() )
-		{
-			c.fwd();
-			if( c.getIntPosition( 2 ) == 0 )
-				c.get().set( c.getFloatPosition(0) );
-		}
-
-		DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< >(
-				Views.interpolate( defRai, new NearestNeighborInterpolatorFactory< FloatType >() ));
-
 		double[] p = new double[]{ 5.0, 4.0 };
 		double[] pxfm = new double[]{ 10.0, 4.0 };
 		double[] q = new double[ 2 ];
 
-		def2d.apply( p, q );
+		defgrad.apply( p, q );
 		Assert.assertArrayEquals( pxfm, q, EPS );
 
-		float[] pf = new float[]{ 5.0f, 4.0f };
-		float[] pxfmf = new float[]{ 10.0f, 4.0f };
-		float[] qf = new float[ 2 ];
+//		float[] pf = new float[]{ 5.0f, 4.0f };
+//		float[] pxfmf = new float[]{ 10.0f, 4.0f };
+//		float[] qf = new float[ 2 ];
+//
+//		defgrad.apply( pf, qf );
+//		Assert.assertArrayEquals( pxfmf, qf, (float)EPS );
 
-		def2d.apply( pf, qf );
-		Assert.assertArrayEquals( pxfmf, qf, (float)EPS );
-
-		RealPoint src = new RealPoint( 10.0, 4.0 );
+		RealPoint src = new RealPoint( p );
 		RealPoint tgt = new RealPoint( 2 );
-		def2d.apply( src, tgt );
-		Assert.assertEquals( tgt.getDoublePosition( 0 ), 10.0, EPS );
-		Assert.assertEquals( tgt.getDoublePosition( 1 ), 4.0, EPS );
+		defgrad.apply( src, tgt );
+		Assert.assertEquals( tgt.getDoublePosition( 0 ), pxfm[ 0 ], EPS );
+		Assert.assertEquals( tgt.getDoublePosition( 1 ), pxfm[ 1 ], EPS );
 	}
-
+	
 	@Test
 	public void testRender()
 	{
@@ -190,4 +178,44 @@ public class DeformationFieldTest
 		RandomAccess< DoubleType > imra = imXfm.randomAccess();
 		imra.setPosition( new int[]{1,1,1} );
 	}
+	
+	@Test
+	public void testInverse()
+	{
+		InvertibleDeformationFieldTransform< FloatType > dfieldGradInv = new InvertibleDeformationFieldTransform<>( defgrad );
+		dfieldGradInv.getOptimzer().setTolerance( EPS / 2 );
+		
+		double[] p = new double[]{ 5.0, 4.0 };
+		double[] pxfm = new double[]{ 10.0, 4.0 };
+		double[] q = new double[ 2 ];
+		
+		dfieldGradInv.apply( p, q );
+		
+		// apply  inverse to destination and ensure it goes to the source point
+		dfieldGradInv.applyInverse( q, pxfm );
+		Assert.assertArrayEquals( p, q, EPS );
+	}
+	
+	@Before
+	public void setUp()
+	{
+		RandomAccessibleInterval<FloatType> defRai = ArrayImgs.floats( 11, 11, 2 );
+		Cursor<FloatType> c = Views.flatIterable(defRai).cursor();
+		while( c.hasNext() )
+		{
+			c.fwd();
+			if( c.getIntPosition( 2 ) == 0 )
+				c.get().set( c.getFloatPosition(0) );
+		}
+
+		defgrad = new DeformationFieldTransform< >(
+				Views.interpolate( defRai, new NearestNeighborInterpolatorFactory< FloatType >() ));
+	}
+	
+	@After
+	public void tearDown()
+	{
+		defgrad = null;
+	}
+	
 }

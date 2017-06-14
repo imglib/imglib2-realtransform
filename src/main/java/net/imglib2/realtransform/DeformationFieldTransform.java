@@ -40,25 +40,26 @@ import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.realtransform.inverse.DifferentiableRealTransform;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
 /**
  * An <em>n</em>-dimensional deformation field.
  * <p>
- * Wraps a {@link RandomAccessibleInterval} of dimensionality D+1 ("def")
- * and interprets it as a D-dimensional {@link RealTransform}.  The last
- * dimension of of the {@link RandomAccessibleInterval} must have at
- * least D components.
+ * Wraps a {@link RandomAccessibleInterval} of dimensionality D+1 ("def") and
+ * interprets it as a D-dimensional {@link RealTransform}. The last dimension of
+ * of the {@link RandomAccessibleInterval} must have at least D components.
  * <p>
- * The deformation field should be interpreted as a d-dimensional
- * vector field.  A source point is displaced by adding the vector
- * at that point the the source point's position.
+ * The deformation field should be interpreted as a d-dimensional vector field.
+ * A source point is displaced by adding the vector at that point the the source
+ * point's position.
  *
  * @author John Bogovic &lt;bogovicj@janelia.hhmi.org&gt;
  *
  */
-public class DeformationFieldTransform<T extends RealType<T>> implements RealTransform
+public class DeformationFieldTransform< T extends RealType< T > > implements RealTransform
+//implements DifferentiableRealTransform
 {
 
 	private final RealRandomAccessible< T > defFieldReal;
@@ -89,6 +90,11 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	public int numTargetDimensions()
 	{
 		return numDim;
+	}
+
+	public RealRandomAccess< T > getDefFieldAcess()
+	{
+		return defFieldAccess;
 	}
 
 	@Override
@@ -128,6 +134,6 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	@Override
 	public RealTransform copy()
 	{
-		return new DeformationFieldTransform< >( this.defFieldReal );
+		return new DeformationFieldTransform<>( this.defFieldReal );
 	}
 }
