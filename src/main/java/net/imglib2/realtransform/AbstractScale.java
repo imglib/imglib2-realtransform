@@ -65,7 +65,7 @@ abstract public class AbstractScale implements ScaleGet
 	 * Set the scale vector.
 	 * 
 	 * @param s
-	 *            s.length <= the number of dimensions of this
+	 *            s.length &lt;= the number of dimensions of this
 	 *            {@link AbstractScale}
 	 */
 	abstract public void set( final double... s );

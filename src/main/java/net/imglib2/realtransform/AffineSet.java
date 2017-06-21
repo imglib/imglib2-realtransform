@@ -50,7 +50,6 @@ public interface AffineSet
 	 * @param value
 	 * @param row
 	 * @param column
-	 * @return
 	 */
 	public void set( final double value, final int row, final int column );
 
@@ -59,9 +58,6 @@ public interface AffineSet
 	 * row packed double values.
 	 * 
 	 * @param values
-	 * @param row
-	 * @param column
-	 * @return
 	 */
 	public void set( final double... values );
 
@@ -70,9 +66,6 @@ public interface AffineSet
 	 * double values from a [row][column] addressed array.
 	 * 
 	 * @param values
-	 * @param row
-	 * @param column
-	 * @return
 	 */
 	public void set( final double[][] values );
 }

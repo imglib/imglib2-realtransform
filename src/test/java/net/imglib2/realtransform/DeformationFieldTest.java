@@ -45,7 +45,6 @@ import net.imglib2.img.array.ArrayCursor;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
-import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
 import net.imglib2.type.numeric.real.DoubleType;
@@ -65,7 +64,7 @@ public class DeformationFieldTest
 				ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 3 ),
 				new FinalInterval( 10, 10, 2 ) );
 
-		DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< FloatType >(
+		DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< >(
 				defRai );
 
 		Assert.assertEquals( 2, def2d.numSourceDimensions() );
@@ -76,7 +75,7 @@ public class DeformationFieldTest
 				ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 4 ),
 				new FinalInterval( 10, 10, 10, 3 ) );
 
-		DeformationFieldTransform< FloatType > def3d = new DeformationFieldTransform< FloatType >(
+		DeformationFieldTransform< FloatType > def3d = new DeformationFieldTransform< >(
 				defRai3d );
 
 		Assert.assertEquals( 3, def3d.numSourceDimensions() );
@@ -92,7 +91,7 @@ public class DeformationFieldTest
 				ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 3 ),
 				new FinalInterval( 10, 10, 2 ) );
 
-		DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< FloatType >(
+		DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< >(
 				defRai );
 
 		double[] p = new double[]{ 5.0, 4.0 };
@@ -130,7 +129,7 @@ public class DeformationFieldTest
 				c.get().set( c.getFloatPosition(0) );
 		}
 
-		DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< FloatType >(
+		DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< >(
 				Views.interpolate( defRai, new NearestNeighborInterpolatorFactory< FloatType >() ));
 
 		double[] p = new double[]{ 5.0, 4.0 };
@@ -165,7 +164,7 @@ public class DeformationFieldTest
 				ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 4 ),
 				interval4d );
 
-		DeformationFieldTransform< FloatType > def3d = new DeformationFieldTransform< FloatType >(
+		DeformationFieldTransform< FloatType > def3d = new DeformationFieldTransform< >(
 				defRai );
 
 		// make a dummy image
@@ -176,7 +175,7 @@ public class DeformationFieldTest
 			c.next().set( x++ );
 
 		RealTransformRandomAccessible< DoubleType, RealTransform > imXfmReal =
-				new RealTransformRandomAccessible< DoubleType, RealTransform >(
+				new RealTransformRandomAccessible< >(
 					Views.interpolate( Views.extendZero( im ), 
 							new NLinearInterpolatorFactory< DoubleType >() ),
 					def3d);
