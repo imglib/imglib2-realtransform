@@ -146,7 +146,7 @@
 		<!-- NB: for SciJava dependencies -->
 		<repository>
 			<id>imagej.public</id>
-			<url>http://code.imagej.net/maven2/releases</url>
+			<url>https://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
