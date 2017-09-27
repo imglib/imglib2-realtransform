@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,7 +32,7 @@
  * #L%
  */
 /**
- * 
+ *
  */
 package net.imglib2.realtransform;
 
@@ -44,168 +44,184 @@ import net.imglib2.concatenate.PreConcatenable;
 
 /**
  * An <em>n</em> transform that applies a scaling first and then shifts coordinates.
- * This transform is faster than using an {@link AffineTransform} with 
+ * This transform is faster than using an {@link AffineTransform} with
  * entries on the diagonal only.
- * 
+ *
  * @author Philipp Hanslovsky
+ * @author Stephan Saalfeld
  */
-public class ScaleAndTranslation implements 
-ScaleAndTranslationGet, Concatenable< ScaleAndTranslationGet >, PreConcatenable< ScaleAndTranslationGet > 
+public class ScaleAndTranslation implements ScaleAndTranslationGet, Concatenable< ScaleAndTranslationGet >, PreConcatenable< ScaleAndTranslationGet >
 {
-	
 	private final ScaleAndTranslation inverse;
 	private final double[] scales;
 	private final double[] translations;
-	private final int nDim;
-	
-	
+	private final int n;
+	private final RealPoint[] ds;
 
 	/**
-	 * @param scales Array containing scales, will be cloned.
-	 * @param translations Array containing translations, will be cloned.
+	 * @param scales Array containing scales
+	 * @param translations Array containing translations
 	 */
-	public ScaleAndTranslation( final double[] scales, final double[] translations ) 
+	public ScaleAndTranslation( final double[] scales, final double[] translations )
 	{
 		super();
-		
+
 		assert translations.length == scales.length;
-		
-		this.scales       = scales.clone(); // clone?
-		this.translations = translations.clone(); // clone?
-		this.nDim         = translations.length;
-		this.inverse      = this.createInverse();
+
+		this.scales = scales.clone();
+		this.translations = translations.clone();
+		this.n = translations.length;
+		this.inverse = this.createInverse();
+
+		ds = createDs( scales );
 	}
-	
-	
+
+
 	/**
 	 * private constructor that takes inverse to avoid object creation when calling
 	 * {@link #inverse}
-	 * @param inverse 
-	 * @param scales Array containing scales, will be cloned.
-	 * @param translations Array containing translations, will be cloned.
-	 * @param nDim Number of Dimensions
+	 *
+	 * @param inverse
+	 * @param scales Array containing scales
+	 * @param translations Array containing translations
 	 */
-	private ScaleAndTranslation(
-			final ScaleAndTranslation inverse, 
-			final double[] scales,
-			final double[] translations, 
-			final int nDim 
-			) 
+	private ScaleAndTranslation( final ScaleAndTranslation inverse, final double[] scales, final double[] translations )
 	{
 		super();
+
 		assert translations.length == scales.length;
-		this.inverse      = inverse;
-		this.scales       = scales.clone();
+
+		this.inverse = inverse;
+		this.scales = scales.clone();
 		this.translations = translations.clone();
-		this.nDim         = nDim;
+		this.n = inverse.n;
+
+		ds = createDs( scales );
 	}
-	
+
+
+	private static RealPoint[] createDs( final double[] scales )
+	{
+		final int n = scales.length;
+		final RealPoint[] ds = new RealPoint[ n ];
+		for ( int d = 0; d < n; ++d )
+		{
+			final RealPoint rp = new RealPoint( n );
+			rp.setPosition( scales[ d ], d );
+			ds[ d ] = rp;
+		}
+		return ds;
+	}
+
 
 	@Override
-	public int numSourceDimensions() 
+	public int numSourceDimensions()
 	{
 		return this.numDimensions();
 	}
 
+
 	@Override
-	public int numTargetDimensions() 
+	public int numTargetDimensions()
 	{
 		return this.numDimensions();
 	}
 
-	@Override
-	public void apply(final double[] source, final double[] target) 
-	{
-		assert source.length == nDim && target.length == nDim;
-		for (int i = 0; i < nDim; i++) 
-		{
-			target[i] = scales[i]*source[i] + translations[i];
-		}
-	}
 
 	@Override
-	public void apply(final float[] source, final float[] target) 
+	public void apply( final double[] source, final double[] target )
 	{
-		assert source.length == nDim && target.length == nDim;
-		for (int i = 0; i < nDim; i++) 
-		{
-			target[i] = (float) (scales[i]*source[i] + translations[i]);
-		}
+		assert source.length >= n && target.length >= n;
+
+		for ( int i = 0; i < n; i++ )
+			target[ i ] = scales[ i ] * source[ i ] + translations[ i ];
 	}
 
-	@Override
-	public void apply(final RealLocalizable source, final RealPositionable target) 
-	{
-		assert source.numDimensions() == nDim && target.numDimensions() == nDim;
-		for ( int d = 0; d < nDim; ++d ) 
-		{
-			target.setPosition( scales[d]*source.getDoublePosition( d ) + translations[d], d);
-		}
-	}
 
 	@Override
-	public void applyInverse(final double[] source, final double[] target) 
+	public void apply( final float[] source, final float[] target )
 	{
-		// target is the source for the inverse transform, thus switch order in call of this.inverse.apply
+		assert source.length >= n && target.length >= n;
+
+		for ( int i = 0; i < n; i++ )
+			target[ i ] = ( float ) ( scales[ i ] * source[ i ] + translations[ i ] );
+	}
+
+
+	@Override
+	public void apply( final RealLocalizable source, final RealPositionable target )
+	{
+		assert source.numDimensions() >= n && target.numDimensions() >= n;
+
+		for ( int d = 0; d < n; ++d )
+			target.setPosition( scales[ d ] * source.getDoublePosition( d ) + translations[ d ], d );
+	}
+
+
+	@Override
+	public void applyInverse( final double[] source, final double[] target )
+	{
 		this.inverse.apply( target, source );
 	}
 
+
 	@Override
-	public void applyInverse(final float[] source, final float[] target) 
+	public void applyInverse( final float[] source, final float[] target )
 	{
-		// target is the source for the inverse transform, thus switch order in call of this.inverse.apply
 		this.inverse.apply( target, source );
 	}
 
+
 	@Override
-	public void applyInverse(final RealPositionable source, final RealLocalizable target) 
+	public void applyInverse( final RealPositionable source, final RealLocalizable target )
 	{
-		// target is the source for the inverse transform, thus switch order in call of this.inverse.apply
 		this.inverse.apply( target, source );
 	}
-	
-	
+
+
 	@Override
-	public ScaleAndTranslation inverse() 
+	public ScaleAndTranslation inverse()
 	{
 		return this.inverse;
 	}
-	
-	public ScaleAndTranslation createInverse() 
+
+
+	public ScaleAndTranslation createInverse()
 	{
-		final double[] invertedShifts = new double[ nDim ];
-		final double[] invertedScales = new double[ nDim ];
-		for (int i = 0; i < nDim; i++) 
+		final double[] invertedShifts = new double[ n ];
+		final double[] invertedScales = new double[ n ];
+		for ( int i = 0; i < n; i++ )
 		{
-			invertedScales[i] = 1.0 /scales[i];
-			invertedShifts[i] = -translations[i] * invertedScales[i];
+			invertedScales[ i ] = 1.0 / scales[ i ];
+			invertedShifts[ i ] = -translations[ i ] * invertedScales[ i ];
 		}
-		return new ScaleAndTranslation( this, invertedScales, invertedShifts, nDim );
+		return new ScaleAndTranslation( this, invertedScales, invertedShifts );
 	}
 
+
 	@Override
-	public ScaleAndTranslation copy() 
+	public ScaleAndTranslation copy()
 	{
-		return new ScaleAndTranslation( inverse, scales, translations, nDim );
+		return new ScaleAndTranslation( inverse, scales, translations );
 	}
 
 
 	@Override
-	public double getScale( int d ) 
+	public double getScale( final int d )
 	{
 		return this.scales[ d ];
 	}
 
 
 	@Override
-	public double[] getScaleCopy() 
+	public double[] getScaleCopy()
 	{
 		return this.scales.clone();
 	}
 
 
 	@Override
-	public double get( final int row, final int column ) 
+	public double get( final int row, final int column )
 	{
 		if ( column == row )
 			return this.scales[ row ];
@@ -217,16 +233,16 @@ ScaleAndTranslationGet, Concatenable< ScaleAndTranslationGet >, PreConcatenable<
 
 
 	@Override
-	public double[] getRowPackedCopy() 
+	public double[] getRowPackedCopy()
 	{
-		int m = this.scales.length;
-		int n = m + 1;
-		double[] result = new double[ m*n ];
-		for ( int i = 0; i < m; ++i ) {
-			int firstElementInRowIndex      = i*n;
-			int lastElementInRowIndex       = firstElementInRowIndex + n - 1;
-			int diagonalIndex               = firstElementInRowIndex + i;
-			result[ diagonalIndex ]         = this.scales[ i ];
+		final int m = n + 1;
+		final double[] result = new double[ n * m ];
+		for ( int i = 0; i < n; ++i )
+		{
+			final int firstElementInRowIndex = i * m;
+			final int lastElementInRowIndex = firstElementInRowIndex + n;
+			final int diagonalIndex = firstElementInRowIndex + i;
+			result[ diagonalIndex ] = this.scales[ i ];
 			result[ lastElementInRowIndex ] = this.translations[ i ];
 		}
 		return result;
@@ -234,75 +250,73 @@ ScaleAndTranslationGet, Concatenable< ScaleAndTranslationGet >, PreConcatenable<
 
 
 	@Override
-	public RealPoint d( int d ) 
+	public RealPoint d( final int d )
 	{
-		RealPoint rp = new RealPoint( nDim );
-		rp.setPosition( this.scales[d], d );
-		return rp;
+		return ds[ d ];
 	}
 
 
 	@Override
-	public int numDimensions() 
+	public int numDimensions()
 	{
-		return this.nDim;
+		return n;
 	}
 
 
 	@Override
-	public double getTranslation( int d ) 
+	public double getTranslation( final int d )
 	{
-		return this.translations[ d ];
+		return translations[ d ];
 	}
 
 
 	@Override
-	public double[] getTranslationCopy() 
+	public double[] getTranslationCopy()
 	{
-		return this.translations.clone();
+		return translations.clone();
 	}
 
 
 	@Override
-	public ScaleAndTranslation preConcatenate(
-			ScaleAndTranslationGet a ) 
+	public ScaleAndTranslation preConcatenate( final ScaleAndTranslationGet a )
 	{
-		assert a.numDimensions() == this.nDim: "Dimensions do not match.";
-		for ( int d = 0; d < this.nDim; ++d ) {
-			double scale            = a.getScale( d );
-			double translation      = this.translations[ d ];
-			this.scales[ d ]       *= scale;
-			this.translations[ d ]  = a.getTranslation( d ) + scale*translation;
+		assert a.numDimensions() == this.n : "Dimensions do not match.";
+
+		for ( int d = 0; d < this.n; ++d )
+		{
+			final double scale = a.getScale( d );
+			final double translation = this.translations[ d ];
+			this.scales[ d ] *= scale;
+			this.translations[ d ] = a.getTranslation( d ) + scale * translation;
 		}
 		return this;
 	}
 
 
 	@Override
-	public Class< ScaleAndTranslationGet > getPreConcatenableClass() 
+	public Class< ScaleAndTranslationGet > getPreConcatenableClass()
 	{
 		return ScaleAndTranslationGet.class;
 	}
 
 
 	@Override
-	public ScaleAndTranslation concatenate(
-			ScaleAndTranslationGet a) 
+	public ScaleAndTranslation concatenate( final ScaleAndTranslationGet a )
 	{
-		assert a.numDimensions() == this.nDim: "Dimensions do not match.";
-		for ( int d = 0; d < this.nDim; ++d ) {
-			double scale            = this.scales[ d ];
-			this.scales[ d ]       *= a.getScale( d );
-			this.translations[ d ] += a.getTranslation( d )*scale;
+		assert a.numDimensions() == this.n : "Dimensions do not match.";
+		for ( int d = 0; d < this.n; ++d )
+		{
+			final double scale = this.scales[ d ];
+			this.scales[ d ] *= a.getScale( d );
+			this.translations[ d ] += a.getTranslation( d ) * scale;
 		}
 		return this;
 	}
 
 
 	@Override
-	public Class< ScaleAndTranslationGet > getConcatenableClass() 
+	public Class< ScaleAndTranslationGet > getConcatenableClass()
 	{
 		return ScaleAndTranslationGet.class;
 	}
-
 }

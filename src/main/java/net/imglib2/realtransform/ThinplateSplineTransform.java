@@ -36,6 +36,7 @@ package net.imglib2.realtransform;
 
 import jitk.spline.ThinPlateR2LogRSplineKernelTransform;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 
 /**
@@ -47,9 +48,10 @@ import net.imglib2.RealPositionable;
  */
 public class ThinplateSplineTransform implements RealTransform {
 
-	final protected ThinPlateR2LogRSplineKernelTransform tps;
-	final protected double[] a;
-	final protected double[] b;
+	final private ThinPlateR2LogRSplineKernelTransform tps;
+	final private double[] a;
+	final private double[] b;
+	final private RealPoint rpa;
 
 	final static private ThinPlateR2LogRSplineKernelTransform init(
 			final double[][] p,
@@ -68,6 +70,7 @@ public class ThinplateSplineTransform implements RealTransform {
 		this.tps = tps;
 		a = new double[tps.getNumDims()];
 		b = new double[a.length];
+		rpa = RealPoint.wrap( a );
 	}
 
 	public ThinplateSplineTransform(
@@ -79,29 +82,29 @@ public class ThinplateSplineTransform implements RealTransform {
 
 
 	@Override
-	public void apply(double[] source, double[] target) {
+	public void apply(final double[] source, final double[] target) {
 
 		tps.apply(source, target);
 	}
 
 	@Override
-	public void apply(float[] source, float[] target) {
+	public void apply(final float[] source, final float[] target) {
 
 		for (int d = 0; d < a.length; ++d)
 			a[d] = source[d];
 
 		tps.apply(a, b);
 
-		for (int d = 0; d < target.length; ++d)
+		for (int d = 0; d < b.length; ++d)
 			target[d] = (float)b[d];
 	}
 
 	@Override
-	public void apply(RealLocalizable source, RealPositionable target) {
-
-		source.localize(a);
-		tps.apply(a, b);
-		target.setPosition(b);
+	public void apply( final RealLocalizable source, final RealPositionable target )
+	{
+		rpa.setPosition( source );
+		tps.apply( a, b );
+		target.setPosition( b );
 	}
 
 	@Override
