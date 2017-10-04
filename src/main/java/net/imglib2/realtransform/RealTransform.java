@@ -75,9 +75,11 @@ public interface RealTransform
 	 * vector.
 	 *
 	 * @param source
-	 *            source coordinates, length must be >= {@link #numSourceDimensions()}
+	 *            source coordinates, length must be {@code >=}
+	 *            {@link #numSourceDimensions()}
 	 * @param target
-	 *            set this to the target coordinates, length must be >= {@link #numTargetDimensions()}
+	 *            set this to the target coordinates, length must be {@code >=}
+	 *            {@link #numTargetDimensions()}
 	 */
 	public void apply( final double[] source, final double[] target );
 
@@ -86,9 +88,11 @@ public interface RealTransform
 	 * vector.
 	 *
 	 * @param source
-	 *            source coordinates, length must be >= {@link #numSourceDimensions()}
+	 *            source coordinates, length must be {@code >=}
+	 *            {@link #numSourceDimensions()}
 	 * @param target
-	 *            set this to the target coordinates, length must be >= {@link #numTargetDimensions()}
+	 *            set this to the target coordinates, length must be {@code >=}
+	 *            {@link #numTargetDimensions()}
 	 */
 	public void apply( final float[] source, final float[] target );
 
@@ -97,13 +101,13 @@ public interface RealTransform
 	 * obtain a target {@link RealPositionable}.
 	 *
 	 * @param source
-	 *            source coordinates,
-	 *            {@link RealLocalizable#numDimensions() numDimensions()} must
-	 *            be >= {@link #numSourceDimensions()}
+	 *            source coordinates, {@link RealLocalizable#numDimensions()
+	 *            numDimensions()} must be {@code >=}
+	 *            {@link #numSourceDimensions()}
 	 * @param target
 	 *            set this to the target coordinates,
 	 *            {@link RealLocalizable#numDimensions() numDimensions()} must
-	 *            be >= {@link #numTargetDimensions()}
+	 *            be {@code >=} {@link #numTargetDimensions()}
 	 */
 	public void apply( final RealLocalizable source, final RealPositionable target );
 
