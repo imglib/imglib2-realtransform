@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ import net.imglib2.view.Views;
 
 /**
  * An <em>n</em>-dimensional deformation field.
- * <p> 
+ * <p>
  * Wraps a {@link RandomAccessibleInterval} of dimensionality D+1 ("def")
  * and interprets it as a D-dimensional {@link RealTransform}.  The last
  * dimension of of the {@link RandomAccessibleInterval} must have at
@@ -53,8 +53,8 @@ import net.imglib2.view.Views;
  * <p>
  * The deformation field should be interpreted as a d-dimensional
  * vector field.  A source point is displaced by adding the vector
- * at that point the the source point's position. 
- * 
+ * at that point the the source point's position.
+ *
  * @author John Bogovic &lt;bogovicj@janelia.hhmi.org&gt;
  *
  */
@@ -67,12 +67,12 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 
 	private final int numDim;
 
-	public DeformationFieldTransform( RandomAccessibleInterval< T > def )
+	public DeformationFieldTransform( final RandomAccessibleInterval< T > def )
 	{
 		this( Views.interpolate( def, new NLinearInterpolatorFactory< T >() ) );
 	}
 
-	public DeformationFieldTransform( RealRandomAccessible< T > defFieldReal )
+	public DeformationFieldTransform( final RealRandomAccessible< T > defFieldReal )
 	{
 		this.defFieldReal = defFieldReal;
 		this.numDim = defFieldReal.numDimensions() - 1;
@@ -92,14 +92,14 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	}
 
 	@Override
-	public void apply( double[] source, double[] target )
+	public void apply( final double[] source, final double[] target )
 	{
-		for ( int d = 0; d < target.length; d++ )
+		for ( int d = 0; d < numDim; d++ )
 			defFieldAccess.setPosition( source[ d ], d );
 
 		defFieldAccess.setPosition( 0.0, numDim );
 
-		System.arraycopy( source, 0, target, 0, source.length );
+		System.arraycopy( source, 0, target, 0, numDim );
 		for ( int d = 0; d < numDim; d++ )
 		{
 			target[ d ] += defFieldAccess.get().getRealDouble();
@@ -108,25 +108,9 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	}
 
 	@Override
-	public void apply( float[] source, float[] target )
+	public void apply( final RealLocalizable source, final RealPositionable target )
 	{
-		for ( int d = 0; d < target.length; d++ )
-			defFieldAccess.setPosition( source[ d ], d );
-
-		defFieldAccess.setPosition( 0.0, numDim );
-
-		System.arraycopy( source, 0, target, 0, source.length );
 		for ( int d = 0; d < numDim; d++ )
-		{
-			target[ d ] += defFieldAccess.get().getRealDouble();
-			defFieldAccess.fwd( numDim );
-		}
-	}
-
-	@Override
-	public void apply( RealLocalizable source, RealPositionable target )
-	{
-		for ( int d = 0; d < target.numDimensions(); d++ )
 			defFieldAccess.setPosition( source.getDoublePosition( d ), d );
 
 		defFieldAccess.setPosition( 0.0, numDim );
