@@ -37,7 +37,6 @@ package net.imglib2.realtransform;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
-import net.imglib2.realtransform.RealTransform;
 
 /**
  * A {@link RealTransform} that linearly interpolates between two
@@ -107,7 +106,17 @@ public class InterpolatedRealTransform implements RealTransform
 	@Override
 	public void apply( final float[] source, final float[] target )
 	{
-		throw new UnsupportedOperationException( "Please use double precision" );
+		for ( int d = 0; d < targetPositionA.length; d++ )
+		{
+			targetPositionA[ d ] = source[ d ];
+			targetPositionB[ d ] = source[ d ];
+		}
+
+		a.apply( targetPositionA, targetPositionA );
+		b.apply( targetPositionB, targetPositionB );
+
+		for ( int d = 0; d < targetPositionA.length; d++ )
+			target[ d ] = ( float )( ( targetPositionA[ d ] - targetPositionB[ d ] ) * lambda + targetPositionB[ d ] );
 	}
 
 	@Override
