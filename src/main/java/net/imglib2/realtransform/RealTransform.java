@@ -93,8 +93,25 @@ public interface RealTransform
 	 * @param target
 	 *            set this to the target coordinates, length must be {@code >=}
 	 *            {@link #numTargetDimensions()}
+	 *
+	 * @deprecated use double precision instead
 	 */
-	public void apply( final float[] source, final float[] target );
+	@Deprecated
+	public default void apply( final float[] source, final float[] target )
+	{
+		assert source.length >= numSourceDimensions() && target.length >= numTargetDimensions() : "Input dimensions too small.";
+
+		final double[] doubleSource = new double[ source.length ];
+		final double[] doubleTarget = new double[ target.length ];
+
+		for ( int d = 0; d < source.length; ++d )
+			doubleSource[ d ] = source[ d ];
+
+		apply( doubleSource, doubleTarget );
+
+		for ( int d = 0; d < target.length; ++d )
+			target[ d ] = ( float )doubleTarget[ d ];
+	}
 
 	/**
 	 * Apply the {@link RealTransform} to a source {@link RealLocalizable} to
