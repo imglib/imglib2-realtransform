@@ -50,6 +50,10 @@ import net.imglib2.RealPositionable;
  * leave all dimensions beyond <em>n</em>-1 in the source vector and <em>m</em>
  * -1 in the target vector unchanged.
  * </p>
+ * <p>
+ * Implementations must support an in-place apply (i.e., passing the same
+ * object as both <em>source</em> and <em>target</em>).
+ * </p>
  *
  * @author Tobias Pietzsch
  * @author Stephan Saalfeld
