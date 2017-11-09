@@ -40,7 +40,7 @@ import net.imglib2.realtransform.RealTransform;
 
 /**
  * A {@link RealTransform} that transitions between two <em>n</em>-dimensional
- * {@link RealTransform RealTransforms).  The resulting {@link RealTransform}
+ * {@link RealTransform RealTransforms}.  The resulting {@link RealTransform}
  * is (<em>n</em> + 1)-dimensional, the transition happens along an
  * interval over the <em>n</em>-th dimension that remains unchanged.
  *
