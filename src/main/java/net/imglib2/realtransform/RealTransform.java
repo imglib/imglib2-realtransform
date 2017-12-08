@@ -143,4 +143,14 @@ public interface RealTransform
 	 * @return deep copy
 	 */
 	public RealTransform copy();
+
+	/**
+	 * Check if the {@link RealTransform} is identity.
+	 * 
+	 * @return true if identity
+	 */
+	default boolean isIdentity()
+	{
+		return false;
+	}
 }

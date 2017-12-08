@@ -319,4 +319,11 @@ public class ScaleAndTranslation implements ScaleAndTranslationGet, Concatenable
 	{
 		return ScaleAndTranslationGet.class;
 	}
+  
+	
+	@Override
+	public boolean isIdentity()
+	{
+		return RealViewsSimplifyUtils.isIdentity( this );
+	}
 }

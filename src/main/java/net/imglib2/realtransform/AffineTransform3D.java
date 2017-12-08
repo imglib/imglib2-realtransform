@@ -1045,4 +1045,10 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 
 		return new FinalRealInterval( rMin, rMax );
 	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		return RealViewsSimplifyUtils.isIdentity( this );
+	}
 }

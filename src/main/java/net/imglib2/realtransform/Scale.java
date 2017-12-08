@@ -35,13 +35,16 @@
 package net.imglib2.realtransform;
 
 import net.imglib2.RealPoint;
+import net.imglib2.concatenate.Concatenable;
+import net.imglib2.concatenate.PreConcatenable;
 
 /**
  * <em>n</em>-d arbitrary scaling.
  * 
  * @author Stephan Saalfeld
+ * @author Christian Dietz
  */
-public class Scale extends AbstractScale
+public class Scale extends AbstractScale implements Concatenable< ScaleGet >, PreConcatenable< ScaleGet >
 {
 	final protected Scale inverse;
 
@@ -91,5 +94,42 @@ public class Scale extends AbstractScale
 	public Scale copy()
 	{
 		return new Scale( s );
+	}
+
+	@Override
+	public Scale preConcatenate( final ScaleGet a )
+	{
+		for ( int d = 0; d < numDimensions(); ++d )
+			set( s[ d ] * a.getScale( d ) );
+		
+		return this;
+	}
+
+	@Override
+	public Class< ScaleGet > getPreConcatenableClass()
+	{
+		return ScaleGet.class;
+	}
+
+	@Override
+	public Scale concatenate( ScaleGet a )
+	{
+		return preConcatenate( a );
+	}
+
+	@Override
+	public Class< ScaleGet > getConcatenableClass()
+	{
+		return ScaleGet.class;
+	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		for ( int i = 0; i < s.length; i++ )
+		{
+			if ( s[ i ] != 1.0 ) { return false; }
+		}
+		return true;
 	}
 }

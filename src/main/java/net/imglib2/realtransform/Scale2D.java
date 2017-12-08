@@ -37,13 +37,15 @@ package net.imglib2.realtransform;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
+import net.imglib2.concatenate.Concatenable;
+import net.imglib2.concatenate.PreConcatenable;
 
 /**
  * 2-d arbitrary scaling.
  * 
  * @author Stephan Saalfeld
  */
-public class Scale2D extends AbstractScale
+public class Scale2D extends AbstractScale implements Concatenable< ScaleGet >, PreConcatenable< ScaleGet >
 {
 	final protected Scale2D inverse;
 
@@ -144,8 +146,8 @@ public class Scale2D extends AbstractScale
 	{
 		assert source.length >= numDimensions() && target.length >= numDimensions(): "Input dimensions too small.";
 
-		source[ 0 ] = ( float )( target[ 0 ] / s[ 0 ] );
-		source[ 1 ] = ( float )( target[ 1 ] / s[ 1 ] );
+		source[ 0 ] = ( float ) ( target[ 0 ] / s[ 0 ] );
+		source[ 1 ] = ( float ) ( target[ 1 ] / s[ 1 ] );
 	}
 
 	@Override
@@ -171,8 +173,8 @@ public class Scale2D extends AbstractScale
 	{
 		assert source.length >= numDimensions() && target.length >= numDimensions(): "Input dimensions too small.";
 
-		target[ 0 ] = ( float )( source[ 0 ] * s[ 0 ] );
-		target[ 1 ] = ( float )( source[ 1 ] * s[ 1 ] );
+		target[ 0 ] = ( float ) ( source[ 0 ] * s[ 0 ] );
+		target[ 1 ] = ( float ) ( source[ 1 ] * s[ 1 ] );
 	}
 
 	@Override
@@ -212,5 +214,38 @@ public class Scale2D extends AbstractScale
 	public Scale2D copy()
 	{
 		return new Scale2D( s );
+	}
+
+	@Override
+	public Scale2D preConcatenate( final ScaleGet a )
+	{
+		set( s[ 0 ] * a.getScale( 0 ),
+		     s[ 1 ] * a.getScale( 1 ) );
+
+		return this;
+	}
+
+	@Override
+	public Class< ScaleGet > getPreConcatenableClass()
+	{
+		return ScaleGet.class;
+	}
+
+	@Override
+	public Scale2D concatenate( ScaleGet a )
+	{
+		return preConcatenate( a );
+	}
+
+	@Override
+	public Class< ScaleGet > getConcatenableClass()
+	{
+		return ScaleGet.class;
+	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		return s[ 0 ] == 1 && s[ 1 ] == 1;
 	}
 }

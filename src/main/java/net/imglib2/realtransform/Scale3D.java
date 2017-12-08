@@ -266,4 +266,10 @@ public class Scale3D extends AbstractScale implements Concatenable< ScaleGet >, 
 	{
 		return ScaleGet.class;
 	}
+	
+	@Override
+	public boolean isIdentity()
+	{
+		return s[ 0 ] == 1 && s[ 1 ] == 1 && s[ 2 ] == 1;
+	}
 }
