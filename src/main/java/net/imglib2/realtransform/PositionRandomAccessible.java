@@ -2,7 +2,7 @@
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
- * Copyright (C) 2009 - 2016 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
+ * Copyright (C) 2009 - 2017 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
  * John Bogovic, Albert Cardona, Barry DeZonia, Christian Dietz, Jan Funke,
  * Aivar Grislis, Jonathan Hale, Grant Harris, Stefan Helfrich, Mark Hiner,
  * Martin Horn, Steffen Jaensch, Lee Kamentsky, Larry Lindsey, Melissa Linkert,
@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,16 +34,73 @@
 
 package net.imglib2.realtransform;
 
+import net.imglib2.Interval;
+import net.imglib2.Point;
+import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessible;
+import net.imglib2.type.numeric.integer.LongType;
+
 /**
- * An <em>n</em>-dimensional translation vector whose fields can be accessed
- * through their dimension index or as a double array.
- * 
- * @author Stephan Saalfeld
+ * A {@link RandomAccessible} over the <em>d</em>-th position of discrete
+ * coordinate space.
+ *
+ * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
  */
-public interface TranslationGet extends ScaleAndTranslationGet
+public class PositionRandomAccessible implements RandomAccessible< LongType >
 {
-	
+	private final int n;
+	private final int d;
+
+	public PositionRandomAccessible( final int numDimensions, final int d )
+	{
+		this.n = numDimensions;
+		this.d = d;
+	}
+
+	public class PositionRandomAccess extends Point implements RandomAccess< LongType >
+	{
+		private final LongType t = new LongType();
+
+		public PositionRandomAccess()
+		{
+			super( PositionRandomAccessible.this.n );
+		}
+
+		@Override
+		public LongType get()
+		{
+			t.set( position[ d ] );
+			return t;
+		}
+
+		@Override
+		public PositionRandomAccess copy()
+		{
+			return new PositionRandomAccess();
+		}
+
+		@Override
+		public RandomAccess< LongType > copyRandomAccess()
+		{
+			return copy();
+		}
+	}
+
 	@Override
-	TranslationGet inverse();
-	
+	public int numDimensions()
+	{
+		return n;
+	}
+
+	@Override
+	public RandomAccess< LongType > randomAccess()
+	{
+		return new PositionRandomAccess();
+	}
+
+	@Override
+	public RandomAccess< LongType > randomAccess( final Interval interval )
+	{
+		return randomAccess();
+	}
 }

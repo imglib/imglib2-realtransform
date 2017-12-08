@@ -2,7 +2,7 @@
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
- * Copyright (C) 2009 - 2016 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
+ * Copyright (C) 2009 - 2017 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
  * John Bogovic, Albert Cardona, Barry DeZonia, Christian Dietz, Jan Funke,
  * Aivar Grislis, Jonathan Hale, Grant Harris, Stefan Helfrich, Mark Hiner,
  * Martin Horn, Steffen Jaensch, Lee Kamentsky, Larry Lindsey, Melissa Linkert,
@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,16 +34,73 @@
 
 package net.imglib2.realtransform;
 
+import net.imglib2.RealInterval;
+import net.imglib2.RealPoint;
+import net.imglib2.RealRandomAccess;
+import net.imglib2.RealRandomAccessible;
+import net.imglib2.type.numeric.real.DoubleType;
+
 /**
- * An <em>n</em>-dimensional translation vector whose fields can be accessed
- * through their dimension index or as a double array.
- * 
- * @author Stephan Saalfeld
+ * A {@link RealRandomAccessible} over the <em>d</em>-th position of real
+ * coordinate space.
+ *
+ * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
  */
-public interface TranslationGet extends ScaleAndTranslationGet
+public class RealPositionRealRandomAccessible implements RealRandomAccessible< DoubleType >
 {
-	
+	private final int n;
+	private final int d;
+
+	public RealPositionRealRandomAccessible( final int numDimensions, final int d )
+	{
+		this.n = numDimensions;
+		this.d = d;
+	}
+
+	public class RealPositionRealRandomAccess extends RealPoint implements RealRandomAccess< DoubleType >
+	{
+		private final DoubleType t = new DoubleType();
+
+		public RealPositionRealRandomAccess()
+		{
+			super( RealPositionRealRandomAccessible.this.n );
+		}
+
+		@Override
+		public DoubleType get()
+		{
+			t.set( position[ d ] );
+			return t;
+		}
+
+		@Override
+		public RealPositionRealRandomAccess copy()
+		{
+			return new RealPositionRealRandomAccess();
+		}
+
+		@Override
+		public RealPositionRealRandomAccess copyRealRandomAccess()
+		{
+			return copy();
+		}
+	}
+
 	@Override
-	TranslationGet inverse();
-	
+	public int numDimensions()
+	{
+		return n;
+	}
+
+	@Override
+	public RealPositionRealRandomAccess realRandomAccess()
+	{
+		return new RealPositionRealRandomAccess();
+	}
+
+	@Override
+	public RealPositionRealRandomAccess realRandomAccess( final RealInterval interval )
+	{
+		return realRandomAccess();
+	}
 }

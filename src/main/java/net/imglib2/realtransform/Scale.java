@@ -41,8 +41,8 @@ import net.imglib2.concatenate.PreConcatenable;
 /**
  * <em>n</em>-d arbitrary scaling.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
- * @author Christian Dietz <dietzc85@googlemail.com>
+ * @author Stephan Saalfeld
+ * @author Christian Dietz
  */
 public class Scale extends AbstractScale implements Concatenable< ScaleGet >, PreConcatenable< ScaleGet >
 {

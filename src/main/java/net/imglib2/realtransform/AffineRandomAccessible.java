@@ -52,8 +52,8 @@ import net.imglib2.RealRandomAccessible;
  * works with a copy of the transform.  Make sure that you request a new
  * {@link RandomAccess} after modifying the transformation.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Stephan Saalfeld
+ * @author Tobias Pietzsch
  */
 public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransformRandomAccessible< T, R >
 {

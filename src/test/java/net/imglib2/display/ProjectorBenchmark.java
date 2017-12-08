@@ -56,7 +56,7 @@ public class ProjectorBenchmark
 			final Converter< A, B > converter )
 	{
 		final IterableIntervalProjector2D< A, B > projector =
-				new IterableIntervalProjector2D< A, B >( 0, 1, source, target, converter );
+				new IterableIntervalProjector2D< >( 0, 1, source, target, converter );
 
 		BenchmarkHelper.benchmarkAndPrint( 100, false, new Runnable()
 		{
@@ -78,7 +78,7 @@ public class ProjectorBenchmark
 			final Converter< A, B > converter )
 	{
 		final RandomAccessibleProjector2D< A, B > projector =
-				new RandomAccessibleProjector2D< A, B >( 0, 1, source, target, converter );
+				new RandomAccessibleProjector2D< >( 0, 1, source, target, converter );
 
 		BenchmarkHelper.benchmarkAndPrint( 100, false, new Runnable()
 		{
@@ -120,7 +120,7 @@ public class ProjectorBenchmark
 	{
 		final Img< FloatType > source = ArrayImgs.floats( 1000, 1000, 10 );
 		final Img< FloatType > target = ArrayImgs.floats( 1000, 1000 );
-		final Converter< FloatType, FloatType > converter = new RealFloatConverter< FloatType >();
+		final Converter< FloatType, FloatType > converter = new RealFloatConverter< >();
 
 		final AffineTransform3D t = new AffineTransform3D();
 		final RandomAccessibleInterval< FloatType > view = Views.interval(

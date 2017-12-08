@@ -42,7 +42,7 @@ import net.imglib2.RealLocalizable;
  * <em>n</em>+1) affine transformation matrix can be accessed via row and column
  * index.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public interface AffineGet extends InvertibleRealTransform, EuclideanSpace
 {

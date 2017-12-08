@@ -44,7 +44,7 @@ import net.imglib2.RealPositionable;
  *
  * Copied from https://github.com/axtimwalde/mpicbg/blob/master/mpicbg/src/main/java/mpicbg/models/PolynomialTransform2D.java
  *
- * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
+ * @author Stephan Saalfeld
  */
 public class PolynomialTransform2D implements RealTransform
 {

@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,12 +44,12 @@ import net.imglib2.RealPositionable;
  * Shared properties of {@link RealTransformSequence} and
  * {@link InvertibleRealTransformSequence}, sequences of something that extends
  * {@link RealTransform RealTransforms}.
- * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ *
+ * @author Stephan Saalfeld
  */
 public class AbstractRealTransformSequence< R extends RealTransform > implements RealTransform
 {
-	final protected ArrayList< R > transforms = new ArrayList< R >();;
+	final protected ArrayList< R > transforms = new ArrayList<>();
 
 	protected double[] tmp = new double[ 0 ];
 
@@ -61,17 +61,17 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 
 	/**
 	 * Append a {@link RealTransform} to the sequence.
-	 * 
+	 *
 	 * @param transform
 	 */
 	public void add( final R transform )
 	{
 		transforms.add( transform );
-		
+
 		if ( transforms.size() == 1 )
 		{
 			nSource = transform.numSourceDimensions();
-			
+
 			/**
 			 * tmp has to be initialized at source size to enable
 			 * #apply(float[], float[]) later which requires initial copy of
@@ -80,9 +80,9 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 			tmp = new double[ nSource ];
 			ptmp = RealPoint.wrap( tmp );
 		}
-		
+
 		nTarget = transform.numTargetDimensions();
-		
+
 		if ( tmp.length < nTarget )
 		{
 			tmp = new double[ nTarget ];
@@ -113,10 +113,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 			if ( s > 0 )
 			{
 				transforms.get( 0 ).apply( source, tmp );
-				
+
 				for ( int i = 1; i < s; ++i )
 					transforms.get( i ).apply( tmp, tmp );
-				
+
 				transforms.get( s ).apply( tmp, target );
 			}
 			else
@@ -168,7 +168,7 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 	@Override
 	public AbstractRealTransformSequence< R > copy()
 	{
-		final AbstractRealTransformSequence< R > copy = new AbstractRealTransformSequence< R >();
+		final AbstractRealTransformSequence< R > copy = new AbstractRealTransformSequence<>();
 		for ( final R t : transforms )
 			copy.add( ( R ) t.copy() );
 		return copy;

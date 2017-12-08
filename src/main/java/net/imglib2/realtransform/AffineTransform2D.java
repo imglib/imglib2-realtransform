@@ -43,7 +43,7 @@ import net.imglib2.concatenate.PreConcatenable;
 /**
  * 2d-affine transformation.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< AffineGet >, PreConcatenable< AffineGet >
 {

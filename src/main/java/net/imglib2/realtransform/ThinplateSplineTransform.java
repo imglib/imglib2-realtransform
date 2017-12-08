@@ -36,6 +36,7 @@ package net.imglib2.realtransform;
 
 import jitk.spline.ThinPlateR2LogRSplineKernelTransform;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 
 /**
@@ -43,83 +44,71 @@ import net.imglib2.RealPositionable;
  * Bogovic's <a href="https://github.com/saalfeldlab/jitk-tps">jitk-tps</a>
  * library.
  *
- * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
+ * @author Stephan Saalfeld
  */
-public class ThinplateSplineTransform implements RealTransform {
+public class ThinplateSplineTransform implements RealTransform
+{
+	final private ThinPlateR2LogRSplineKernelTransform tps;
 
-	final protected ThinPlateR2LogRSplineKernelTransform tps;
-	final protected double[] a;
-	final protected double[] b;
+	final private double[] a;
 
-	final static private ThinPlateR2LogRSplineKernelTransform init(
-			final double[][] p,
-			final double[][] q) {
+	final private double[] b;
 
+	final private RealPoint rpa;
+
+	final static private ThinPlateR2LogRSplineKernelTransform init( final double[][] p, final double[][] q )
+	{
 		assert p.length == q.length;
 
-		final ThinPlateR2LogRSplineKernelTransform tps =
-				new ThinPlateR2LogRSplineKernelTransform(p.length, p, q);
+		final ThinPlateR2LogRSplineKernelTransform tps = new ThinPlateR2LogRSplineKernelTransform( p.length, p, q );
 
 		return tps;
 	}
 
-	public ThinplateSplineTransform(final ThinPlateR2LogRSplineKernelTransform tps) {
-
+	public ThinplateSplineTransform( final ThinPlateR2LogRSplineKernelTransform tps )
+	{
 		this.tps = tps;
-		a = new double[tps.getNumDims()];
-		b = new double[a.length];
+		a = new double[ tps.getNumDims() ];
+		b = new double[ a.length ];
+		rpa = RealPoint.wrap( a );
 	}
 
-	public ThinplateSplineTransform(
-			final double[][] p,
-			final double[][] q) {
-
-		this(init(p, q));
-	}
-
-
-	@Override
-	public void apply(double[] source, double[] target) {
-
-		tps.apply(source, target);
+	public ThinplateSplineTransform( final double[][] p, final double[][] q )
+	{
+		this( init( p, q ) );
 	}
 
 	@Override
-	public void apply(float[] source, float[] target) {
-
-		for (int d = 0; d < a.length; ++d)
-			a[d] = source[d];
-
-		tps.apply(a, b);
-
-		for (int d = 0; d < target.length; ++d)
-			target[d] = (float)b[d];
+	public void apply( final double[] source, final double[] target )
+	{
+		tps.apply( source, target );
 	}
 
 	@Override
-	public void apply(RealLocalizable source, RealPositionable target) {
-
-		source.localize(a);
-		tps.apply(a, b);
-		target.setPosition(b);
+	public void apply( final RealLocalizable source, final RealPositionable target )
+	{
+		rpa.setPosition( source );
+		tps.apply( a, b );
+		for ( int d = 0; d < a.length; ++d )
+			target.setPosition( b[ d ], d );
 	}
 
 	@Override
-	public ThinplateSplineTransform copy() {
-
+	public ThinplateSplineTransform copy()
+	{
 		/* tps is stateless and constant and can therefore be reused */
-		return new ThinplateSplineTransform(tps);
+		return new ThinplateSplineTransform( tps );
 	}
 
 	@Override
-	public int numSourceDimensions() {
-
+	public int numSourceDimensions()
+	{
 		return tps.getNumDims();
 	}
 
 	@Override
-	public int numTargetDimensions() {
-
+	public int numTargetDimensions()
+	{
 		return tps.getNumDims();
 	}
 }

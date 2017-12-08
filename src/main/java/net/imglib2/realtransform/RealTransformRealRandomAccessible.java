@@ -49,7 +49,7 @@ import net.imglib2.RealRandomAccessible;
  * internally works with a copy of the transform.  Make sure that you request
  * a new {@link RandomAccess} after modifying the transformation.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class RealTransformRealRandomAccessible< T, R extends RealTransform > implements RealRandomAccessible< T >
 {

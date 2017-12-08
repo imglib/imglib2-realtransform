@@ -48,7 +48,7 @@ import net.imglib2.RealPositionable;
  * 
  * TODO This can be a singleton
  * 
- * @author Tobias Pietzsch <tobias.pietzsch@gmail.com>
+ * @author Tobias Pietzsch
  */
 public class PolarToCartesianTransform2D implements InvertibleRealTransform
 {

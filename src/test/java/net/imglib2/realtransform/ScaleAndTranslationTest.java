@@ -42,7 +42,7 @@ import org.junit.Test;
 /**
  * Unit tests for {@link ScaleAndTranslation}
  * 
- * @author Philipp Hanslovsky <hanslovskyp@janelia.hhmi.org>
+ * @author Philipp Hanslovsky
  *
  */
 public class ScaleAndTranslationTest {

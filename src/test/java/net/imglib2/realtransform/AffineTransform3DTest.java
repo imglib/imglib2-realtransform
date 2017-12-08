@@ -37,14 +37,11 @@ import static org.junit.Assert.*;
 
 import java.util.Random;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  *
  */
 public class AffineTransform3DTest
@@ -104,8 +101,9 @@ public class AffineTransform3DTest
 
 			dR.concatenate( affine );
 			affine.rotate( axis, d );
-			
+
 			assertArrayEquals( dR.getRowPackedCopy(), affine.getRowPackedCopy(), 0.001 );
+			assertArrayEquals( dR.inverse().getRowPackedCopy(), affine.inverse().getRowPackedCopy(), 0.001 );
 		}
 	}
 	
@@ -131,8 +129,9 @@ public class AffineTransform3DTest
 			
 			dR.concatenate( affine );
 			affine.scale( s );
-			
+
 			assertArrayEquals( dR.getRowPackedCopy(), affine.getRowPackedCopy(), 0.001 );
+			assertArrayEquals( dR.inverse().getRowPackedCopy(), affine.inverse().getRowPackedCopy(), 0.001 );
 		}
 	}
 	
@@ -154,20 +153,20 @@ public class AffineTransform3DTest
 		//Move to origin and test
 		toBeOrigin.translate(inverseTranslation);
 		assertArrayEquals( toBeOrigin.getTranslation(), new double[]{0, 0, 0}, 0.001 );
-		
+		assertArrayEquals( toBeOrigin.inverse().getTranslation(), new double[]{ 0, 0, 0 }, 0.001 );
+
 		//Move to origin the easy way
 		toBeOrigin = affine.copy();
 		toBeOrigin.setTranslation(0, 0, 0);
 		assertArrayEquals( toBeOrigin.getTranslation(), new double[]{0, 0, 0}, 0.001 );
-		
+		assertArrayEquals( toBeOrigin.inverse().getTranslation(), new double[]{ 0, 0, 0 }, 0.001 );
+
 		//Move back to initial position
 		final AffineTransform3D backToOriginal = toBeOrigin.copy();
 		backToOriginal.translate(translationFromOrigin);
 
 		assertArrayEquals( backToOriginal.getRowPackedCopy(), affine.getRowPackedCopy(), 0.001 );
-		
-		
-		
+		assertArrayEquals( backToOriginal.inverse().getRowPackedCopy(), affine.inverse().getRowPackedCopy(), 0.001 );
 	}
 
 }

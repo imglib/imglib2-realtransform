@@ -42,7 +42,7 @@ import net.imglib2.RealPositionable;
  * 3d inverse perspective transformation. Implemented as singleton as it has no
  * properties.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class InversePerspective3D implements InvertibleRealTransform, EuclideanSpace
 {

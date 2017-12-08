@@ -50,7 +50,7 @@ import net.imglib2.RealRandomAccessible;
  * initialization (e.g. setPosition(double[])) of any existing one before making
  * any relative move.
  * 
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTransformRealRandomAccessible< T, R >
 {

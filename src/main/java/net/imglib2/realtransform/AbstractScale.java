@@ -41,7 +41,7 @@ import net.imglib2.RealPositionable;
 /**
  * <em>n</em>-d arbitrary scaling.  Abstract base implementation.
  *
- * @author Stephan Saalfeld <saalfelds@janelia.hhmi.org>
+ * @author Stephan Saalfeld
  */
 abstract public class AbstractScale implements ScaleGet
 {
@@ -65,7 +65,7 @@ abstract public class AbstractScale implements ScaleGet
 	 * Set the scale vector.
 	 * 
 	 * @param s
-	 *            s.length <= the number of dimensions of this
+	 *            s.length &lt;= the number of dimensions of this
 	 *            {@link AbstractScale}
 	 */
 	abstract public void set( final double... s );
