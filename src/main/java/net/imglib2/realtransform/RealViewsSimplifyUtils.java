@@ -52,8 +52,7 @@ import net.imglib2.view.RandomAccessibleOnRealRandomAccessible;
 public class RealViewsSimplifyUtils
 {
 	/**
-	 * @param {@link
-	 * 			AffineGet} to be checked
+	 * @param affineGet {@link AffineGet} to be checked
 	 * @return true, if the given {@link AffineGet} only scales and translates.
 	 */
 	public static boolean isExclusiveScaleAndTranslation( final AffineGet affineGet )
@@ -74,8 +73,7 @@ public class RealViewsSimplifyUtils
 	}
 
 	/**
-	 * @param {@link
-	 * 			AffineGet} to be checked
+	 * @param affineGet {@link AffineGet} to be checked
 	 * @return true, if the given {@link AffineGet} affineGet only scales.
 	 */
 	public static boolean isExclusiveScale( final AffineGet affineGet )
@@ -96,8 +94,7 @@ public class RealViewsSimplifyUtils
 	}
 
 	/**
-	 * @param {@link
-	 * 			AffineGet} to be checked
+	 * @param affineGet {@link AffineGet} to be checked
 	 * @return true, if the given {@link AffineGet} only translates.
 	 */
 	public static boolean isExlusiveTranslation( final AffineGet affineGet )
