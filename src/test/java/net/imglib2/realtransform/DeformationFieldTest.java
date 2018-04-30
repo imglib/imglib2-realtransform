@@ -82,6 +82,7 @@ public class DeformationFieldTest
 		Assert.assertEquals( 3, def3d.numTargetDimensions() );
 	}
 
+	@SuppressWarnings( "deprecation" )
 	@Test
 	public void testTranslation()
 	{
@@ -115,6 +116,7 @@ public class DeformationFieldTest
 		Assert.assertEquals( tgt.getDoublePosition( 1 ), 5.0, EPS );
 	}
 
+	@SuppressWarnings( "deprecation" )
 	@Test
 	public void testGradient()
 	{

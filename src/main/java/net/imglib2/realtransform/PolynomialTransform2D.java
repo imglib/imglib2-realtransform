@@ -79,7 +79,7 @@ public class PolynomialTransform2D implements RealTransform
 	 * terms is smaller or equal a given number.
 	 *
 	 * @param numPolTerms
-	 * @return
+	 * @return result of the calculation
 	 */
 	final static public int orderOf( final int numPolTerms )
 	{
@@ -91,7 +91,7 @@ public class PolynomialTransform2D implements RealTransform
 	 * of given order.
 	 *
 	 * @param order
-	 * @return
+	 * @return result of the calculation
 	 */
 	final static public int numPolTerms( final int order )
 	{

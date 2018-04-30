@@ -72,6 +72,7 @@ public final class InverseRealTransform implements InvertibleRealTransform
 		inverse.applyInverse( target, source );
 	}
 
+	@Deprecated
 	@Override
 	public void apply( final float[] source, final float[] target )
 	{
@@ -90,6 +91,7 @@ public final class InverseRealTransform implements InvertibleRealTransform
 		inverse.apply( target, source );
 	}
 
+	@Deprecated
 	@Override
 	public void applyInverse( final float[] source, final float[] target )
 	{

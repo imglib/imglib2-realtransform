@@ -297,21 +297,21 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public void localize( float[] position )
+		public void localize( float[] pos )
 		{
 			for ( int d = 0; d < sourceNumDimensions; ++d )
-				position[ d ] = sourceAccess.getFloatPosition( d );
+				pos[ d ] = sourceAccess.getFloatPosition( d );
 			for ( int d = sourceNumDimensions; d < numDimensions; ++d )
-				position[ d ] = ( float )this.position[ d ];
+				pos[ d ] = ( float )this.position[ d ];
 		}
 
 		@Override
-		public void localize( double[] position )
+		public void localize( double[] pos )
 		{
 			for ( int d = 0; d < sourceNumDimensions; ++d )
-				position[ d ] = sourceAccess.getDoublePosition( d );
+				pos[ d ] = sourceAccess.getDoublePosition( d );
 			for ( int d = sourceNumDimensions; d < numDimensions; ++d )
-				position[ d ] = this.position[ d ];
+				pos[ d ] = this.position[ d ];
 		}
 
 		@Override

@@ -173,10 +173,7 @@ public class RealViewsSimplifyUtils
 			{
 				return ( RandomAccessible< T > ) tmp.getA();
 			}
-			else
-			{
-				return new RandomAccessibleOnRealRandomAccessible<>( source );
-			}
+			return new RandomAccessibleOnRealRandomAccessible<>( source );
 		}
 
 		return createRandomAccessible( tmp.getA(), tmp.getB() );
@@ -272,10 +269,7 @@ public class RealViewsSimplifyUtils
 		{
 			return new AffineRandomAccessible<>( rra, ( AffineGet ) t );
 		}
-		else
-		{
-			return new RealTransformRandomAccessible<>( rra, t );
-		}
+		return new RealTransformRandomAccessible<>( rra, t );
 	}
 
 	private static < T > RealRandomAccessible< T > createRealRandomAccessible( final RealRandomAccessible< T > rra, final RealTransform t )
@@ -286,10 +280,7 @@ public class RealViewsSimplifyUtils
 			{
 				return new AffineRandomAccessible<>( rra, ( AffineGet ) t );
 			}
-			else
-			{
-				return new RealTransformRandomAccessible<>( rra, t );
-			}
+			return new RealTransformRandomAccessible<>( rra, t );
 		}
 
 		return rra;
