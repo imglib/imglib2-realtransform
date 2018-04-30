@@ -175,7 +175,7 @@ public class RealViewsSimplifyUtils
 			}
 			else
 			{
-				return new RandomAccessibleOnRealRandomAccessible< T >( source );
+				return new RandomAccessibleOnRealRandomAccessible<>( source );
 			}
 		}
 
@@ -270,11 +270,11 @@ public class RealViewsSimplifyUtils
 	{
 		if ( t instanceof AffineGet )
 		{
-			return new AffineRandomAccessible< T, AffineGet >( rra, ( AffineGet ) t );
+			return new AffineRandomAccessible<>( rra, ( AffineGet ) t );
 		}
 		else
 		{
-			return new RealTransformRandomAccessible< T, RealTransform >( rra, t );
+			return new RealTransformRandomAccessible<>( rra, t );
 		}
 	}
 
@@ -284,11 +284,11 @@ public class RealViewsSimplifyUtils
 		{
 			if ( t instanceof AffineGet )
 			{
-				return new AffineRandomAccessible< T, AffineGet >( rra, ( AffineGet ) t );
+				return new AffineRandomAccessible<>( rra, ( AffineGet ) t );
 			}
 			else
 			{
-				return new RealTransformRandomAccessible< T, RealTransform >( rra, t );
+				return new RealTransformRandomAccessible<>( rra, t );
 			}
 		}
 
@@ -298,7 +298,7 @@ public class RealViewsSimplifyUtils
 	@SuppressWarnings( "unchecked" )
 	private static < T > Pair< RealRandomAccessible< T >, RealTransform > findSourceAndSimplifyTransforms( final RealRandomAccessible< T > source )
 	{
-		final List< RealTransform > transforms = new LinkedList< RealTransform >();
+		final List< RealTransform > transforms = new LinkedList<>();
 
 		RealRandomAccessible< T > tmp = source;
 		if ( tmp instanceof RealTransformRealRandomAccessible )
@@ -326,9 +326,9 @@ public class RealViewsSimplifyUtils
 				tmp = createRealRandomAccessible( tmp, transforms.get( i ) );
 			}
 			if ( transforms.size() > 0 )
-				return new ValuePair< RealRandomAccessible< T >, RealTransform >( tmp, transforms.get( transforms.size() - 1 ) );
+				return new ValuePair<>( tmp, transforms.get( transforms.size() - 1 ) );
 		}
-		return new ValuePair< RealRandomAccessible< T >, RealTransform >( tmp, null );
+		return new ValuePair<>( tmp, null );
 	}
 
 	private static void simplifyRealTransforms( final List< RealTransform > transforms )

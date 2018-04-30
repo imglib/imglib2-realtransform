@@ -115,6 +115,6 @@ public class PositionFieldTransform< T extends RealType< T > > implements RealTr
 		@SuppressWarnings( "unchecked" )
 		final RealRandomAccess< T >[] accessCopies = ( RealRandomAccess< T >[] )new RealRandomAccess[ positionAccesses.length ];
 		Arrays.setAll( accessCopies, i -> positionAccesses[ i ].copyRealRandomAccess() );
-		return new PositionFieldTransform< T >( accessCopies );
+		return new PositionFieldTransform<>( accessCopies );
 	}
 }
