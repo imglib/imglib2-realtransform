@@ -42,8 +42,9 @@ package net.imglib2.realtransform;
  */
 public interface TranslationGet extends ScaleAndTranslationGet
 {
-	
 	@Override
 	TranslationGet inverse();
-	
+
+	@Override
+	TranslationGet copy();
 }

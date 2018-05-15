@@ -44,4 +44,7 @@ public interface ScaleGet extends ScaleAndTranslationGet
 {
 	@Override
 	ScaleGet inverse();
+
+	@Override
+	ScaleGet copy();
 }

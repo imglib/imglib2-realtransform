@@ -65,4 +65,7 @@ public interface AffineGet extends InvertibleRealTransform, EuclideanSpace
 
 	@Override
 	AffineGet inverse();
+
+	@Override
+	AffineGet copy();
 }

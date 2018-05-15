@@ -74,4 +74,7 @@ public interface ScaleAndTranslationGet extends AffineGet
 
 	@Override
 	ScaleAndTranslationGet inverse();
+
+	@Override
+	ScaleAndTranslationGet copy();
 }
