@@ -140,7 +140,10 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	 * Writes the result into the passed {@link RandomAccessibleInterval}. If
 	 * the transform has N source dimensions, then the deformation field must
 	 * have at least N+1 dimensions where the last dimensions of of length at
-	 * least N.
+	 * least N.  
+	 * 
+	 * A DeformationField creating with the resulting {@link RandomAccessibleInterval}
+	 * will give the same results as the transform inside its {@link Interval}.
 	 * 
 	 * @param transform
 	 *            the {@link RealTransform} to convert
@@ -162,11 +165,8 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 			Composite< T > displacementVector = c.next();
 
 			// transform the location of the cursor
-			// so that the point p stores the point that c will be transformed
-			// to
+			// and store the displacement
 			transform.apply( c, p );
-
-			// store the displacement
 			for ( int i = 0; i < N; i++ )
 				displacementVector.get( i ).setReal( p.getDoublePosition( i ) - c.getDoublePosition( i ) ); 
 		}
