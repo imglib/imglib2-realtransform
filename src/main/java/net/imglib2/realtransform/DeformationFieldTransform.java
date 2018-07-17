@@ -34,14 +34,19 @@
 
 package net.imglib2.realtransform;
 
+import net.imglib2.Cursor;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
+import net.imglib2.view.composite.Composite;
+import net.imglib2.view.composite.CompositeIntervalView;
+import net.imglib2.view.composite.GenericComposite;
 
 /**
  * An <em>n</em>-dimensional deformation field.
@@ -69,7 +74,7 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 
 	public DeformationFieldTransform( final RandomAccessibleInterval< T > def )
 	{
-		this( Views.interpolate( def, new NLinearInterpolatorFactory< T >() ) );
+		this( Views.interpolate( Views.extendBorder( def ), new NLinearInterpolatorFactory< T >() ) );
 	}
 
 	public DeformationFieldTransform( final RealRandomAccessible< T > defFieldReal )
@@ -129,5 +134,44 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	public RealTransform copy()
 	{
 		return new DeformationFieldTransform< >( this.defFieldReal );
+	}
+
+	/**
+	 * Converts a {@link RealTransform} into a deformation field.
+	 * 
+	 * Writes the result into the passed {@link RandomAccessibleInterval}. If
+	 * the transform has N source dimensions, then the deformation field must
+	 * have at least N+1 dimensions where the last dimensions of of length at
+	 * least N.  
+	 * 
+	 * A DeformationField creating with the resulting {@link RandomAccessibleInterval}
+	 * will give the same results as the transform inside its {@link Interval}.
+	 * 
+	 * @param transform
+	 *            the {@link RealTransform} to convert
+	 * @param deformationField
+	 *            the {@link RandomAccessibleInterval} into which the
+	 *            displacement field will be written
+	 */
+	public static < T extends RealType< T > > void fromRealTransform( final RealTransform transform, final RandomAccessibleInterval< T > deformationField )
+	{
+		assert deformationField.numDimensions() == ( transform.numSourceDimensions() + 1 );
+		assert deformationField.dimension( deformationField.numDimensions() - 1 ) >= transform.numSourceDimensions();
+
+		int N = transform.numSourceDimensions();
+		RealPoint p = new RealPoint( transform.numTargetDimensions() );
+
+		CompositeIntervalView< T, ? extends GenericComposite< T > > col = Views.collapse( deformationField );
+		Cursor< ? extends GenericComposite< T > > c = Views.flatIterable( col ).cursor();
+		while ( c.hasNext() )
+		{
+			GenericComposite< T > displacementVector = c.next();
+
+			// transform the location of the cursor
+			// and store the displacement
+			transform.apply( c, p );
+			for ( int i = 0; i < N; i++ )
+				displacementVector.get( i ).setReal( p.getDoublePosition( i ) - c.getDoublePosition( i ) ); 
+		}
 	}
 }

@@ -44,14 +44,20 @@ import net.imglib2.RealPoint;
 import net.imglib2.img.array.ArrayCursor;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.img.array.ArrayRandomAccess;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
+import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ConstantUtils;
+import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import net.imglib2.view.composite.Composite;
+import net.imglib2.view.composite.CompositeIntervalView;
+import net.imglib2.view.composite.GenericComposite;
 
 public class DeformationFieldTest
 {
@@ -189,5 +195,43 @@ public class DeformationFieldTest
 
 		RandomAccess< DoubleType > imra = imXfm.randomAccess();
 		imra.setPosition( new int[]{1,1,1} );
+	}
+
+	/**
+	 * Ensure that converting and arbitrary RealTransform to a DeformationField works as expected 
+	 */
+	@Test
+	public void testConversion()
+	{
+		final double EPS = 1e-5;
+
+		// create some transform
+		AffineTransform3D transform = new AffineTransform3D();
+		transform.translate( -4, 10, 0.2 );
+		transform.rotate( 0, Math.PI / 2 );
+		transform.rotate( 1, -Math.PI / 16 );
+		transform.rotate( 2, Math.PI / 8 );
+		transform.scale( 1.25 );
+
+		ArrayImg< FloatType, FloatArray > dfield = ArrayImgs.floats( 5, 5, 5, 3 );
+		DeformationFieldTransform.fromRealTransform( transform, dfield );
+		DeformationFieldTransform< FloatType > def3d = new DeformationFieldTransform<>( dfield );
+
+		double[] pArray = new double[ 3 ];
+		double[] qArray = new double[ 3 ];
+		RealPoint p = RealPoint.wrap( pArray );
+		RealPoint q = RealPoint.wrap( qArray );
+
+		CompositeIntervalView< FloatType, ? extends GenericComposite< FloatType > > col = Views.collapse( dfield );
+		Cursor< ? extends GenericComposite< FloatType > > c = Views.flatIterable( col ).cursor();
+		while ( c.hasNext() )
+		{
+			c.fwd();
+			transform.apply( c, p );
+			def3d.apply( c, q );
+
+			Assert.assertArrayEquals( "", pArray, qArray, EPS );
+		}
+
 	}
 }
