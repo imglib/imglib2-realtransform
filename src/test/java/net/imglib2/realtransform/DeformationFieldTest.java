@@ -56,6 +56,8 @@ import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.Composite;
+import net.imglib2.view.composite.CompositeIntervalView;
+import net.imglib2.view.composite.GenericComposite;
 
 public class DeformationFieldTest
 {
@@ -220,7 +222,8 @@ public class DeformationFieldTest
 		RealPoint p = RealPoint.wrap( pArray );
 		RealPoint q = RealPoint.wrap( qArray );
 
-		Cursor< Composite< FloatType > > c = Views.flatIterable( Views.collapse( dfield ) ).cursor();
+		CompositeIntervalView< FloatType, ? extends GenericComposite< FloatType > > col = Views.collapse( dfield );
+		Cursor< ? extends GenericComposite< FloatType > > c = Views.flatIterable( col ).cursor();
 		while ( c.hasNext() )
 		{
 			c.fwd();

@@ -45,6 +45,8 @@ import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.Composite;
+import net.imglib2.view.composite.CompositeIntervalView;
+import net.imglib2.view.composite.GenericComposite;
 
 /**
  * An <em>n</em>-dimensional deformation field.
@@ -159,10 +161,11 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 		int N = transform.numSourceDimensions();
 		RealPoint p = new RealPoint( transform.numTargetDimensions() );
 
-		Cursor< Composite< T > > c = Views.flatIterable( Views.collapse( deformationField ) ).cursor();
+		CompositeIntervalView< T, ? extends GenericComposite< T > > col = Views.collapse( deformationField );
+		Cursor< ? extends GenericComposite< T > > c = Views.flatIterable( col ).cursor();
 		while ( c.hasNext() )
 		{
-			Composite< T > displacementVector = c.next();
+			GenericComposite< T > displacementVector = c.next();
 
 			// transform the location of the cursor
 			// and store the displacement
