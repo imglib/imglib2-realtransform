@@ -66,6 +66,7 @@ public class RealViews
 	 *            the {@link InvertibleRealTransform} transforming source
 	 *            coordinates to coordinates of the returned
 	 *            {@link RealRandomAccessible}
+	 * @param <T> the type
 	 *
 	 * @return {@link RealTransformRealRandomAccessible} representing the
 	 *         transformed source
@@ -93,6 +94,7 @@ public class RealViews
 	 *            the {@link InvertibleRealTransform} transforming source
 	 *            coordinates to coordinates of the returned
 	 *            {@link RealRandomAccessible}
+	 * @param <T> the type
 	 *
 	 * @return {@link RealTransformRandomAccessible} representing the
 	 *         transformed source
@@ -120,6 +122,7 @@ public class RealViews
 	 *            the {@link InvertibleRealTransform} transforming source
 	 *            coordinates to coordinates of the returned
 	 *            {@link RealRandomAccessible}
+	 * @param <T> the type
 	 *
 	 * @return {@link AffineRealRandomAccessible} representing the transformed
 	 *         source
@@ -148,6 +151,7 @@ public class RealViews
 	 *            the {@link InvertibleRealTransform} transforming source
 	 *            coordinates to coordinates of the returned
 	 *            {@link RealRandomAccessible}
+	 * @param <T> the type
 	 *
 	 * @return {@link AffineRandomAccessible} representing the transformed
 	 *         source
@@ -168,6 +172,8 @@ public class RealViews
 	 *
 	 * @param source
 	 *            the source
+	 * @param <T> the type
+	 * @return the new {@link RealRandomAccessible}
 	 */
 	public static < T > RealRandomAccessible< T > addDimension( final RealRandomAccessible< T > source )
 	{
@@ -186,6 +192,7 @@ public class RealViews
 	 * 
 	 * @param source
 	 *            {@link RealRandomAccessible} to be simplified
+	 * @param <T> the type
 	 * @return potentially simplified {@link RandomAccessible}
 	 * 
 	 */
@@ -206,6 +213,7 @@ public class RealViews
 	 * 
 	 * @param source
 	 *            {@link RealRandomAccessible} to be simplified
+	 * @param <T> the type
 	 * @return potentially simplified {@link RealRandomAccessible}
 	 * 
 	 */

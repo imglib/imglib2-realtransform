@@ -78,7 +78,7 @@ public class PolynomialTransform2D implements RealTransform
 	 * Calculate the maximum order of a polynom whose number of polyynomial
 	 * terms is smaller or equal a given number.
 	 *
-	 * @param numPolTerms
+	 * @param numPolTerms the number of terms
 	 * @return result of the calculation
 	 */
 	final static public int orderOf( final int numPolTerms )
@@ -90,7 +90,7 @@ public class PolynomialTransform2D implements RealTransform
 	 * Calculate the number of polynomial terms for a 2d polynomial transform
 	 * of given order.
 	 *
-	 * @param order
+	 * @param order of the polynomial
 	 * @return result of the calculation
 	 */
 	final static public int numPolTerms( final int order )
