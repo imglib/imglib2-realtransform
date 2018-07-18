@@ -47,9 +47,9 @@ public interface AffineSet
 	 * Set a field of the <em>n</em>&times;(<em>n</em>+1) affine transformation
 	 * matrix.
 	 * 
-	 * @param value
-	 * @param row
-	 * @param column
+	 * @param value the value
+	 * @param row the row index
+	 * @param column the column index
 	 */
 	public void set( final double value, final int row, final int column );
 
@@ -57,7 +57,7 @@ public interface AffineSet
 	 * Set the <em>n</em>&times;(<em>n</em>+1) affine transformation matrix with
 	 * row packed double values.
 	 * 
-	 * @param values
+	 * @param values the lines of values
 	 */
 	public void set( final double... values );
 
@@ -65,7 +65,7 @@ public interface AffineSet
 	 * Set the <em>n</em>&times;(<em>n</em>+1) affine transformation matrix with
 	 * double values from a [row][column] addressed array.
 	 * 
-	 * @param values
+	 * @param values a 2d array of values
 	 */
 	public void set( final double[][] values );
 }

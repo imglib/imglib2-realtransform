@@ -90,6 +90,7 @@ abstract public class AbstractTranslation implements TranslationGet
 	 * @param t
 	 *            t.length &lt;= the number of dimensions of this
 	 *            {@link AbstractTranslation}
+	 * @param d the dimension
 	 */
 	abstract public void set( final double t, final int d );
 

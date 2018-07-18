@@ -142,6 +142,7 @@ public class RealViewsSimplifyUtils
 	 * 
 	 * @param source
 	 *            to be simplified.
+	 * @param <T> the type
 	 * @return a (potentially) simplified version of the source.
 	 * 
 	 */
@@ -159,6 +160,7 @@ public class RealViewsSimplifyUtils
 	 * 
 	 * @param source
 	 *            to be simplified.
+	 * @param <T> the type
 	 * @return a (potentially) simplified version of the source.
 	 * 
 	 */

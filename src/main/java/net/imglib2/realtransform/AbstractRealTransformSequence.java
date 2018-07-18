@@ -62,7 +62,7 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 	/**
 	 * Append a {@link RealTransform} to the sequence.
 	 *
-	 * @param transform
+	 * @param transform the RealTransform
 	 */
 	public void add( final R transform )
 	{
