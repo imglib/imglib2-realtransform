@@ -49,19 +49,31 @@ public interface AffineGet extends InvertibleRealTransform, EuclideanSpace
 	/**
 	 * Get a field of the <em>n</em>&times;(<em>n</em>+1) affine transformation
 	 * matrix.
+	 * 
+	 * @param row
+	 *            the row index
+	 * @param column
+	 *            the column index
+	 * @return the value
 	 */
-	public double get( final int row, final int column );
+	public double get(final int row, final int column);
 
 	/**
 	 * Get a copy of the <em>n</em>&times;(<em>n</em>+1) affine transformation
 	 * matrix as a row packed array similar to Jama.
+	 * 
+	 * @return the array of values
 	 */
 	public double[] getRowPackedCopy();
 
 	/**
 	 * Get the constant partial differential vector for dimension d.
+	 * 
+	 * @param d
+	 *            the dimension
+	 * @return the partial differential vector
 	 */
-	public RealLocalizable d( int d );
+	public RealLocalizable d(int d);
 
 	@Override
 	AffineGet inverse();

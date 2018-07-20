@@ -45,7 +45,7 @@ public interface ScaleAndTranslationGet extends AffineGet
 	/**
 	 * Get a field of the <em>n</em>-dimensional scale vector.
 	 *
-	 * @param d
+	 * @param d the dimension
 	 * @return element of the scale
 	 */
 	public double getScale( final int d );
@@ -60,7 +60,7 @@ public interface ScaleAndTranslationGet extends AffineGet
 	/**
 	 * Get a field of the <em>n</em>-dimensionsional translation vector.
 	 *
-	 * @param d
+	 * @param d the dimension
 	 * @return element of the translation
 	 */
 	public double getTranslation( final int d );

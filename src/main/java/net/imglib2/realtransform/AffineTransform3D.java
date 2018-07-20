@@ -699,7 +699,7 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 	/**
 	 * Initialize the translation with a given vector
 	 * 
-	 * @param translationVector
+	 * @param translationVector the translation
 	 */
 	public void setTranslation(double... translationVector)
 	{
@@ -764,20 +764,20 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 	 * m20 m21 m22 m23
 	 * </pre>
 	 * 
-	 * @param m00
-	 * @param m01
-	 * @param m02
-	 * @param m03
+	 * @param m00 element 0,0
+	 * @param m01 element 0,1
+	 * @param m02 element 0,2
+	 * @param m03 element 0,3
 	 * 
-	 * @param m10
-	 * @param m11
-	 * @param m12
-	 * @param m13
+	 * @param m10 element 1,0
+	 * @param m11 element 1,1
+	 * @param m12 element 1,2
+	 * @param m13 element 1,3
 	 * 
-	 * @param m20
-	 * @param m21
-	 * @param m22
-	 * @param m23
+	 * @param m20 element 2,0
+	 * @param m21 element 2,1
+	 * @param m22 element 2,2
+	 * @param m23 element 2,3
 	 */
 	final public void set(
 			final double m00, final double m01, final double m02, final double m03,
@@ -961,7 +961,8 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 	 * Calculate the boundary interval of an interval after it has been
 	 * transformed.
 	 * 
-	 * @param interval
+	 * @param interval the original bounds
+	 * @return the new bounds
 	 */
 	public FinalRealInterval estimateBounds( final RealInterval interval )
 	{
