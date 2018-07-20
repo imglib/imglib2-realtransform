@@ -145,7 +145,7 @@ public class DeformationFieldTransform<T extends RealType<T>> implements RealTra
 	 * least N.  
 	 * 
 	 * A DeformationField creating with the resulting {@link RandomAccessibleInterval}
-	 * will give the same results as the transform inside its {@link Interval}.
+	 * will give the same results as the transform inside its Interval.
 	 * 
 	 * @param transform
 	 *            the {@link RealTransform} to convert
