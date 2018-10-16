@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>imglib2-realtransform</artifactId>
-	<version>2.0.1-SNAPSHOT</version>
+	<version>2.0.2-SNAPSHOT</version>
 
 	<name>ImgLib2 Real Transform</name>
 	<description>Real space coordinate transformations.</description>
