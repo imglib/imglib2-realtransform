@@ -39,7 +39,6 @@ public interface DifferentiableRealTransform extends RealTransform
 	 *            the source point
 	 * @param y
 	 *            the destination point
-	 * @return the direction
 	 */
 	public void directionToward( final double[] displacement, final double[] x, final double[] y );
 

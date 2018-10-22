@@ -320,13 +320,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 	/**
 	 * Uses Backtracking Line search to determine a step size.
 	 * 
-	 * @param c
-	 *            the armijoCondition parameter
-	 * @param beta
-	 *            the fraction to multiply the step size at each iteration (
-	 *            less than 1 )
-	 * @param maxtries
-	 *            max number of tries
 	 * @param t0
 	 *            initial step size
 	 * @return the step size
