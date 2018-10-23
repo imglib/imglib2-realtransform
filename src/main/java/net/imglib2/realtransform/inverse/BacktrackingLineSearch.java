@@ -170,7 +170,7 @@ public class BacktrackingLineSearch
 	 * Perform backtracking line search.
 	 * 
 	 * @param c the armijoCondition parameter
-	 * @param beta the fraction to multiply the step size at each iteration ( < 1 )
+	 * @param beta the fraction to multiply the step size at each iteration ( &lt; 1 )
 	 * @param maxtries max number of tries
 	 * @param t0 initial step size
 	 * @return the step size
