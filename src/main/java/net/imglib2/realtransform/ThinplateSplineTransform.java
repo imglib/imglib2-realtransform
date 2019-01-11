@@ -56,6 +56,8 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 
 	final private double[] b;
 
+	final private double[] tmp;
+
 	final private RealPoint rpa;
 
 	double[] estimateXfm;
@@ -79,6 +81,7 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 		this.tps = tps;
 		a = new double[ tps.getNumDims() ];
 		b = new double[ a.length ];
+		tmp = new double[ a.length ];
 		rpa = RealPoint.wrap( a );
 		estimateXfm = new double[ tps.getNumDims() ];
 	}
@@ -91,7 +94,15 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 	@Override
 	public void apply( final double[] source, final double[] target )
 	{
-		tps.apply( source, target );
+		if( source == target )
+		{
+			System.arraycopy( source, 0, tmp, 0, source.length );
+			tps.apply( tmp, target );
+		}
+		else
+		{
+			tps.apply( source, target );
+		}
 	}
 
 	@Override
