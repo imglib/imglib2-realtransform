@@ -42,4 +42,6 @@ public interface DifferentiableRealTransform extends RealTransform
 	 */
 	public void directionToward( final double[] displacement, final double[] x, final double[] y );
 
+	@Override
+	public DifferentiableRealTransform copy(); 
 }
