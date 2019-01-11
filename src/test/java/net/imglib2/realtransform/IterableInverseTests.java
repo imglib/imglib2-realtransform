@@ -161,7 +161,6 @@ public class IterableInverseTests
 	{
 		final AffineTransform jacobian;
 
-		// TODO move this class into tests
 		public IterativeAffineInverse( int n )
 		{
 			super( n );
@@ -182,6 +181,12 @@ public class IterableInverseTests
 				jacobian.set( 0.0, d, n );
 
 			return jacobian;
+		}
+
+		@Override
+		public IterativeAffineInverse copy()
+		{
+			return new IterativeAffineInverse( jacobian.numDimensions() );
 		}
 
 	}
