@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,7 +42,7 @@ import net.imglib2.concatenate.PreConcatenable;
 
 /**
  * 2d-affine transformation.
- * 
+ *
  * @author Stephan Saalfeld
  */
 public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< AffineGet >, PreConcatenable< AffineGet >
@@ -431,7 +431,7 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 
 	/**
 	 * Rotate
-	 * 
+	 *
 	 * @param d
 	 *            angle in radians
 	 */
@@ -447,7 +447,7 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 		final double a10 = dsin * a.m00 + dcos * a.m10;
 		final double a11 = dsin * a.m01 + dcos * a.m11;
 		final double a12 = dsin * a.m02 + dcos * a.m12;
-		
+
 		a.m00 = a00;
 		a.m01 = a01;
 		a.m02 = a02;
@@ -463,10 +463,10 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 
 	/**
 	 * Translate
-	 * 
+	 *
 	 * @param t
 	 *            2d translation vector
-	 * 
+	 *
 	 */
 	public void translate( final double... t )
 	{
@@ -481,10 +481,10 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 
 	/**
 	 * Scale
-	 * 
+	 *
 	 * @param d
 	 *            scale factor
-	 * 
+	 *
 	 */
 	public void scale( final double d )
 	{
@@ -494,6 +494,27 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 		a.m10 *= d;
 		a.m11 *= d;
 		a.m12 *= d;
+
+		invert();
+		updateDs();
+		inverse.updateDs();
+	}
+
+	/**
+	 * Scale
+	 *
+	 * @param s0 scale factor for dimension 0
+	 * @param s1 scale factor for dimension 1
+	 */
+	public void scale( final double s0, final double s1 )
+	{
+		a.m00 *= s0;
+		a.m01 *= s0;
+		a.m02 *= s0;
+
+		a.m10 *= s1;
+		a.m11 *= s1;
+		a.m12 *= s1;
 
 		invert();
 		updateDs();
@@ -623,7 +644,7 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 		invert();
 		inverse.updateDs();
 	}
-	
+
 	@Override
 	public boolean isIdentity()
 	{
