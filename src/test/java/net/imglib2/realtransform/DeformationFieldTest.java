@@ -105,18 +105,20 @@ public class DeformationFieldTest
 		def2d.apply( p, q );
 		Assert.assertArrayEquals( pxfm, q, EPS );
 
-//		float[] pf = new float[]{ 5.0f, 4.0f };
-//		float[] pxfmf = new float[]{ 6.0f, 5.0f };
-//		float[] qf = new float[ 2 ];
-//
-//		def2d.apply( pf, qf );
-//		Assert.assertArrayEquals( pxfmf, qf, (float)EPS );
+		def2d.apply( p, p );
+		Assert.assertArrayEquals( "double apply in place", pxfm, p, EPS );
+
 
 		RealPoint src = new RealPoint( 5.0, 4.0 );
 		RealPoint tgt = new RealPoint( 2 );
 		def2d.apply( src, tgt );
 		Assert.assertEquals( tgt.getDoublePosition( 0 ), 6.0, EPS );
 		Assert.assertEquals( tgt.getDoublePosition( 1 ), 5.0, EPS );
+
+		// in place
+		def2d.apply( src, src );
+		Assert.assertEquals( "positionable in place x", src.getDoublePosition( 0 ), 6.0, EPS );
+		Assert.assertEquals( "positionable in place y", src.getDoublePosition( 1 ), 5.0, EPS );
 	}
 
 	@Test

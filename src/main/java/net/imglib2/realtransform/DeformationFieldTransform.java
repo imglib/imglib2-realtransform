@@ -40,7 +40,6 @@ import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
-import net.imglib2.realtransform.inverse.DifferentiableRealTransform;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
@@ -59,25 +58,21 @@ import net.imglib2.view.Views;
  *
  */
 public class DeformationFieldTransform< T extends RealType< T > > implements RealTransform
-//implements DifferentiableRealTransform
 {
 
 	private final RealRandomAccessible< T > defFieldReal;
-
-	private final RealRandomAccess< T > defFieldAccess;
 
 	private final int numDim;
 
 	public DeformationFieldTransform( final RandomAccessibleInterval< T > def )
 	{
-		this( Views.interpolate( def, new NLinearInterpolatorFactory< T >() ) );
+		this( Views.interpolate( Views.extendZero( def ), new NLinearInterpolatorFactory< T >() ) );
 	}
 
 	public DeformationFieldTransform( final RealRandomAccessible< T > defFieldReal )
 	{
 		this.defFieldReal = defFieldReal;
 		this.numDim = defFieldReal.numDimensions() - 1;
-		defFieldAccess = defFieldReal.realRandomAccess();
 	}
 
 	@Override
@@ -92,14 +87,15 @@ public class DeformationFieldTransform< T extends RealType< T > > implements Rea
 		return numDim;
 	}
 
-	public RealRandomAccess< T > getDefFieldAcess()
+	public RealRandomAccessible< T > getDefFieldAcess()
 	{
-		return defFieldAccess;
+		return defFieldReal;
 	}
 
 	@Override
 	public void apply( final double[] source, final double[] target )
 	{
+		RealRandomAccess< T > defFieldAccess = defFieldReal.realRandomAccess().copyRealRandomAccess();
 		for ( int d = 0; d < numDim; d++ )
 			defFieldAccess.setPosition( source[ d ], d );
 
@@ -116,6 +112,7 @@ public class DeformationFieldTransform< T extends RealType< T > > implements Rea
 	@Override
 	public void apply( final RealLocalizable source, final RealPositionable target )
 	{
+		RealRandomAccess< T > defFieldAccess = defFieldReal.realRandomAccess().copyRealRandomAccess();
 		for ( int d = 0; d < numDim; d++ )
 			defFieldAccess.setPosition( source.getDoublePosition( d ), d );
 
@@ -126,7 +123,6 @@ public class DeformationFieldTransform< T extends RealType< T > > implements Rea
 		{
 			newpos = source.getDoublePosition( d ) + defFieldAccess.get().getRealDouble();
 			target.setPosition( newpos, d );
-
 			defFieldAccess.fwd( numDim );
 		}
 	}

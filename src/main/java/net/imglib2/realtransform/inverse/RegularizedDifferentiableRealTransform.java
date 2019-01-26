@@ -64,7 +64,7 @@ public class RegularizedDifferentiableRealTransform extends AbstractDifferentiab
 		dxfm.apply( source, target );
 	}
 
-	public RealTransform copy()
+	public DifferentiableRealTransform copy()
 	{
 		return dxfm.copy();
 	}
