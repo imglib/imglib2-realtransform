@@ -7,7 +7,7 @@ import net.imglib2.RealPositionable;
  * An {@link InvertibleRealTransform} for which the forward and inverse
  * transforms are explicitly given as {@link RealTransform}s. Consistency is not
  * internally enforced.
- * 
+ *
  * @author John Bogovic
  * @author Stephan Saalfeld
  *
@@ -89,7 +89,6 @@ public class ExplicitInvertibleRealTransform implements InvertibleRealTransform
 	@Override
 	public InvertibleRealTransform copy()
 	{
-		return new ExplicitInvertibleRealTransform( forwardTransform, inverseTransform );
+		return new ExplicitInvertibleRealTransform( forwardTransform.copy(), inverseTransform.copy() );
 	}
-
 }
