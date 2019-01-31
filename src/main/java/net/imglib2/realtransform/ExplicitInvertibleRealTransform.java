@@ -22,23 +22,25 @@ public class ExplicitInvertibleRealTransform implements InvertibleRealTransform
 
 	/**
 	 * Creates a new ExplicitInvertibleRealTransform.
-	 *  
+	 *
 	 * @param forwardTransform the transform defining the forward direction
-	 * @param inverseTransform the trasnform defining the inverse direction
+	 * @param inverseTransform the transform defining the inverse direction
 	 */
 	public ExplicitInvertibleRealTransform( final RealTransform forwardTransform, final RealTransform inverseTransform )
 	{
+		assert
+			forwardTransform.numTargetDimensions() == inverseTransform.numSourceDimensions() &&
+			forwardTransform.numSourceDimensions() == inverseTransform.numTargetDimensions() : "number of target and source dimensions not compatible";
+
 		this.forwardTransform = forwardTransform;
 		this.inverseTransform = inverseTransform;
-		this.inverse = new ExplicitInvertibleRealTransform( inverseTransform, forwardTransform, this );
-		// TODO explicitly check that source and target dimensions for forward
-		// and inverse transforms are compatible?
+		this.inverse = new ExplicitInvertibleRealTransform( this );
 	}
 
-	private ExplicitInvertibleRealTransform( final RealTransform forwardTransform, final RealTransform inverseTransform, final ExplicitInvertibleRealTransform inverse )
+	private ExplicitInvertibleRealTransform( final ExplicitInvertibleRealTransform inverse )
 	{
-		this.forwardTransform = forwardTransform;
-		this.inverseTransform = inverseTransform;
+		this.forwardTransform = inverse.inverseTransform;
+		this.inverseTransform = inverse.forwardTransform;
 		this.inverse = inverse;
 	}
 
