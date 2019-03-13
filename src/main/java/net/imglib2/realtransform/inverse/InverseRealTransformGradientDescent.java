@@ -228,7 +228,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		double[] srcd = new double[ src.numDimensions() ];
 		double[] tgtd = new double[ tgt.numDimensions() ];
 		src.localize( srcd );
-		apply( src, tgt );
+		apply( srcd, tgtd );
 		tgt.setPosition( tgtd );
 	}
 
@@ -249,23 +249,14 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 		setEstimate( guess );
 
-		//xfm.apply( guess, guessXfm );
 		xfm.apply( estimate, estimateXfm );
-
-		//setTarget( target );
-		//setEstimate( guess );
 		updateError();
-
-//		System.out.println( "target : " + Arrays.toString( target ));
-//		System.out.println( "estimate : " + Arrays.toString( estimate ));
-//		System.out.println( "estXfm   : " + Arrays.toString( estimateXfm ));
 
 		double t = 1.0;
 		int k = 0;
 		while ( error >= tolerance && k < maxIters )
 		{
 
-//			System.out.println( "k: " + k );
 			/*
 			 * xfm.jacobian( estimate );
 			 * 
@@ -274,13 +265,11 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 			// TODO the above lines may be important
 			// if we want to regularize the jacobian
-			// xfm.directionToward( errorV, estimate, dir );
 			xfm.directionToward( dir, estimateXfm, target );
 
 			/* the two below lines should give identical results */
-//			t = backtrackingLineSearch( c, beta, stepSizeMaxTries, t0 );
+			// t = backtrackingLineSearch( c, beta, stepSizeMaxTries, t0 );
 			t = backtrackingLineSearch( error );
-			
 
 			if ( t == 0.0 )
 				break;
@@ -290,14 +279,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 			updateError();
 
 			error = getError();
-
-//			System.out.println( "t: " + t );
-//			System.out.println( "dir      : " + Arrays.toString( dir ));
-//			System.out.println( "errV      : " + Arrays.toString( errorV ));
-//			System.out.println( "estimate : " + Arrays.toString( estimate ));
-//			System.out.println( "estXfm   : " + Arrays.toString( estimateXfm ));
-//			System.out.println( "error      : " + error );
-//			System.out.println( " " );
 
 			k++;
 		}
