@@ -88,6 +88,7 @@ public class IterableInverseTests
 
 		final ThinplateSplineTransform tps = new ThinplateSplineTransform( src_simple, tgt );
 		WrappedIterativeInvertibleRealTransform<ThinplateSplineTransform> tpsInv = new WrappedIterativeInvertibleRealTransform<>( tps );
+		tpsInv.getOptimzer().setTolerance( EPS / 2 );
 
 		/* **** PT 1 **** */
 		double[] x = new double[]{ 0.0f, 0.0f };
@@ -281,7 +282,7 @@ public class IterableInverseTests
 		// a difficult case in which
 		// the optimizer must 
 		InverseRealTransformGradientDescent rotinverter = new InverseRealTransformGradientDescent( 3, rot );
-		rotinverter.setTolerance( EPS / 20 );
+		rotinverter.setTolerance( EPS / 2 );
 
 		rot.apply( p, pxfm );
 		rotinverter.apply( pxfm, q );
