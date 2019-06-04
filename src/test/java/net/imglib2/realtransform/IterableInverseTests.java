@@ -55,12 +55,10 @@ public class IterableInverseTests
 	{
 		assert p.numDimensions() == q.numDimensions();
 
-		for( int i = 0; i< p.numDimensions(); i++ )
+		for ( int i = 0; i < p.numDimensions(); i++ )
 		{
-			if( Math.abs( p.getDoublePosition( i ) - q.getDoublePosition( i )) > eps )
+			if ( Math.abs( p.getDoublePosition( i ) - q.getDoublePosition( i ) ) > eps )
 			{
-				//System.err.println( "p: "  + p );
-				//System.err.println( "q: "  + q );
 				return false;
 			}
 		}
@@ -88,7 +86,7 @@ public class IterableInverseTests
 
 		final ThinplateSplineTransform tps = new ThinplateSplineTransform( src_simple, tgt );
 		WrappedIterativeInvertibleRealTransform<ThinplateSplineTransform> tpsInv = new WrappedIterativeInvertibleRealTransform<>( tps );
-		tpsInv.getOptimzer().setTolerance( EPS / 2 );
+		tpsInv.getOptimzer().setTolerance( EPS / 5 );
 
 		/* **** PT 1 **** */
 		double[] x = new double[]{ 0.0f, 0.0f };
@@ -102,6 +100,12 @@ public class IterableInverseTests
 		tps.apply( x, y );
 		tpsInv.applyInverse( yi, y );
 		Assert.assertArrayEquals("tps warp inv 1", x, yi, EPS );
+
+		xp.setPosition( x );
+		tpsInv.apply( xp, yp );
+		tpsInv.applyInverse( yip, yp );
+		Assert.assertTrue( "tps warp inv 1 pts", almostEqual( xp, yip, EPS ));
+
 
 		xp.setPosition( x );
 		tpsInv.apply( xp, yp );
@@ -282,7 +286,7 @@ public class IterableInverseTests
 		// a difficult case in which
 		// the optimizer must 
 		InverseRealTransformGradientDescent rotinverter = new InverseRealTransformGradientDescent( 3, rot );
-		rotinverter.setTolerance( EPS / 2 );
+		rotinverter.setTolerance( EPS / 20 );
 
 		rot.apply( p, pxfm );
 		rotinverter.apply( pxfm, q );

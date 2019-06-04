@@ -61,10 +61,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 	private double[] guess; // initialization for iterative inverse
 
-	//private double[] src; // source point (unmodified)
-
-	//private double[] tgt; // target point (unmodified)
-
 	protected static Logger logger = LogManager.getLogger( InverseRealTransformGradientDescent.class.getName() );
 
 	public InverseRealTransformGradientDescent( int ndims, DifferentiableRealTransform xfm )
@@ -76,9 +72,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		directionalDeriv = new double[ ndims ];
 		descentDirectionMag = 0.0;
 		jacobian = new AffineTransform( ndims );
-
-//		src = new double[ ndims ];
-//		tgt = new double[ ndims ];
 
 		target = new double[ ndims ];
 		estimate = new double[ ndims ];
@@ -189,7 +182,12 @@ public class InverseRealTransformGradientDescent implements RealTransform
 	@Override
 	public RealTransform copy()
 	{
-		return new InverseRealTransformGradientDescent( ndims, xfm );
+		InverseRealTransformGradientDescent copy = new InverseRealTransformGradientDescent( ndims, xfm );
+		copy.setBeta( this.beta );
+		copy.setC( this.c );
+		copy.setTolerance( this.tolerance );
+		copy.setMaxIters( this.maxIters );
+		return copy;
 	}
 
 	public void setGuess( final double[] guess )
@@ -199,14 +197,11 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 	public void apply( final double[] s, final double[] t )
 	{
-		// tgt is the error estimate
-		double err = inverseTol( s, s, tolerance, maxIters );
+		// invTol sets the error
+		inverseTol( s, s, tolerance, maxIters );
 
 		// copy estimate into t
 		System.arraycopy( estimate, 0, t, 0, t.length );
-
-//		if( err > tolerance )
-//			System.out.println( "err: " + err + " >  EPS ( " + tolerance + " )" );
 	}
 
 	@Deprecated
@@ -286,12 +281,13 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		return error;
 	}
 
+	/**
+	 *  Changes jacobian (J) to be:
+	 *  ( 1-eps ) * J + ( eps ) * I
+	 *  note jacRegMatrix = eps * I
+	 */
 	public void regularizeJacobian()
 	{
-		// Changes jacobian (J) to be:
-		// ( 1-eps ) * J + ( eps ) * I
-		//
-		// note jacRegMatrix = eps * I
 		for ( int i = 0; i < ndims; i++ )
 		{
 			jacobian.set( jacobianRegularizationEps + jacobian.get( i, i ), i, i );
@@ -428,7 +424,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 			return;
 		}
 
-		// ( errorV = target - estimateXfm )
 		for ( int i = 0; i < ndims; i++ )
 			errorV[ i ] = target[ i ] - estimateXfm[ i ];
 

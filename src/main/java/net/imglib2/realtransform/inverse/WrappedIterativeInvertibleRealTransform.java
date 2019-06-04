@@ -10,7 +10,7 @@ public class WrappedIterativeInvertibleRealTransform< T extends RealTransform > 
 {
 	protected final T forwardTransform;
 
-	protected final DifferentiableRealTransform differentiableTrasnform;
+	protected final DifferentiableRealTransform differentiableTransform;
 
 	protected final InverseRealTransformGradientDescent inverseTransform;
 
@@ -20,14 +20,28 @@ public class WrappedIterativeInvertibleRealTransform< T extends RealTransform > 
 
 		if( xfm instanceof DifferentiableRealTransform )
 		{
-			differentiableTrasnform = (DifferentiableRealTransform) xfm;
+			differentiableTransform = (DifferentiableRealTransform) xfm;
 		}
 		else
 		{
-			differentiableTrasnform = new RealTransformFiniteDerivatives( xfm );
+			differentiableTransform = new RealTransformFiniteDerivatives( xfm );
 		}
 
-		inverseTransform = new InverseRealTransformGradientDescent( xfm.numSourceDimensions(), differentiableTrasnform );
+		inverseTransform = new InverseRealTransformGradientDescent( xfm.numSourceDimensions(), differentiableTransform );
+	}
+
+	private WrappedIterativeInvertibleRealTransform( final T xfm, InverseRealTransformGradientDescent inverse )
+	{
+		this.forwardTransform = xfm;
+		if( xfm instanceof DifferentiableRealTransform )
+		{
+			differentiableTransform = (DifferentiableRealTransform) xfm;
+		}
+		else
+		{
+			differentiableTransform = new RealTransformFiniteDerivatives( xfm );
+		}
+		this.inverseTransform = inverse;
 	}
 
 	public T getTransform()
@@ -82,9 +96,10 @@ public class WrappedIterativeInvertibleRealTransform< T extends RealTransform > 
 		return inverseTransform;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	@Override
-	public InvertibleRealTransform copy()
+	public WrappedIterativeInvertibleRealTransform<T> copy()
 	{
-		return new WrappedIterativeInvertibleRealTransform< T >( forwardTransform );
+		return new WrappedIterativeInvertibleRealTransform< T >( (T)forwardTransform.copy(), (InverseRealTransformGradientDescent)inverseTransform.copy() );
 	}
 }
