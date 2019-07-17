@@ -644,13 +644,13 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 	 *
 	 * @param axis
 	 *            0=x, 1=y, 2=z
-	 * @param d
+	 * @param angle
 	 *            angle in radians
 	 */
-	public void rotate( final int axis, final double d )
+	public void rotate( final int axis, final double angle )
 	{
-		final double dcos = Math.cos( d );
-		final double dsin = Math.sin( d );
+		final double dcos = Math.cos( angle );
+		final double dsin = Math.sin( angle );
 
 		switch ( axis )
 		{
