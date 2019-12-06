@@ -35,7 +35,8 @@
 package net.imglib2.realtransform;
 
 /**
- * A sequence of {@link RealTransform RealTransforms}.
+ * A sequence of {@link RealTransform RealTransforms}.  If empty, 
+ * will behave as an identity transformation.
  * 
  * @author Stephan Saalfeld
  */

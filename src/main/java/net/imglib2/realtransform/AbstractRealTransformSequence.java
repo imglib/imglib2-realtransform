@@ -46,6 +46,7 @@ import net.imglib2.RealPositionable;
  * {@link RealTransform RealTransforms}.
  *
  * @author Stephan Saalfeld
+ * @author John Bogovic
  */
 public class AbstractRealTransformSequence< R extends RealTransform > implements RealTransform
 {
@@ -103,6 +104,12 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 	}
 
 	@Override
+	public boolean isIdentity()
+	{
+		return transforms.isEmpty();
+	}
+
+	@Override
 	public void apply( final double[] source, final double[] target )
 	{
 		assert source.length >= nSource && target.length >= nTarget: "Input dimensions too small.";
@@ -122,6 +129,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 			else
 				transforms.get( 0 ).apply( source, target );
 		}
+		else
+		{
+			System.arraycopy( source, 0, target, 0, target.length );
+		}
 	}
 
 	@Override
@@ -140,6 +151,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 
 			for ( int d = 0; d < nTarget; ++d )
 				target[ d ] = ( float )tmp[ d ];
+		}
+		else
+		{
+			System.arraycopy( source, 0, target, 0, target.length );
 		}
 	}
 
@@ -161,6 +176,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 			}
 			else
 				transforms.get( 0 ).apply( source, target );
+		}
+		else
+		{
+			target.setPosition( source );
 		}
 	}
 

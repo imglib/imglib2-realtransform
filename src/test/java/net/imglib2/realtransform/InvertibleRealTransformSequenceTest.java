@@ -219,6 +219,24 @@ public class InvertibleRealTransformSequenceTest
 	}
 
 	@Test
+	public void testEmptySequence()
+	{
+		final InvertibleRealTransformSequence l = new InvertibleRealTransformSequence();
+		Assert.assertTrue( l.isIdentity() );
+
+		final double[] x1 = new double[ 3 ];
+		final double[] x2 = new double[ 3 ];
+
+		// must behave as identity
+		l.apply( y, x1 );
+		Assert.assertArrayEquals( y, x1, 0.001 );
+
+		// must behave as identity
+		l.applyInverse( x2, y );
+		Assert.assertArrayEquals( x2, y, 0.001 );
+	}
+
+	@Test
 	public void testCopy()
 	{
 		final InvertibleRealTransformSequence l = new InvertibleRealTransformSequence();

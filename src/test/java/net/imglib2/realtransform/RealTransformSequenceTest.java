@@ -161,6 +161,19 @@ public class RealTransformSequenceTest
 	}
 
 	@Test
+	public void testEmpySequence()
+	{
+		final RealTransformSequence l = new RealTransformSequence();
+		final double[] y1 = new double[ 3 ];
+		final RealPoint py1 = RealPoint.wrap( y1 );
+
+		l.apply( px, py1 );
+
+		Assert.assertTrue( l.isIdentity() );
+		Assert.assertArrayEquals( y1, x, 0.001 );
+	}
+
+	@Test
 	public void testCopy()
 	{
 		final RealTransformSequence l = new RealTransformSequence();
