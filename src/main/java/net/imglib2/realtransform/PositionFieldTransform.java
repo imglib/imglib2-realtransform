@@ -36,12 +36,18 @@ package net.imglib2.realtransform;
 
 import java.util.Arrays;
 
+import net.imglib2.RandomAccessible;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
-import net.imglib2.realtransform.RealTransform;
+import net.imglib2.interpolation.InterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.outofbounds.OutOfBoundsBorderFactory;
+import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 /**
  * A {@link RealTransform} by continuous coordinate lookup.
@@ -51,20 +57,56 @@ import net.imglib2.type.numeric.RealType;
 public class PositionFieldTransform< T extends RealType< T > > implements RealTransform
 {
 	/* one for each dimension */
-	private final RealRandomAccess< T >[] positionAccesses;
+	protected final RealRandomAccess< T >[] positionAccesses;
 
-	public PositionFieldTransform( final RealRandomAccess< T >[] positionAccesses )
+	@SuppressWarnings("unchecked")
+	protected static < T extends RealType< T > > RealRandomAccessible< T >[] extendAndInterpolate(
+			final RandomAccessibleInterval< T >[] positions,
+			final OutOfBoundsFactory< T, RandomAccessibleInterval< T > > outOfBoundsFactory,
+			final InterpolatorFactory< T, RandomAccessible< T > > interpolatorFactory)
+	{
+		final RealRandomAccessible<T>[] realPositions = new RealRandomAccessible[positions.length];
+		Arrays.setAll( realPositions, i -> Views.interpolate(
+				Views.extend(positions[i], outOfBoundsFactory),
+				interpolatorFactory));
+		return realPositions;
+	}
+
+	protected RealRandomAccess< T >[] copyAccesses()
+	{
+		@SuppressWarnings("unchecked")
+		final RealRandomAccess< T >[] accessCopies = new RealRandomAccess[ positionAccesses.length ];
+		Arrays.setAll( accessCopies, i -> positionAccesses[ i ].copyRealRandomAccess() );
+		return accessCopies;
+	}
+
+	@SafeVarargs
+	public PositionFieldTransform( final RealRandomAccess< T >... positionAccesses )
 	{
 		this.positionAccesses = positionAccesses;
 	}
 
-	@SuppressWarnings( "unchecked" )
-	public PositionFieldTransform( final RealRandomAccessible< T >[] positions )
+	public PositionFieldTransform( final RealRandomAccessible< T >... positions )
 	{
 		assert( Arrays.stream( positions ).allMatch( p -> p.numDimensions() == positions.length ) ) : "Dimensions do not match.";
 
 		positionAccesses = new RealRandomAccess[ positions.length ];
 		Arrays.setAll( positionAccesses, i -> positions[ i ].realRandomAccess() );
+	}
+
+	@SafeVarargs
+	public PositionFieldTransform( final RandomAccessibleInterval< T >... positions )
+	{
+		this(extendAndInterpolate(positions, new OutOfBoundsBorderFactory<>(), new NLinearInterpolatorFactory<>()));
+	}
+
+	@SafeVarargs
+	public PositionFieldTransform(
+			final OutOfBoundsFactory< T, RandomAccessibleInterval< T > > outOfBoundsFactory,
+			final InterpolatorFactory< T, RandomAccessible< T > > interpolatorFactory,
+			final RandomAccessibleInterval< T >... positions )
+	{
+		this(extendAndInterpolate( positions, outOfBoundsFactory, interpolatorFactory ) );
 	}
 
 	@Override
@@ -112,9 +154,6 @@ public class PositionFieldTransform< T extends RealType< T > > implements RealTr
 	@Override
 	public RealTransform copy()
 	{
-		@SuppressWarnings( "unchecked" )
-		final RealRandomAccess< T >[] accessCopies = new RealRandomAccess[ positionAccesses.length ];
-		Arrays.setAll( accessCopies, i -> positionAccesses[ i ].copyRealRandomAccess() );
-		return new PositionFieldTransform<>( accessCopies );
+		return new PositionFieldTransform<>( copyAccesses() );
 	}
 }
