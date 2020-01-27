@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -139,12 +139,12 @@ public class RealViewsSimplifyUtils
 
 	/**
 	 * See {@link RealViews}{@link #simplifyReal(RealRandomAccessible)}
-	 * 
+	 *
 	 * @param source
 	 *            to be simplified.
 	 * @param <T> the type
 	 * @return a (potentially) simplified version of the source.
-	 * 
+	 *
 	 */
 	public static < T > RealRandomAccessible< T > simplifyReal( final RealRandomAccessible< T > source )
 	{
@@ -157,12 +157,12 @@ public class RealViewsSimplifyUtils
 
 	/**
 	 * See {@link RealViews}{@link #simplify(RealRandomAccessible)}
-	 * 
+	 *
 	 * @param source
 	 *            to be simplified.
 	 * @param <T> the type
 	 * @return a (potentially) simplified version of the source.
-	 * 
+	 *
 	 */
 	@SuppressWarnings( "unchecked" )
 	public static < T > RandomAccessible< T > simplify( final RealRandomAccessible< T > source )
@@ -262,7 +262,7 @@ public class RealViewsSimplifyUtils
 			return new ScaleAndTranslation( t, s );
 
 		}
-		return ( AffineGet ) affineGet.copy();
+		return affineGet.copy();
 	}
 
 	private static < T > RandomAccessible< T > createRandomAccessible( final RealRandomAccessible< T > rra, final RealTransform t )
@@ -356,4 +356,32 @@ public class RealViewsSimplifyUtils
 		}
 	}
 
+	public static < F extends AffineGet & AffineSet > F roundInverseAffineGet( final AffineGet source ) {
+
+		final F target;
+		final int n = source.numDimensions();
+		final double[] values = source.getRowPackedCopy();
+		final long[] roundValues = new long[ n ];
+
+		for (int i = 0; i < values.length; ++i )
+			values[ i ] = roundValues[ i ] = Math.round( values[ i ] );
+
+		final long[][] vectors = new long[ n ][ n ];
+		for ( int d = 0; d < n; ++d )
+			for ( int i = d * n + d, j = 0; j < n; i += n + 1, ++j )
+				vectors[ d ][ j ] = roundValues[ i ];
+
+
+		if ( n == 2 )
+			target = ( F )new AffineTransform2D();
+		else if ( n == 3 )
+			target = ( F )new AffineTransform3D();
+		else
+			target = ( F )new AffineTransform( n );
+
+		target.set( values );
+
+		return target;
+
+	}
 }
