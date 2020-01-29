@@ -80,12 +80,14 @@ public class PositionFieldTransform< T extends RealType< T > > implements RealTr
 		return accessCopies;
 	}
 
-	@SafeVarargs
+	@SuppressWarnings( "unchecked" )
 	public PositionFieldTransform( final RealRandomAccess< T >... positionAccesses )
 	{
 		this.positionAccesses = positionAccesses;
 	}
 
+	@SuppressWarnings( "unchecked" )
+	@SafeVarargs
 	public PositionFieldTransform( final RealRandomAccessible< T >... positions )
 	{
 		assert( Arrays.stream( positions ).allMatch( p -> p.numDimensions() == positions.length ) ) : "Dimensions do not match.";
