@@ -43,7 +43,7 @@ import net.imglib2.RealPositionable;
 /**
  * Shared properties of {@link RealTransformSequence} and
  * {@link InvertibleRealTransformSequence}, sequences of something that extends
- * {@link RealTransform RealTransforms}.
+ * {@link RealTransform RealTransforms}. If empty, will behave as the identity transformation.
  *
  * @author Stephan Saalfeld
  */
@@ -103,6 +103,26 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 	}
 
 	@Override
+	public boolean isIdentity()
+	{
+		if ( transforms.size() == 0 )
+		{
+			return true;
+		}
+		else
+		{
+			// if any transform in the sequence is not identity, this sequence
+			// is not the identity
+			for ( R t : transforms )
+			{
+				if ( !t.isIdentity() )
+					return false;
+			}
+			return true;
+		}
+	}
+
+	@Override
 	public void apply( final double[] source, final double[] target )
 	{
 		assert source.length >= nSource && target.length >= nTarget: "Input dimensions too small.";
@@ -122,6 +142,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 			else
 				transforms.get( 0 ).apply( source, target );
 		}
+		else
+		{
+			System.arraycopy( source, 0, target, 0, target.length );
+		}
 	}
 
 	@Override
@@ -140,6 +164,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 
 			for ( int d = 0; d < nTarget; ++d )
 				target[ d ] = ( float )tmp[ d ];
+		}
+		else
+		{
+			System.arraycopy( source, 0, target, 0, target.length );
 		}
 	}
 
@@ -161,6 +189,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 			}
 			else
 				transforms.get( 0 ).apply( source, target );
+		}
+		else
+		{
+			target.setPosition( source );
 		}
 	}
 
