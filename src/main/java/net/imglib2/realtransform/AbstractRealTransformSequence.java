@@ -44,6 +44,11 @@ import net.imglib2.RealPositionable;
  * Shared properties of {@link RealTransformSequence} and
  * {@link InvertibleRealTransformSequence}, sequences of something that extends
  * {@link RealTransform RealTransforms}. If empty, will behave as the identity transformation.
+ * 
+ * {@link isIdentity} will return true if either the sequence is empty, or if
+ * every transform in the sequence returns true for {@link isIdentity}.  This 
+ * sequence could behave as the identity even if {@link isIdentity} returns false,
+ * for example, if it contains only a transform and its inverse.
  *
  * @author Stephan Saalfeld
  */

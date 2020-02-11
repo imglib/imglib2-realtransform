@@ -104,18 +104,23 @@ public class InvertibleRealTransformSequenceTest
 	public void testEmptySequence()
 	{
 		final InvertibleRealTransformSequence l = new InvertibleRealTransformSequence();
-		Assert.assertTrue( l.isIdentity() );
+		Assert.assertTrue( "isIdentity is true for empty sequence", l.isIdentity() );
 
 		final double[] x1 = new double[ 3 ];
 		final double[] x2 = new double[ 3 ];
 
 		// must behave as identity
 		l.apply( y, x1 );
-		Assert.assertArrayEquals( y, x1, 0.001 );
+		Assert.assertArrayEquals( "empty sequence behaves as identity", y, x1, 0.001 );
 
 		// must behave as identity
 		l.applyInverse( x2, y );
-		Assert.assertArrayEquals( x2, y, 0.001 );
+		Assert.assertArrayEquals( "empty sequence inverse behaves as identity", x2, y, 0.001 );
+
+		// ensure a sequence with containing non-identity does not return true
+		// for isIdentity
+		l.add( a1 );
+		Assert.assertFalse( "isIdentity is false for non-identity sequence", l.isIdentity() );
 	}
 
 	@Test
