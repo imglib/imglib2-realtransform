@@ -43,8 +43,8 @@ import net.imglib2.RealPositionable;
 /**
  * Shared properties of {@link RealTransformSequence} and
  * {@link InvertibleRealTransformSequence}, sequences of something that extends
- * {@link RealTransform RealTransforms}.
- *
+ * {@link RealTransform RealTransforms}. If empty, will behave as the identity transformation.
+ * 
  * @author Stephan Saalfeld
  */
 public class AbstractRealTransformSequence< R extends RealTransform > implements RealTransform
@@ -102,6 +102,34 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 		return nTarget;
 	}
 
+	/**
+	 * Returns true if either the sequence is empty, or if
+	 * every transform in the sequence returns true for {@link isIdentity}.  This 
+	 * sequence could behave as the identity even if this method returns false,
+	 * for example, if it contains only a transform and its inverse.
+	 * 
+	 * @return true if empty or contains only identity transforms.
+	 */
+	@Override
+	public boolean isIdentity()
+	{
+		if ( transforms.size() == 0 )
+		{
+			return true;
+		}
+		else
+		{
+			// if any transform in the sequence is not identity, this sequence
+			// is not the identity
+			for ( R t : transforms )
+			{
+				if ( !t.isIdentity() )
+					return false;
+			}
+			return true;
+		}
+	}
+
 	@Override
 	public void apply( final double[] source, final double[] target )
 	{
@@ -122,6 +150,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 			else
 				transforms.get( 0 ).apply( source, target );
 		}
+		else
+		{
+			System.arraycopy( source, 0, target, 0, target.length );
+		}
 	}
 
 	@Override
@@ -140,6 +172,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 
 			for ( int d = 0; d < nTarget; ++d )
 				target[ d ] = ( float )tmp[ d ];
+		}
+		else
+		{
+			System.arraycopy( source, 0, target, 0, target.length );
 		}
 	}
 
@@ -161,6 +197,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 			}
 			else
 				transforms.get( 0 ).apply( source, target );
+		}
+		else
+		{
+			target.setPosition( source );
 		}
 	}
 

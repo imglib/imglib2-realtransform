@@ -34,11 +34,14 @@
 
 package net.imglib2.realtransform;
 
+import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
+import net.imglib2.interpolation.InterpolatorFactory;
+import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.type.numeric.RealType;
 
 /**
@@ -49,7 +52,7 @@ import net.imglib2.type.numeric.RealType;
 public class DeformationFieldTransform< T extends RealType< T > > extends PositionFieldTransform< T >
 {
 
-	@SafeVarargs
+	@SuppressWarnings( "unchecked" )
 	public DeformationFieldTransform( final RealRandomAccess< T >... positionAccesses )
 	{
 		super( positionAccesses );
@@ -65,6 +68,15 @@ public class DeformationFieldTransform< T extends RealType< T > > extends Positi
 	public DeformationFieldTransform( final RandomAccessibleInterval< T >... positions )
 	{
 		super( positions );
+	}
+
+	@SafeVarargs
+	public DeformationFieldTransform(
+			final OutOfBoundsFactory< T, RandomAccessibleInterval< T > > outOfBoundsFactory,
+			final InterpolatorFactory< T, RandomAccessible< T > > interpolatorFactory,
+			final RandomAccessibleInterval< T >... positions )
+	{
+		super( outOfBoundsFactory, interpolatorFactory, positions );
 	}
 
 	@Override

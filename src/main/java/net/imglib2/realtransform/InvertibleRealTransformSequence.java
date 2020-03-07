@@ -40,6 +40,7 @@ import net.imglib2.RealPositionable;
 /**
  * An {@link InvertibleRealTransform} that is a sequence of
  * {@link InvertibleRealTransform InvertibleRealTransforms}.
+ * If empty, will behave as the identity transformation.
  * 
  * @author Stephan Saalfeld
  */
@@ -65,6 +66,10 @@ public class InvertibleRealTransformSequence extends AbstractRealTransformSequen
 			else
 				transforms.get( 0 ).applyInverse( source, target );
 		}
+		else
+		{
+			System.arraycopy( target, 0, source, 0, source.length );
+		}
 	}
 
 	@Override
@@ -83,6 +88,10 @@ public class InvertibleRealTransformSequence extends AbstractRealTransformSequen
 
 			for ( int d = 0; d < nSource; ++d )
 				source[ d ] = ( float )tmp[ d ];
+		}
+		else
+		{
+			System.arraycopy( target, 0, source, 0, source.length );
 		}
 	}
 
@@ -105,6 +114,10 @@ public class InvertibleRealTransformSequence extends AbstractRealTransformSequen
 			}
 			else
 				transforms.get( 0 ).applyInverse( source, target );
+		}
+		else
+		{
+			source.setPosition( target );
 		}
 	}
 
