@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,15 +34,15 @@
 
 package net.imglib2.realtransform;
 
+import Jama.Matrix;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.concatenate.Concatenable;
 import net.imglib2.concatenate.PreConcatenable;
-import Jama.Matrix;
 
 /**
  * An <em>n</em>-dimensional affine transformation.
- * 
+ *
  * @author Stephan Saalfeld
  */
 public class AffineTransform extends AbstractAffineTransform implements Concatenable< AffineGet >, PreConcatenable< AffineGet >
@@ -73,6 +73,13 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 		inverse = new AffineTransform( this );
 		invert();
 		inverse.updateDs();
+	}
+
+	public AffineTransform( final double... matrix )
+	{
+		super( ( int )Math.sqrt( matrix.length ) );
+		inverse = new AffineTransform( this );
+		set( matrix );
 	}
 
 	protected AffineTransform( final AffineTransform inverse )
@@ -255,8 +262,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 	{
 		assert values.length == n * n + n: "Input dimensions do not match dimensions of this affine transform.";
 
-		int i = 0;
-		for ( int r = 0; r < n; ++r )
+		for ( int r = 0, i = 0; r < n; ++r )
 		{
 			for ( int c = 0; c < n; ++c, ++i )
 				a.set( r, c, values[ i ] );
@@ -275,7 +281,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 		copy.set( this );
 		return copy;
 	}
-	
+
 	@Override
 	public boolean isIdentity()
 	{
