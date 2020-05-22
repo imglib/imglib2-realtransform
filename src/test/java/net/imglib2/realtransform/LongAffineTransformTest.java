@@ -4,8 +4,6 @@
 package net.imglib2.realtransform;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -13,6 +11,7 @@ import java.util.Random;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import Jama.Matrix;
 import net.imglib2.util.Pair;
 
 /**
@@ -134,6 +133,9 @@ public class LongAffineTransformTest
 
 		final AffineTransform tAffine = new AffineTransform( testsRealDouble[ i ] );
 
+		System.out.print( "original:" );
+		new Matrix( tAffine.getRowPackedCopy(), tAffine.numDimensions() + 1 ).transpose().print( 5, 2 );
+
 //		System.out.println( "affine: " + Arrays.toString( tAffine.getRowPackedCopy() ) );
 
 		final double[] testVector = testRealDoubleVectors[ i ][ j ];
@@ -145,10 +147,12 @@ public class LongAffineTransformTest
 
 		tAffine.apply( testVectorCopy1, testVectorCopy1 );
 
-		final Pair< LongAffineTransform, AffineTransform > pair = LongAffineTransform.splitAffineTransform( tAffine );
+		final Pair< LongAffineTransform, AffineTransform > pair = LongAffineTransform.decomposeLongReal( tAffine );
 
-		System.out.println( "round:  " + Arrays.toString( pair.getA().toAffineTransform().getRowPackedCopy() ) );
-		System.out.println( "rest:   " + Arrays.toString( pair.getB().getRowPackedCopy() ) );
+//		System.out.print( "round:" );
+//		new Matrix( pair.getA().toAffineTransform().getRowPackedCopy(), testVector.length + 1 ).transpose().print( 5, 2 );
+//		System.out.print( "rest:" );
+//		new Matrix( pair.getB().getRowPackedCopy(), testVector.length + 1 ).transpose().print( 5, 2 );
 
 
 //		assertArrayEquals(
@@ -169,6 +173,46 @@ public class LongAffineTransformTest
 	}
 
 	@Test
+	public void testSingularMatrix()
+	{
+		final Matrix matrix = new Matrix(
+				new double[] {
+					1.12,  -0.13,   1.57,  -1.05,  -1.40,
+					-0.64,   0.73,  -0.27,   0.61,   1.66,
+					1.39,  -0.29,   0.98,   1.36,   1.48,
+					0.90,  -1.98,   1.81,   0.57,  -1.32,
+					1.29,   0.63,   1.48,  -1.99,  -0.76 }, 5 ).transpose();
+
+		matrix.print( 5, 2 );
+
+		final Matrix matrixLong = new Matrix(
+				new double[] {
+					1,  0,  2,  -1,  -1,
+					0,  1,  0,  1,   2,
+					1,  0,  1,  1,   1,
+					1,  -2, 2,  1,   -1,
+					1,  1,  1,  -2,  -1 }, 5 ).transpose();
+
+		System.out.println( Arrays.toString( matrixLong.eig().getRealEigenvalues() ) );
+
+		System.out.println( "det " + matrixLong.det() );
+
+		System.out.println( "rank " + matrixLong.rank() );
+
+		LongAffineTransform.fullRank( matrix, matrixLong );
+
+		System.out.println( Arrays.toString( matrixLong.eig().getRealEigenvalues() ) );
+
+		System.out.println( "det " + matrixLong.det() );
+
+		System.out.println( "rank " + matrixLong.rank() );
+
+		matrixLong.transpose().inverse();
+	}
+
+
+
+	@Test
 	public void test()
 	{
 		for ( int i = 0; i < tests.length; ++i )
@@ -180,19 +224,4 @@ public class LongAffineTransformTest
 			}
 		}
 	}
-
-	@Test
-	public void testCollinear()
-	{
-		for ( int i = 0; i < collinearVectors.length; ++i )
-		{
-			assertTrue( LongAffineTransform.collinear( collinearVectors[ i ][ 0 ], collinearVectors[ i ][ 1 ] ) );
-		}
-
-		for ( int i = 0; i < nonCollinearVectors.length; ++i )
-		{
-			assertFalse( LongAffineTransform.collinear( nonCollinearVectors[ i ][ 0 ], nonCollinearVectors[ i ][ 1 ] ) );
-		}
-	}
-
 }

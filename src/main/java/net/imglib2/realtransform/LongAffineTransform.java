@@ -73,6 +73,30 @@ import net.imglib2.util.ValuePair;
  */
 public class LongAffineTransform implements EuclideanSpace, Transform, RealTransform, Concatenable< LongAffineTransform >, PreConcatenable< LongAffineTransform >
 {
+	private static class Element
+	{
+		public final int r;
+		public final int c;
+		public final double diff;
+		public final double value;
+		public final double newValue;
+
+		public Element( final int r, final int c, final double diff, final double value, final double newValue )
+		{
+			this.r = r;
+			this.c = c;
+			this.diff = diff;
+			this.value = value;
+			this.newValue = newValue;
+		}
+
+		@Override
+		public String toString()
+		{
+			return "(" + r + ", " + c + ") : " + diff + ", " + value + ", " + newValue;
+		}
+	}
+
 	final protected int n;
 
 	protected final long[] atArray;
@@ -181,192 +205,56 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 		return new AffineTransform( doubleParameters );
 	}
 
-	private static void column(
-			final Matrix matrix,
-			final int c,
-			final double[] a )
-	{
-
-		for ( int r = 0; r < matrix.getRowDimension(); ++r )
-			a[ r ] = matrix.get( r, c );
-	}
-
-	private static boolean zero(
-			final double[] a )
-	{
-
-		for ( int r = 0; r < a.length; ++r )
-			if ( a[ r ] != 0 )
-				return false;
-
-		return true;
-	}
-
-	private static boolean zeroExcept(
-			final Matrix a,
-			final int c,
-			final int except )
-	{
-		for ( int r = 0; r < a.getRowDimension(); ++r )
-			if ( !( r == except || a.get( r, c ) == 0 ) )
-				return false;
-
-		return true;
-	}
-
-	private static double ratio( final double a, final double b )
-	{
-		if ( b == 0 )
-			return a == 0 ? Double.NaN : Double.POSITIVE_INFINITY;
-		else
-			return a / b;
-	}
-
-	public static boolean collinear(
-			final double[] a,
-			final double[] b )
-	{
-		final int n = a.length;
-
-		double ratio = ratio( a[ 0 ], b[ 0 ] );
-
-		for ( int r = 1; r < n; ++r )
-		{
-			if ( Double.isNaN( ratio ) )
-				ratio = ratio( a[ r ], b[ r ] );
-			else if ( ratio != ratio( a[ r ], b[ r ] ) )
-				return false;
-		}
-
-		return true;
-	}
-
-	private static boolean collinear(
-			final Matrix matrix,
-			final double[] a,
-			final double[] b,
-			final int ca,
-			final int cb )
-	{
-		column( matrix, ca, a );
-		column( matrix, cb, b );
-
-		return collinear( a, b );
-	}
-
-	private static int needWork(
-			final Matrix affineMatrix,
-			final Matrix roundMatrix,
-			final double[] a,
-			final double[] b,
-			final boolean[] needWork )
-	{
-		final int n = needWork.length;
-
-		for ( int c = 0; c < n; ++c )
-		{
-			if ( needWork[ c ] )
-			{
-				column( roundMatrix, c, a );
-				if ( zero( a ) )
-				{
-					column( affineMatrix, c, b );
-					if ( zero( b ) )
-						needWork[ c ] = false;
-				}
-			}
-		}
-
-		for ( int c1 = 0; c1 < n; ++c1 )
-		{
-			if ( needWork[ c1 ] )
-			{
-//				needWork[ c1 ] = false;
-				column( roundMatrix, c1, a );
-				for ( int c2 = c1 + 1; c2 < n; ++c2 )
-				{
-					if ( needWork[ c2 ] )
-					{
-						column( roundMatrix, c2, b );
-						if ( collinear( a, b ) )
-						{
-//							needWork[ c1 ] = true;
-//							needWork[ c2 ] = true;
-							return c1;
-						}
-					}
-				}
-			}
-		}
-
-		return -1;
-
-//		for ( int r = 0; r < n; ++r )
-//		{
-//			if ( needWork[ r ] )
-//				return true;
-//		}
-//
-//		return false;
-	}
-
-	private static void move(
-			final Matrix affineMatrix,
-			final Matrix roundMatrix,
-			final boolean[][] hasMoved,
-			final int c )
-	{
-		final int n = affineMatrix.getRowDimension();
-
-		double minDistance = Double.MAX_VALUE;
-		int minR = 0;
-		double value = 0;
-
-		for ( int r = 0; r < n; ++r )
-		{
-			if ( !hasMoved[ c ][ r ] )
-			{
-				final double real = affineMatrix.get( r, c );
-				final double round = roundMatrix.get( r, c );
-
-				final double distance = Math.abs( real - round );
-				if ( distance < minDistance )
-				{
-					final double test = real < round ? round - 1 : round + 1;
-					if ( test == 0 && zeroExcept( roundMatrix, c, r ) )
-					{
-						minDistance = distance;
-						minR = r;
-						value = test;
-					}
-				}
-			}
-		}
-
-		roundMatrix.set( minR, c, value );
-	}
-
-	public static void spread(
+	public static void fullRank(
 			final Matrix affineMatrix,
 			final Matrix roundMatrix )
 	{
-		final int n = affineMatrix.getColumnDimension();
-		final double[] a = new double[ n ];
-		final double[] b = new double[ n ];
-		final boolean[] needWork = new boolean[ n ];
-		Arrays.fill( needWork, true );
-		int moveThis = needWork( affineMatrix, roundMatrix, a, b, needWork );
-		if ( moveThis >= 0 )
-		{
-			final boolean[][] hasMoved = new boolean[ n ][ n ];
+		final int n = roundMatrix.getRowDimension();
+		int rank = roundMatrix.rank();
+		if ( rank == n )
+			return;
 
-			do
+		final Element[] sortedMatrix = new Element[ n * n ];
+		for ( int r = 0, i = 0; r < n; ++r )
+		{
+			for ( int c = 0; c < n; ++c, ++i )
 			{
-				move( affineMatrix, roundMatrix, hasMoved, moveThis );
-				moveThis = needWork( affineMatrix, roundMatrix, a, b, needWork );
-				System.out.println( moveThis );
+				final double real = affineMatrix.get( r, c );
+				final double round = roundMatrix.get( r, c ); // TODO could this be just round?
+				final double diff = round - real;
+				if ( diff < 0 )
+					sortedMatrix[ i ] = new Element( r, c, -diff, round, round + 1 );
+				else
+					sortedMatrix[ i ] = new Element( r, c, diff, round, round - 1 );
+
 			}
-			while ( moveThis >= 0 );
+		}
+
+		Arrays.sort( sortedMatrix, ( a, b ) -> a.value < b.value ? -1 : a.value > b.value ? 1 : 0 );
+
+		System.out.println( Arrays.toString( sortedMatrix ) );
+
+		System.out.println( "before " );
+		roundMatrix.print( 5, 2 );
+
+		for ( final Element e : sortedMatrix  )
+		{
+			roundMatrix.set( e.r, e.c, e.newValue );
+			final int newRank = roundMatrix.rank();
+			if ( newRank == n )
+			{
+				System.out.println( "changed " );
+				roundMatrix.print( 5, 2 );
+				return;
+			}
+			if ( newRank <= rank )
+				roundMatrix.set( e.r, e.c, e.value );
+			else
+			{
+				rank = newRank;
+				System.out.println( "changed " );
+				roundMatrix.print( 5, 2 );
+			}
 		}
 	}
 
@@ -379,7 +267,7 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 	 * @param affine
 	 * @return
 	 */
-	public static Pair< LongAffineTransform, AffineTransform > decomposeRealLong(
+	public static Pair< LongAffineTransform, AffineTransform > decomposeLongReal(
 			final AffineGet affine )
 	{
 		final int n = affine.numDimensions();
@@ -388,9 +276,9 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 
 		final Matrix roundMatrix = new Matrix( n, n );
 
-		for ( int r = 0, i = 0; r < n; ++r )
+		for ( int r = 0; r < n; ++r )
 		{
-			for ( int c = 0; c < n; ++c, ++i )
+			for ( int c = 0; c < n; ++c )
 			{
 				final double value = affine.get( r, c );
 				affineMatrix.set( r, c, value );
@@ -398,7 +286,7 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 			}
 		}
 
-		spread( affineMatrix, roundMatrix );
+		fullRank( affineMatrix, roundMatrix );
 
 		final long[] atLong = new long[ n * n + n ];
 		final double[] atRound = new double[ atLong.length ];
@@ -429,7 +317,7 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 	 * @param affine
 	 * @return
 	 */
-	public static Pair< AffineTransform, LongAffineTransform > decomposeLongReal(
+	public static Pair< AffineTransform, LongAffineTransform > decomposeRealLong(
 			final AffineGet affine )
 	{
 		final int n = affine.numDimensions();
@@ -438,9 +326,9 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 
 		final Matrix roundMatrix = new Matrix( n, n );
 
-		for ( int r = 0, i = 0; r < n; ++r )
+		for ( int r = 0; r < n; ++r )
 		{
-			for ( int c = 0; c < n; ++c, ++i )
+			for ( int c = 0; c < n; ++c )
 			{
 				final double value = affine.get( r, c );
 				affineMatrix.set( r, c, value );
@@ -448,7 +336,7 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 			}
 		}
 
-		spread( affineMatrix, roundMatrix );
+		fullRank( affineMatrix, roundMatrix );
 
 		final long[] atLong = new long[ n * n + n ];
 		final double[] atRound = new double[ atLong.length ];
