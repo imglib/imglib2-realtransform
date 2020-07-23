@@ -56,7 +56,6 @@ public class LongAffineTransformTest
 	{
 		for ( int i = 0; i < tests.length; ++i )
 		{
-
 			final int n = rnd.nextInt( 5 ) + 1;
 			final long[] test = new long[ ( n + 1 ) * n ];
 			final double[] testDouble = new double[ test.length ];
@@ -121,7 +120,7 @@ public class LongAffineTransformTest
 		}
 		catch ( final RuntimeException e )
 		{
-			System.out.println( "Matrix is singular, not important for this test." );
+//			System.out.println( "Matrix is singular, skipping for this test." );
 		}
 	}
 
@@ -133,8 +132,8 @@ public class LongAffineTransformTest
 
 		final AffineTransform tAffine = new AffineTransform( testsRealDouble[ i ] );
 
-		System.out.print( "original:" );
-		new Matrix( tAffine.getRowPackedCopy(), tAffine.numDimensions() + 1 ).transpose().print( 5, 2 );
+//		System.out.print( "original:" );
+//		new Matrix( tAffine.getRowPackedCopy(), tAffine.numDimensions() + 1 ).transpose().print( 5, 2 );
 
 //		System.out.println( "affine: " + Arrays.toString( tAffine.getRowPackedCopy() ) );
 
@@ -183,7 +182,7 @@ public class LongAffineTransformTest
 					0.90,  -1.98,   1.81,   0.57,  -1.32,
 					1.29,   0.63,   1.48,  -1.99,  -0.76 }, 5 ).transpose();
 
-		matrix.print( 5, 2 );
+//		matrix.print( 5, 2 );
 
 		final Matrix matrixLong = new Matrix(
 				new double[] {
@@ -193,21 +192,21 @@ public class LongAffineTransformTest
 					1,  -2, 2,  1,   -1,
 					1,  1,  1,  -2,  -1 }, 5 ).transpose();
 
-		System.out.println( Arrays.toString( matrixLong.eig().getRealEigenvalues() ) );
-
-		System.out.println( "det " + matrixLong.det() );
-
-		System.out.println( "rank " + matrixLong.rank() );
+//		System.out.println( Arrays.toString( matrixLong.eig().getRealEigenvalues() ) );
+//
+//		System.out.println( "det " + matrixLong.det() );
+//
+//		System.out.println( "rank " + matrixLong.rank() );
 
 		LongAffineTransform.fullRank( matrix, matrixLong );
 
-		System.out.println( Arrays.toString( matrixLong.eig().getRealEigenvalues() ) );
+//		System.out.println( Arrays.toString( matrixLong.eig().getRealEigenvalues() ) );
+//
+//		System.out.println( "det " + matrixLong.det() );
+//
+//		System.out.println( "rank " + matrixLong.rank() );
 
-		System.out.println( "det " + matrixLong.det() );
-
-		System.out.println( "rank " + matrixLong.rank() );
-
-		matrixLong.transpose().inverse();
+		matrixLong.transpose().inverse(); // would throw exception if still singular
 	}
 
 

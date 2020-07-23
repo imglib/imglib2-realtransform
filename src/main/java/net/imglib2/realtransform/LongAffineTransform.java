@@ -230,12 +230,12 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 			}
 		}
 
-		Arrays.sort( sortedMatrix, ( a, b ) -> a.value < b.value ? -1 : a.value > b.value ? 1 : 0 );
+		Arrays.sort( sortedMatrix, ( a, b ) -> a.diff < b.diff ? 1 : a.diff > b.diff ? -1 : 0 );
 
-		System.out.println( Arrays.toString( sortedMatrix ) );
+//		System.out.println( Arrays.toString( sortedMatrix ) );
 
-		System.out.println( "before " );
-		roundMatrix.print( 5, 2 );
+//		System.out.println( "before " );
+//		roundMatrix.print( 5, 2 );
 
 		for ( final Element e : sortedMatrix  )
 		{
@@ -243,8 +243,8 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 			final int newRank = roundMatrix.rank();
 			if ( newRank == n )
 			{
-				System.out.println( "changed " );
-				roundMatrix.print( 5, 2 );
+//				System.out.println( "changed " );
+//				roundMatrix.print( 5, 2 );
 				return;
 			}
 			if ( newRank <= rank )
@@ -252,8 +252,8 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 			else
 			{
 				rank = newRank;
-				System.out.println( "changed " );
-				roundMatrix.print( 5, 2 );
+//				System.out.println( "changed " );
+//				roundMatrix.print( 5, 2 );
 			}
 		}
 	}
@@ -626,5 +626,10 @@ public class LongAffineTransform implements EuclideanSpace, Transform, RealTrans
 	public int numDimensions()
 	{
 		return n;
+	}
+
+	public Point d( final int d )
+	{
+		return ds[ d ];
 	}
 }
