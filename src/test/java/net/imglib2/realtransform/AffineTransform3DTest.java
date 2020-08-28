@@ -37,6 +37,9 @@ import static org.junit.Assert.*;
 
 import java.util.Random;
 
+import net.imglib2.FinalRealInterval;
+import net.imglib2.test.ImgLib2Assert;
+import net.imglib2.util.Intervals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,6 +59,18 @@ public class AffineTransform3DTest
 	public void setUp() throws Exception
 	{
 		 rnd.setSeed( 0 );
+	}
+
+	@Test
+	public void testEstimateBoundsFast()
+	{
+		final AffineTransform3D affine = new AffineTransform3D();
+		affine.set( 0.6257181216214484, -0.42700874006027256, 1.7985971795733178, 14.49098566228043,
+				-0.23594150694929406, 0.2738747799215179, 3.865571650972771, 316.97923101552897,
+				-0.5001796987961186, -0.663312458844776, 0.42718951567612307, 483.7819295341877 );
+		final FinalRealInterval interval = new FinalRealInterval( new double[] { -0.5, -0.5, -0.5 }, new double[] { 957.5, 385.5, 43.5 } );
+
+		ImgLib2Assert.assertIntervalEquals( affine.estimateBounds( interval ), affine.estimateBoundsFast( interval ), 0.0000001 );
 	}
 
 	@Test
