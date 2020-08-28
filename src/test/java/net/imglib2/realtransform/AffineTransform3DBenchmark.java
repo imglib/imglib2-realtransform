@@ -78,15 +78,6 @@ public class AffineTransform3DBenchmark
 		blackhole.consume( i );
 	}
 
-	@Benchmark
-	@BenchmarkMode( Mode.AverageTime )
-	@OutputTimeUnit( TimeUnit.NANOSECONDS )
-	public void estimateBoundsFast( Blackhole blackhole )
-	{
-		FinalRealInterval i = affine.estimateBoundsFast( interval );
-		blackhole.consume( i );
-	}
-
 	public static void main( final String... args ) throws RunnerException
 	{
 		final Options opt = new OptionsBuilder()

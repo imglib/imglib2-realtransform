@@ -41,7 +41,6 @@ import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.concatenate.Concatenable;
 import net.imglib2.concatenate.PreConcatenable;
-import net.imglib2.util.Util;
 
 /**
  * 3d-affine transformation.
@@ -991,7 +990,14 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 		inverse.updateDs();
 	}
 
-	public FinalRealInterval estimateBoundsFast( final RealInterval interval )
+	/**
+	 * Calculate the boundary interval of an interval after it has been
+	 * transformed.
+	 *
+	 * @param interval the original bounds
+	 * @return the new bounds
+	 */
+	public FinalRealInterval estimateBounds( final RealInterval interval )
 	{
 		assert interval.numDimensions() >= 3: "Interval dimensions do not match.";
 
@@ -1065,96 +1071,6 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 			rMin[ d ] = interval.realMin( d );
 			rMax[ d ] = interval.realMax( d );
 		}
-		return new FinalRealInterval( rMin, rMax );
-	}
-
-	/**
-	 * Calculate the boundary interval of an interval after it has been
-	 * transformed.
-	 *
-	 * @param interval the original bounds
-	 * @return the new bounds
-	 */
-	public FinalRealInterval estimateBounds( final RealInterval interval )
-	{
-		assert interval.numDimensions() >= 3: "Interval dimensions do not match.";
-
-		final double[] min = new double[ interval.numDimensions() ];
-		final double[] max = new double[ min.length ];
-		final double[] rMin = new double[ min.length ];
-		final double[] rMax = new double[ min.length ];
-		min[ 0 ] = interval.realMin( 0 );
-		min[ 1 ] = interval.realMin( 1 );
-		min[ 2 ] = interval.realMin( 2 );
-		max[ 0 ] = interval.realMax( 0 );
-		max[ 1 ] = interval.realMax( 1 );
-		max[ 2 ] = interval.realMax( 2 );
-		rMin[ 0 ] = rMin[ 1 ] = rMin[ 2 ] = Double.MAX_VALUE;
-		rMax[ 0 ] = rMax[ 1 ] = rMax[ 2 ] = -Double.MAX_VALUE;
-		for ( int d = 3; d < rMin.length; ++d )
-		{
-			rMin[ d ] = interval.realMin( d );
-			rMax[ d ] = interval.realMax( d );
-			min[ d ] = interval.realMin( d );
-			max[ d ] = interval.realMax( d );
-		}
-
-		final double[] f = new double[ 3 ];
-		final double[] g = new double[ 3 ];
-
-		apply( min, g );
-		Util.min( rMin, g );
-		Util.max( rMax, g );
-
-		f[ 0 ] = max[ 0 ];
-		f[ 1 ] = min[ 1 ];
-		f[ 2 ] = min[ 2 ];
-		apply( f, g );
-		Util.min( rMin, g );
-		Util.max( rMax, g );
-
-		f[ 0 ] = min[ 0 ];
-		f[ 1 ] = max[ 1 ];
-		f[ 2 ] = min[ 2 ];
-		apply( f, g );
-		Util.min( rMin, g );
-		Util.max( rMax, g );
-
-		f[ 0 ] = max[ 0 ];
-		f[ 1 ] = max[ 1 ];
-		f[ 2 ] = min[ 2 ];
-		apply( f, g );
-		Util.min( rMin, g );
-		Util.max( rMax, g );
-
-		f[ 0 ] = min[ 0 ];
-		f[ 1 ] = min[ 1 ];
-		f[ 2 ] = max[ 2 ];
-		apply( f, g );
-		Util.min( rMin, g );
-		Util.max( rMax, g );
-
-		f[ 0 ] = max[ 0 ];
-		f[ 1 ] = min[ 1 ];
-		f[ 2 ] = max[ 2 ];
-		apply( f, g );
-		Util.min( rMin, g );
-		Util.max( rMax, g );
-
-		f[ 0 ] = min[ 0 ];
-		f[ 1 ] = max[ 1 ];
-		f[ 2 ] = max[ 2 ];
-		apply( f, g );
-		Util.min( rMin, g );
-		Util.max( rMax, g );
-
-		f[ 0 ] = max[ 0 ];
-		f[ 1 ] = max[ 1 ];
-		f[ 2 ] = max[ 2 ];
-		apply( f, g );
-		Util.min( rMin, g );
-		Util.max( rMax, g );
-
 		return new FinalRealInterval( rMin, rMax );
 	}
 
