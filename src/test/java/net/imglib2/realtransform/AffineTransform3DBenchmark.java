@@ -33,12 +33,14 @@
  */
 package net.imglib2.realtransform;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import net.imglib2.FinalRealInterval;
 import net.imglib2.test.ImgLib2Assert;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
@@ -55,18 +57,30 @@ import org.openjdk.jmh.runner.options.TimeValue;
 @Fork( 1 )
 public class AffineTransform3DBenchmark
 {
+	public static Random random = new Random( 0 );
+
 	public AffineTransform3D affine;
 
 	public FinalRealInterval interval;
 
-	@Setup
+	@Setup( Level.Iteration )
 	public void allocate()
 	{
+		final double[] min = new double[ 3 ];
+		final double[] max = new double[ 3 ];
+		for ( int d = 0; d < 3; d++ )
+		{
+			final double a = random.nextDouble();
+			final double b = random.nextDouble();
+			min[ d ] = Math.min( a, b );
+			max[ d ] = Math.max( a, b );
+		}
+		interval = new FinalRealInterval( min, max );
+
 		affine = new AffineTransform3D();
-		affine.set( 0.6257181216214484, -0.42700874006027256, 1.7985971795733178, 14.49098566228043,
-				-0.23594150694929406, 0.2738747799215179, 3.865571650972771, 316.97923101552897,
-				-0.5001796987961186, -0.663312458844776, 0.42718951567612307, 483.7819295341877 );
-		interval = new FinalRealInterval( new double[] { -0.5, -0.5, -0.5 }, new double[] { 957.5, 385.5, 43.5 } );
+		for ( int r = 0; r < 3; r++ )
+			for ( int c = 0; c < 4; c++ )
+				affine.set( random.nextDouble(), r, c );
 	}
 
 	@Benchmark
