@@ -35,8 +35,13 @@ package net.imglib2.realtransform;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+import java.util.PrimitiveIterator;
 import java.util.Random;
-
+import net.imglib2.FinalRealInterval;
+import net.imglib2.RealInterval;
+import net.imglib2.test.ImgLib2Assert;
+import net.imglib2.util.Util;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -169,4 +174,59 @@ public class AffineTransform3DTest
 		assertArrayEquals( backToOriginal.inverse().getRowPackedCopy(), affine.inverse().getRowPackedCopy(), 0.001 );
 	}
 
+	@Test
+	public void testEstimateBounds()
+	{
+		final int numIterations = 1000;
+		final PrimitiveIterator.OfDouble random = rnd.doubles( -100, 100 ).iterator();
+
+		for ( int i = 0; i < numIterations; i++ )
+		{
+			final double[] min = new double[ 3 ];
+			final double[] max = new double[ 3 ];
+			for ( int d = 0; d < 3; d++ )
+			{
+				final double a = random.nextDouble();
+				final double b = random.nextDouble();
+				min[ d ] = Math.min( a, b );
+				max[ d ] = Math.max( a, b );
+			}
+			final FinalRealInterval interval = new FinalRealInterval( min, max );
+
+			final AffineTransform3D affine = new AffineTransform3D();
+			for ( int r = 0; r < 3; r++ )
+				for ( int c = 0; c < 4; c++ )
+					affine.set( random.nextDouble(), r, c );
+
+			ImgLib2Assert.assertIntervalEquals( affine.estimateBounds( interval ), estimateBoundsFromCorners( affine, interval ), 0.0000001 );
+		}
+	}
+
+	public static FinalRealInterval estimateBoundsFromCorners( final RealTransform transform, final RealInterval interval )
+	{
+		assert interval.numDimensions() == transform.numSourceDimensions();
+
+		final int n = transform.numSourceDimensions();
+		final double[] corner = new double[ n ];
+
+		final int m = transform.numTargetDimensions();
+		final double[] tcorner = new double[ m ];
+
+		final double[] rMin = new double[ m ];
+		final double[] rMax = new double[ m ];
+		Arrays.fill( rMin, Double.POSITIVE_INFINITY );
+		Arrays.fill( rMax, Double.NEGATIVE_INFINITY );
+
+		final int nCorners = 1 << n;
+		for ( int i = 0; i < nCorners; i++ )
+		{
+			for ( int  d = 0, mask = 1; d < n; ++d, mask = mask << 1 )
+				corner[ d ] = ( i & mask ) == 0 ? interval.realMin( d ) : interval.realMax( d );
+			transform.apply( corner, tcorner );
+			Util.min( rMin, tcorner );
+			Util.max( rMax, tcorner );
+		}
+
+		return new FinalRealInterval( rMin, rMax );
+	}
 }
