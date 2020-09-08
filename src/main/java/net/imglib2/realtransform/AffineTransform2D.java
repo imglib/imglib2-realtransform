@@ -34,11 +34,14 @@
 
 package net.imglib2.realtransform;
 
+import net.imglib2.FinalRealInterval;
+import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.concatenate.Concatenable;
 import net.imglib2.concatenate.PreConcatenable;
+import net.imglib2.util.Util;
 
 /**
  * 2d-affine transformation.
@@ -649,5 +652,60 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 	public boolean isIdentity()
 	{
 		return RealViewsSimplifyUtils.isIdentity( this );
+	}
+
+	/**
+	 * Calculate the boundary interval of an interval after it has been
+	 * transformed.
+	 *
+	 * @param interval the original bounds
+	 * @return the new bounds
+	 */
+	public FinalRealInterval estimateBounds( final RealInterval interval )
+	{
+		final double[] min = new double[ interval.numDimensions() ];
+		final double[] max = new double[ min.length ];
+		final double[] rMin = new double[ min.length ];
+		final double[] rMax = new double[ min.length ];
+		min[ 0 ] = interval.realMin( 0 );
+		min[ 1 ] = interval.realMin( 1 );
+		max[ 0 ] = interval.realMax( 0 );
+		max[ 1 ] = interval.realMax( 1 );
+		rMin[ 0 ] = rMin[ 1 ] = Double.MAX_VALUE;
+		rMax[ 0 ] = rMax[ 1 ] = -Double.MAX_VALUE;
+		for ( int d = 2; d < rMin.length; ++d )
+		{
+			rMin[ d ] = interval.realMin( d );
+			rMax[ d ] = interval.realMax( d );
+			min[ d ] = interval.realMin( d );
+			max[ d ] = interval.realMax( d );
+		}
+
+		final double[] f = new double[ 2 ];
+		final double[] g = new double[ 2 ];
+
+		apply( min, g );
+		Util.min( rMin, g );
+		Util.max( rMax, g );
+
+		f[ 0 ] = max[ 0 ];
+		f[ 1 ] = min[ 1 ];
+		apply( f, g );
+		Util.min( rMin, g );
+		Util.max( rMax, g );
+
+		f[ 0 ] = min[ 0 ];
+		f[ 1 ] = max[ 1 ];
+		apply( f, g );
+		Util.min( rMin, g );
+		Util.max( rMax, g );
+
+		f[ 0 ] = max[ 0 ];
+		f[ 1 ] = max[ 1 ];
+		apply( f, g );
+		Util.min( rMin, g );
+		Util.max( rMax, g );
+
+		return new FinalRealInterval( rMin, rMax );
 	}
 }
