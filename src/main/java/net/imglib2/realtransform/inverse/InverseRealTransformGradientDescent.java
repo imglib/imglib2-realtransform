@@ -38,10 +38,10 @@ import net.imglib2.RealPositionable;
 import net.imglib2.realtransform.AffineTransform;
 import net.imglib2.realtransform.RealTransform;
 
-import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import java.util.Arrays;
 
 public class InverseRealTransformGradientDescent implements RealTransform
 {
@@ -94,7 +94,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 	private double[] guess; // initialization for iterative inverse
 
-	protected static Logger logger = LogManager.getLogger( InverseRealTransformGradientDescent.class.getName() );
+	protected static Logger logger = LoggerFactory.getLogger( InverseRealTransformGradientDescent.class );
 
 	public InverseRealTransformGradientDescent( int ndims, DifferentiableRealTransform xfm )
 	{
