@@ -35,10 +35,10 @@ package net.imglib2.realtransform.inverse;
 
 import java.util.Arrays;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import net.imglib2.realtransform.RealTransform;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A generic backtracking line search to iteratively estimate the inverse of a {@link RealTransform}.
@@ -74,8 +74,8 @@ public class BacktrackingLineSearch
 	private double initStepSize = 10;
 	private int lineSearchMaxTries = 16;		
 	
-	protected static Logger logger = LogManager.getLogger( 
-			BacktrackingLineSearch.class.getName() );
+	protected static Logger logger = LoggerFactory.getLogger( 
+			BacktrackingLineSearch.class );
 
 	public BacktrackingLineSearch( final int nd )
 	{
