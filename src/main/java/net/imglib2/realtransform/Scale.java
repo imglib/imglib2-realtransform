@@ -100,8 +100,8 @@ public class Scale extends AbstractScale implements Concatenable< ScaleGet >, Pr
 	public Scale preConcatenate( final ScaleGet a )
 	{
 		for ( int d = 0; d < numDimensions(); ++d )
-			set( s[ d ] * a.getScale( d ) );
-		
+			s[d] *= a.getScale( d );
+
 		return this;
 	}
 
