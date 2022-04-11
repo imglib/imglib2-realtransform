@@ -152,4 +152,14 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 		return jacobian;
 	}
 
+	/**
+	 * Returns the instance of the wrapped {@link ThinPlateR2LogRSplineKernelTransform}.
+	 *
+	 * @return the kernel transform
+	 */
+	public ThinPlateR2LogRSplineKernelTransform getKernelTransform()
+	{
+		return tps;
+	}
+
 }
