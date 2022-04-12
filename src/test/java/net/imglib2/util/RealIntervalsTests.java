@@ -80,7 +80,7 @@ public class RealIntervalsTests {
 		final AffineTransform3D xfm = new AffineTransform3D();
 		xfm.scale(2, 3, 4);
 
-		final RealInterval bbox = RealIntervals.boundingIntervalVolume( itvl, xfm, 10, 10, 10 );
+		final RealInterval bbox = RealIntervals.boundingIntervalVolume( itvl, xfm, 10 );
 		assertEquals( "max x ", itvl.realMax(0) * 2, bbox.realMax(0), EPS );
 		assertEquals( "max y ", itvl.realMax(1) * 3, bbox.realMax(1), EPS );
 		assertEquals( "max z ", itvl.realMax(2) * 4, bbox.realMax(2), EPS );
@@ -118,13 +118,23 @@ public class RealIntervalsTests {
 
 		assertEquals( "min z ", itvl.realMin(2), bbox.realMin(2), EPS );
 		assertEquals( "max z ", itvl.realMax(2), bbox.realMax(2), EPS );
+		
+		final RealInterval bboxSamples = RealIntervals.boundingIntervalFacesSamples( itvl, xfm, 8, 6, 4 );
+		assertEquals( "min x ", itvl.realMin(0), bboxSamples.realMin(0), EPS );
+		assertEquals( "max x ", itvl.realMax(0) + 5, bboxSamples.realMax(0), EPS );
+
+		assertEquals( "min y ", itvl.realMin(1) - 5, bboxSamples.realMin(1), EPS );
+		assertEquals( "max y ", itvl.realMax(1), bboxSamples.realMax(1), EPS );
+
+		assertEquals( "min z ", itvl.realMin(2), bboxSamples.realMin(2), EPS );
+		assertEquals( "max z ", itvl.realMax(2), bboxSamples.realMax(2), EPS );
 	}
 
 	@Test
 	public void testBboxVolumePfield()
 	{
 		final PositionFieldTransform<DoubleType> xfm = pfield();
-		final RealInterval bbox = RealIntervals.boundingIntervalVolume( itvl, xfm, 5, 5, 5 );
+		final RealInterval bbox = RealIntervals.boundingIntervalVolume( itvl, xfm, 5 );
 		assertEquals( "min x ", itvl.realMin(0), bbox.realMin(0), EPS );
 		assertEquals( "max x ", itvl.realMax(0) + 5, bbox.realMax(0), EPS );
 
@@ -133,6 +143,16 @@ public class RealIntervalsTests {
 
 		assertEquals( "min z ", itvl.realMin(2), bbox.realMin(2), EPS );
 		assertEquals( "max z ", itvl.realMax(2), bbox.realMax(2), EPS );
+		
+		final RealInterval bboxSamples = RealIntervals.boundingIntervalVolumeSamples( itvl, xfm, 8, 6, 4 );
+		assertEquals( "min x samples", itvl.realMin(0), bboxSamples.realMin(0), EPS );
+		assertEquals( "max x samples", itvl.realMax(0) + 5, bboxSamples.realMax(0), EPS );
+
+		assertEquals( "min y samples", itvl.realMin(1) - 5, bboxSamples.realMin(1), EPS );
+		assertEquals( "max y samples", itvl.realMax(1), bboxSamples.realMax(1), EPS );
+
+		assertEquals( "min z samples", itvl.realMin(2), bboxSamples.realMin(2), EPS );
+		assertEquals( "max z samples", itvl.realMax(2), bboxSamples.realMax(2), EPS );
 	}
 
 	private static PositionFieldTransform< DoubleType > pfield()

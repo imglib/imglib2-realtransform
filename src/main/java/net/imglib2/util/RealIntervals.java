@@ -34,7 +34,6 @@
 package net.imglib2.util;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 import net.imglib2.FinalRealInterval;
 import net.imglib2.RealInterval;
@@ -115,13 +114,15 @@ public class RealIntervals
 	 *            the real interval
 	 * @param transform
 	 *            the transformation
-	 * @param steps
-	 *            step between samples
+	 * @param spacing
+	 *            spacing between samples along each dimension
 	 * @return the bounding interval
 	 */
-	public static RealInterval boundingIntervalFaces( final RealInterval interval, final RealTransform xfm, double... steps )
+	public static RealInterval boundingIntervalFaces( final RealInterval interval, final RealTransform transform, double... spacing )
 	{
 		final int nd = interval.numDimensions();
+		final double[] itSpacing = fillSpacing( nd, spacing ) ;
+
 		final double[] min = new double[ nd ];
 		final double[] max = new double[ nd ];
 		Arrays.fill( min, Double.MAX_VALUE );
@@ -135,13 +136,63 @@ public class RealIntervals
 			interval.realMax( itvlMax );
 			itvlMin[ i ]  = interval.realMin( i );
 			itvlMax[ i ]  = interval.realMin( i );
-			transformedCoordinateBounds( xfm, new LocalizingRealIntervalIterator( itvlMin, itvlMax, steps ), min, max );
+			transformedCoordinateBounds( transform, new LocalizingRealIntervalIterator( itvlMin, itvlMax, itSpacing ), min, max );
 
 			itvlMin[ i ]  = interval.realMax( i );
 			itvlMax[ i ]  = interval.realMax( i );
-			transformedCoordinateBounds( xfm, new LocalizingRealIntervalIterator( itvlMin, itvlMax, steps ), min, max );
+			transformedCoordinateBounds( transform, new LocalizingRealIntervalIterator( itvlMin, itvlMax, itSpacing ), min, max );
 		}
 
+		return new FinalRealInterval( min, max );
+	}
+
+	/**
+	 * Estimate the {@link RealInterval} that bounds the given RealInterval
+	 * after being transformed by a {@link RealTransform}.
+	 * <p>
+	 * This implementation estimates the bounding interval by transforming points 
+	 * on the faces of the given real interval.
+	 *
+	 * @param interval
+	 *            the real interval
+	 * @param transform
+	 *            the transformation
+	 * @param numSamples
+	 *            number of samples per dimension
+	 * @return the bounding interval
+	 */
+	public static RealInterval boundingIntervalFacesSamples( final RealInterval interval, final RealTransform transform, int... numSamples )
+	{
+		return boundingIntervalFaces( interval, transform, stepsFromSamples( interval, numSamples ));
+	}
+
+	/**
+	 * Estimate the {@link RealInterval} that bounds the given RealInterval
+	 * after being transformed by a {@link RealTransform}.
+	 * <p>
+	 * This implementation estimates the bounding interval by transforming
+	 * points in the volume of the given real interval.
+	 *
+	 * @param interval
+	 *            the real interval
+	 * @param transform
+	 *            the transformation
+	 * @param spacing
+	 *            spacing between samples along each dimension
+	 * @return the bounding interval
+	 */
+	public static RealInterval boundingIntervalVolume(
+			final RealInterval interval, final RealTransform transform, double... spacing )
+	{
+		int nd = interval.numDimensions();
+		final double[] itSpacing = fillSpacing( nd, spacing ) ;
+
+		double[] min = new double[ nd ];
+		double[] max = new double[ nd ];
+		Arrays.fill( min, Long.MAX_VALUE );
+		Arrays.fill( max, Long.MIN_VALUE );
+		final LocalizingRealIntervalIterator it = new LocalizingRealIntervalIterator( interval, itSpacing );
+		transformedCoordinateBounds( transform, it, min, max );
 		return new FinalRealInterval( min, max );
 	}
 
@@ -156,21 +207,15 @@ public class RealIntervals
 	 *            the real interval
 	 * @param transform
 	 *            the transformation
-	 * @param steps
-	 *            step between samples
+	 * @param numSamples
+	 *            the number of samples per dimension
 	 * @return the bounding interval
 	 */
-	public static RealInterval boundingIntervalVolume(
-			final RealInterval interval, final RealTransform transform, double... steps )
+	public static RealInterval boundingIntervalVolumeSamples(
+			final RealInterval interval, final RealTransform transform, int... numSamples )
 	{
-		int nd = interval.numDimensions();
-		double[] min = new double[ nd ];
-		double[] max = new double[ nd ];
-		Arrays.fill( min, Long.MAX_VALUE );
-		Arrays.fill( max, Long.MIN_VALUE );
-		final LocalizingRealIntervalIterator it = new LocalizingRealIntervalIterator( interval, steps );
-		transformedCoordinateBounds( transform, it, min, max );
-		return new FinalRealInterval( min, max );
+		return boundingIntervalVolume( interval, transform, stepsFromSamples( interval, numSamples ));
+
 	}
 
 	/**
@@ -207,6 +252,37 @@ public class RealIntervals
 					max[ d ] = p;
 			}
 		}
+	}
+
+	private static double[] fillSpacing( int nd, double... spacing )
+	{
+		final double[] out;
+		if( spacing.length >= nd )
+			out = spacing;
+		else
+		{
+			out = new double[ nd ];
+			for( int i = 0; i < nd; i++ )
+				if( i < spacing.length )
+					out[i] = spacing[ i ];
+				else
+					out[i] = spacing[ spacing.length - 1 ];
+		}
+		return out;
+	}
+
+	private static double[] stepsFromSamples( final RealInterval interval , int... numSamples )
+	{
+		final double[] out = new double[ interval.numDimensions() ];
+		for( int i = 0; i < out.length; i++ )
+		{
+			final double w = interval.realMax( i ) - interval.realMin( i );
+			if( i < numSamples.length )
+				out[i] = w / numSamples[ i ];
+			else
+				out[i] = w / numSamples[ numSamples.length - 1 ];
+		}
+		return out;
 	}
 
 }
