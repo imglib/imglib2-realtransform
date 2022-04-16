@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,7 +49,7 @@ import net.imglib2.RealRandomAccessible;
  * {@link RealRandomAccess} after modifying the transformation or perform a full
  * initialization (e.g. setPosition(double[])) of any existing one before making
  * any relative move.
- * 
+ *
  * @author Stephan Saalfeld
  */
 public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTransformRealRandomAccessible< T, R >
@@ -58,7 +58,7 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 	 * {@link RealRandomAccess} that generates its samples from a source
 	 * {@link RealRandomAccessible} at coordinates transformed by a
 	 * {@link RealTransform}.
-	 * 
+	 *
 	 */
 	public class AffineRealRandomAccess extends RealTransformRealRandomAccessible< T, R >.RealTransformRealRandomAccess
 	{
@@ -247,12 +247,6 @@ public class AffineRealRandomAccessible< T, R extends AffineGet > extends RealTr
 		public AffineRealRandomAccess copy()
 		{
 			return new AffineRealRandomAccess();
-		}
-
-		@Override
-		public RealRandomAccess< T > copyRealRandomAccess()
-		{
-			return copy();
 		}
 	}
 
