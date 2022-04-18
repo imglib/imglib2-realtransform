@@ -84,7 +84,7 @@ public class RealTransformRandomAccessible< T, R extends RealTransform > extends
 		protected RealTransformRandomAccess( final RealTransformRandomAccess a )
 		{
 			super( a );
-			sourceAccess = a.sourceAccess.copyRealRandomAccess();
+			sourceAccess = a.sourceAccess.copy();
 			transformCopy = ( R )a.transformCopy.copy();
 		}
 
