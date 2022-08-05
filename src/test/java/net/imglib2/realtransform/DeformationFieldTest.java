@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,8 +41,12 @@ import org.junit.Test;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
+import net.imglib2.RealRandomAccessible;
+import net.imglib2.converter.Converters;
 import net.imglib2.img.array.ArrayCursor;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
@@ -51,8 +55,12 @@ import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ConstantUtils;
+import net.imglib2.util.Intervals;
+import net.imglib2.util.Localizables;
 import net.imglib2.view.IntervalView;
+import net.imglib2.view.RandomAccessibleOnRealRandomAccessible;
 import net.imglib2.view.Views;
+import net.imglib2.view.composite.RealComposite;
 
 public class DeformationFieldTest
 {
@@ -199,6 +207,144 @@ public class DeformationFieldTest
 		// apply  inverse to destination and ensure it goes to the source point
 		dfieldGradInv.applyInverse( q, pxfm );
 		Assert.assertArrayEquals( p, q, EPS );
+	}
+
+	private static <T> void timeLoop(final Iterable<T> interval, final String title) {
+
+		final long t = System.nanoTime();
+		for (final T value : interval);
+
+		System.out.println(title + " " + (System.nanoTime() - t));
+
+	}
+
+	@Test
+	public void testFieldGenerator()
+	{
+		final AffineTransform3D t = new AffineTransform3D();
+		t.set(
+				1, 0, 0, 100,
+				0, 1, 0, 200,
+				0, 0, 1, 300);
+
+		final int n = t.numSourceDimensions();
+		final int m = t.numTargetDimensions();
+
+//		final FunctionRealRandomAccessible<RealPoint> inputCoordinates =
+//				new FunctionRealRandomAccessible<RealPoint>(
+//					n,
+//					(x, y) -> y.setPosition(x),
+//					() -> new RealPoint(n));
+
+		final RealRandomAccessible<RealLocalizable> inputCoordinates = Localizables.realRandomAccessible(2);
+
+		final RealRandomAccessible<RealComposite<DoubleType>> positions =
+				Converters.convert2(
+					inputCoordinates,
+					() -> {
+//						System.out.println("new converter");
+						return (x, y) -> {
+							t.apply(x, y);
+//							for (int d = 0; d < m; ++d)
+//								y.move(-x.getDoublePosition(d), d);
+//							System.out.println("apply");
+						};
+					},
+					() -> DoubleType.createVector(m));
+
+		final RandomAccessibleOnRealRandomAccessible<RealComposite<DoubleType>> positionsRaster = Views.raster(positions);
+		final RandomAccessible<DoubleType> inflated = Views.inflate(positionsRaster);
+		final IntervalView<DoubleType> inflatedInterleavedInterval = Views.interval(
+				Views.moveAxis(inflated, 3, 0),
+				Intervals.createMinMax(0, 0, 0, 0, 2, 1, 10, 1));
+		final IntervalView<DoubleType> inflatedLargeInterval = Views.interval(
+				Views.moveAxis(inflated, 3, 0),
+				Intervals.createMinMax(0, 0, 0, 0, 2, 100, 500, 200));
+
+		final RandomAccessible<DoubleType> interleaved = Views.interleave(positionsRaster);
+		final IntervalView<DoubleType> interleavedInterval = Views.interval(
+				interleaved,
+				Intervals.createMinMax(0, 0, 0, 0, 2, 1, 10, 1));
+		final IntervalView<DoubleType> interleavedLargeInterval = Views.interval(
+				interleaved,
+				Intervals.createMinMax(0, 0, 0, 0, 2, 100, 500, 200));
+
+
+		final RealRandomAccessible<RealLocalizable> inputCoordinates2 = Localizables.realRandomAccessible(n);
+		final RealRandomAccessible<RealComposite<DoubleType>> positions2 =
+				Converters.convert2(
+					inputCoordinates2,
+					() -> {
+//						System.out.println("new converter");
+						return (x, y) -> {
+							t.apply(x, y);
+//							System.out.println("apply");
+						};
+					},
+					() -> DoubleType.createVector(m));
+
+		final RandomAccessibleOnRealRandomAccessible<RealComposite<DoubleType>> positionsRaster2 = Views.raster(positions2);
+		final RandomAccessible<DoubleType> inflated2 = Views.inflate(positionsRaster2);
+		final IntervalView<DoubleType> inflatedInterleavedInterval2 = Views.interval(
+				Views.moveAxis(inflated2, 3, 0),
+				Intervals.createMinMax(0, 0, 0, 0, 2, 1, 10, 1));
+		final IntervalView<DoubleType> inflatedLargeInterval2 = Views.interval(
+				Views.moveAxis(inflated2, 3, 0),
+				Intervals.createMinMax(0, 0, 0, 0, 2, 100, 500, 200));
+
+		final RandomAccessible<DoubleType> interleaved2 = Views.interleave(positionsRaster);
+		final IntervalView<DoubleType> interleavedInterval2 = Views.interval(
+				interleaved2,
+				Intervals.createMinMax(0, 0, 0, 0, 2, 1, 10, 1));
+		final IntervalView<DoubleType> interleavedLargeInterval2 = Views.interval(
+				interleaved2,
+				Intervals.createMinMax(0, 0, 0, 0, 2, 100, 500, 200));
+
+
+
+
+//		final RandomAccessibleInterval<DoubleType> inflatedInterleavedInterval = Views.moveAxis(
+//				Views.interval(inflated, Intervals.createMinMax(0, 0, 0, 0, 0, 0, 0, 2)),
+//				3,
+//				0);
+
+//		final RealRandomAccessible<DoubleVectorType> positions =
+//				Converters.convert2(
+//					inputCoordinates,
+//					() -> {
+//						System.out.println("new converter");
+//						return (x, y) -> {
+//							System.out.println("apply");
+//							t.apply(x, y);
+//						};
+//					},
+//					() -> {
+//						System.out.println("new type");
+//						return new DoubleVectorType(3);
+//					});
+
+//		final RandomAccessibleOnRealRandomAccessible<DoubleVectorType> positionsRaster = Views.raster(positions);
+//
+//		final RandomAccessible<DoubleType> inflated = Views.inflate(positionsRaster);
+//
+//		final IntervalView<DoubleType> inflatedInterleavedInterval = Views.interval(
+//				Views.moveAxis(inflated, 3, 0),
+//				Intervals.createMinMax(0, 0, 0, 0, 2, 1, 10, 1));
+
+		for (int i = 0; i < 10; ++i) {
+//			timeLoop(inflatedLargeInterval,                    "inflated composite        ");
+//			timeLoop(interleavedLargeInterval,                 "interleaved composite     ");
+			timeLoop(inflatedLargeInterval2,                   "inflated composite 2      ");
+			timeLoop(interleavedLargeInterval2,                "interleaved composite 2   ");
+		}
+
+//		for (final DoubleType value : inflatedInterleavedInterval) {
+//			System.out.println(value);
+//		}
+//
+//		for (final DoubleType value : interleavedInterval) {
+//			System.out.println(value);
+//		}
 	}
 
 	@Before
