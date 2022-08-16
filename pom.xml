@@ -165,6 +165,8 @@ Mark Longair, Brian Northan, Nick Perry, Curtis Rueden, Johannes Schindelin,
 Jean-Yves Tinevez and Michael Zinsmaier.</license.copyrightOwners>
 
 		<jitk-tps.version>3.0.2</jitk-tps.version>
+		<imglib2.version>6.0.0-SNAPSHOT</imglib2.version>
+		<enforcer.skip>true</enforcer.skip>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
