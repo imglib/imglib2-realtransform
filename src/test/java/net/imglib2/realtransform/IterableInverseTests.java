@@ -33,9 +33,6 @@
  */
 package net.imglib2.realtransform;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import net.imglib2.RealPoint;
 import net.imglib2.position.FunctionRealRandomAccessible;
 import net.imglib2.realtransform.inverse.DifferentiableRealTransform;
@@ -43,6 +40,9 @@ import net.imglib2.realtransform.inverse.InverseRealTransformGradientDescent;
 import net.imglib2.realtransform.inverse.RealTransformFiniteDerivatives;
 import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.composite.RealComposite;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class IterableInverseTests
 {
@@ -213,78 +213,68 @@ public class IterableInverseTests
 		Assert.assertTrue( "tps warp inv 6 pts", almostEqual( xp, yip, EPS ));
 	}
 
+	private void assertInvertibleTransform(double[] initialPos, InvertibleRealTransform invertibleTransform, String message) {
+
+		double[] tmpPos = new double[initialPos.length];
+		double[] resultPos = new double[initialPos.length];
+		invertibleTransform.apply(initialPos, tmpPos);
+		invertibleTransform.applyInverse(resultPos, tmpPos);
+
+		Assert.assertArrayEquals(message, initialPos, resultPos, MIDEPS);
+	}
+
+	private void assertInvertibleTransform(RealPoint initialPoint, InvertibleRealTransform invertibleTransform, String message) {
+
+		RealPoint tmpPoint = new RealPoint(initialPoint.numDimensions());
+		RealPoint resultPoint = new RealPoint(initialPoint.numDimensions());
+		invertibleTransform.apply(initialPoint, tmpPoint);
+		invertibleTransform.applyInverse(resultPoint, tmpPoint);
+
+		Assert.assertTrue(message, almostEqual(initialPoint, resultPoint, MIDEPS));
+	}
+
 	@Test
-	public void testDeformationFieldInverse()
-	{
-		final FunctionRealRandomAccessible< FloatType > wigglyDefFieldX =
-				new FunctionRealRandomAccessible<>( 2, ( t, u ) -> {
-					final double r = Math.sqrt( t.getDoublePosition( 0 ) * t.getDoublePosition( 0 ) + t.getDoublePosition( 1 ) * t.getDoublePosition( 1 ) );
+	public void testDeformationFieldInverse() {
 
-					u.setReal( 0.05 * Math.sin( r / 10 ) * t.getDoublePosition( 1 ) );
-				}, FloatType::new );
-		final FunctionRealRandomAccessible< FloatType > wigglyDefFieldY =
-				new FunctionRealRandomAccessible<>( 2, ( t, u ) -> {
-					final double r = Math.sqrt( t.getDoublePosition( 0 ) * t.getDoublePosition( 0 ) + t.getDoublePosition( 1 ) * t.getDoublePosition( 1 ) );
+		final FunctionRealRandomAccessible<RealComposite<FloatType>> wiggleDefField =
+				new FunctionRealRandomAccessible<>(2, (pos, target) -> {
+					final double r = Math.sqrt(pos.getDoublePosition(0) * pos.getDoublePosition(0) + pos.getDoublePosition(1) * pos.getDoublePosition(1));
 
-					u.setReal( -0.05 * Math.sin( r / 10 ) * t.getDoublePosition( 0 ) );
-				}, FloatType::new );
+					target.get(0).setReal(0.05 * Math.sin(r / 10) * pos.getDoublePosition(1));
+					target.get(1).setReal(-0.05 * Math.sin(r / 10) * pos.getDoublePosition(0));
 
-		final DeformationFieldTransform< FloatType > defTransform = new DeformationFieldTransform<FloatType >(
-				wigglyDefFieldX,
-				wigglyDefFieldY );
-		final InvertibleDeformationFieldTransform< FloatType > invDef = new InvertibleDeformationFieldTransform<>( defTransform );
-		invDef.getOptimzer().setMaxIters( 1000 );
-		invDef.getOptimzer().setTolerance( MIDEPS / 5 );
+				}, () -> FloatType.createVector(2));
 
-		final double[] x = new double[] { 0.0f, 0.0f };
-		final double[] y = new double[ 2 ];
-		final double[] yi = new double[ 2 ];
+		final DeformationFieldTransform<FloatType> wiggleTransform = new DeformationFieldTransform<>(wiggleDefField);
+		final InvertibleDeformationFieldTransform<FloatType> inverseTransform = new InvertibleDeformationFieldTransform<>(wiggleTransform);
+		inverseTransform.getOptimzer().setMaxIters(1000);
+		inverseTransform.getOptimzer().setTolerance(MIDEPS / 5);
 
-		final RealPoint xp = new RealPoint( 2 );
-		final RealPoint yp = new RealPoint( 2 );
-		final RealPoint yip = new RealPoint( 2 );
+		final double[] x = new double[]{0.0f, 0.0f};
+		final RealPoint xPoint = new RealPoint(2);
 
 		// THE ORIGIN
-		x[ 0 ] = 0;
-		x[ 1 ] = 0;
+		int inverseTestNum = 0;
 
-		int i = 0;
-		invDef.apply( x, y );
-		invDef.applyInverse( yi, y );
-		Assert.assertArrayEquals( "tps warp inv " + i, x, yi, MIDEPS );
-
-		xp.setPosition( x );
-		invDef.apply( xp, yp );
-		invDef.applyInverse( yip, yp );
-		Assert.assertTrue( "tps warp inv pts " + i, almostEqual( xp, yip, MIDEPS ) );
+		x[0] = 0;
+		x[1] = 0;
+		xPoint.setPosition(x);
+		assertInvertibleTransform(x, inverseTransform, "def field inv " + inverseTestNum);
+		assertInvertibleTransform(xPoint, inverseTransform, "def field inv pts" + inverseTestNum++);
 
 		// A SECOND POINT
-		i++;
-		x[ 0 ] = 130;
-		x[ 1 ] = -190;
-
-		invDef.apply( x, y );
-		invDef.applyInverse( yi, y );
-		Assert.assertArrayEquals( "tps warp inv " + i, x, yi, MIDEPS );
-
-		xp.setPosition( x );
-		invDef.apply( xp, yp );
-		invDef.applyInverse( yip, yp );
-		Assert.assertTrue( "tps warp inv pts " + i, almostEqual( xp, yip, MIDEPS ) );
+		x[0] = 130;
+		x[1] = -190;
+		xPoint.setPosition(x);
+		assertInvertibleTransform(x, inverseTransform, "def field inv " + inverseTestNum);
+		assertInvertibleTransform(xPoint, inverseTransform, "def field inv pts" + inverseTestNum++);
 
 		// ANOTHER POINT
-		i++;
-		x[ 0 ] = -300;
-		x[ 1 ] = 220;
-
-		invDef.apply( x, y );
-		invDef.applyInverse( yi, y );
-		Assert.assertArrayEquals( "tps warp inv " + i, x, yi, MIDEPS );
-
-		xp.setPosition( x );
-		invDef.apply( xp, yp );
-		invDef.applyInverse( yip, yp );
-		Assert.assertTrue( "tps warp inv pts " + i, almostEqual( xp, yip, MIDEPS ) );
+		x[0] = -300;
+		x[1] = 220;
+		xPoint.setPosition(x);
+		assertInvertibleTransform(x, inverseTransform, "def field inv " + inverseTestNum);
+		assertInvertibleTransform(xPoint, inverseTransform, "def field inv pts" + inverseTestNum);
 	}
 
 	@Test

@@ -34,15 +34,18 @@
 
 package net.imglib2.realtransform;
 
-import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
-import net.imglib2.interpolation.InterpolatorFactory;
-import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.composite.Composite;
+import net.imglib2.view.composite.RealComposite;
+
+import java.util.Arrays;
+import java.util.function.IntFunction;
+import java.util.function.IntUnaryOperator;
 
 /**
  * A {@link RealTransform} by continuous offset lookup.
@@ -52,66 +55,54 @@ import net.imglib2.type.numeric.RealType;
 public class DeformationFieldTransform< T extends RealType< T > > extends PositionFieldTransform< T >
 {
 
-	@SuppressWarnings( "unchecked" )
-	public DeformationFieldTransform( final RealRandomAccess< T >... positionAccesses )
+	public DeformationFieldTransform( RealRandomAccessible<RealComposite< T >> positions )
 	{
+
+		super( positions );
+	}
+
+	public DeformationFieldTransform( RealRandomAccess<RealComposite< T >> positionAccesses )
+	{
+
 		super( positionAccesses );
 	}
 
-	@SafeVarargs
-	public DeformationFieldTransform( final RealRandomAccessible< T >... positions )
+	public DeformationFieldTransform( RandomAccessibleInterval< T > positions )
 	{
-		super( positions );
-	}
 
-	@SafeVarargs
-	public DeformationFieldTransform( final RandomAccessibleInterval< T >... positions )
-	{
 		super( positions );
-	}
-
-	@SafeVarargs
-	public DeformationFieldTransform(
-			final OutOfBoundsFactory< T, RandomAccessibleInterval< T > > outOfBoundsFactory,
-			final InterpolatorFactory< T, RandomAccessible< T > > interpolatorFactory,
-			final RandomAccessibleInterval< T >... positions )
-	{
-		super( outOfBoundsFactory, interpolatorFactory, positions );
 	}
 
 	@Override
 	public void apply( final double[] source, final double[] target )
 	{
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			positionAccesses[ d ].setPosition( source );
 
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			target[ d ] = positionAccesses[ d ].get().getRealDouble() + source[ d ];
+		Composite< T > comp = positionAccesses.setPositionAndGet(source);
+		for ( int d = 0; d < target.length; d++ )
+			target[ d ] = comp.get( d ).getRealDouble() + source[ d ];
 	}
 
 	@Override
 	public void apply( final float[] source, final float[] target )
 	{
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			positionAccesses[ d ].setPosition( source );
 
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			target[ d ] = ( float ) ( positionAccesses[ d ].get().getRealDouble() + source[ d ] );
+		Composite< T > comp = positionAccesses.setPositionAndGet(source);
+		for ( int d = 0; d < target.length; d++ )
+			target[ d ] = ( float ) (comp.get( d ).getRealDouble() + source[ d ]);
 	}
 
 	@Override
 	public void apply( final RealLocalizable source, final RealPositionable target )
 	{
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			positionAccesses[ d ].setPosition( source );
 
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			target.setPosition( positionAccesses[ d ].get().getRealDouble() + source.getDoublePosition( d ), d );
+		Composite< T > comp = positionAccesses.setPositionAndGet(source);
+		for ( int d = 0; d < target.numDimensions(); d++ )
+			target.setPosition( comp.get( d ).getRealDouble() + source.getDoublePosition( d ), d );
 	}
 
 	@Override
 	public RealTransform copy()
 	{
-		return new DeformationFieldTransform<>( copyAccesses() );
+		return new DeformationFieldTransform<>( positionAccesses.copy() );
 	}
 }

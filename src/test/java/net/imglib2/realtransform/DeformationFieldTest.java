@@ -33,16 +33,12 @@
  */
 package net.imglib2.realtransform;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
+import net.imglib2.RealRandomAccessible;
 import net.imglib2.img.array.ArrayCursor;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
@@ -53,6 +49,11 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ConstantUtils;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import net.imglib2.view.composite.RealComposite;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DeformationFieldTest
 {
@@ -67,9 +68,8 @@ public class DeformationFieldTest
 				ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 3 ),
 				new FinalInterval( 10, 10, 2 ) );
 
-		final DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< >(
-				Views.hyperSlice( defRai, 2, 0 ),
-				Views.hyperSlice( defRai, 2, 1 ));
+		final DeformationFieldTransform< FloatType > def2d =
+				new DeformationFieldTransform< >(convertToDefFieldInput(defRai));
 
 		Assert.assertEquals( 2, def2d.numSourceDimensions() );
 		Assert.assertEquals( 2, def2d.numTargetDimensions() );
@@ -79,10 +79,8 @@ public class DeformationFieldTest
 				ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 4 ),
 				new FinalInterval( 10, 10, 10, 3 ) );
 
-		final DeformationFieldTransform< FloatType > def3d = new DeformationFieldTransform< >(
-				Views.hyperSlice( defRai3d, 3, 0 ),
-				Views.hyperSlice( defRai3d, 3, 1 ),
-				Views.hyperSlice( defRai3d, 3, 2 ) );
+		final DeformationFieldTransform< FloatType > def3d =
+				new DeformationFieldTransform< >(convertToDefFieldInput(defRai3d));
 
 		Assert.assertEquals( 3, def3d.numSourceDimensions() );
 		Assert.assertEquals( 3, def3d.numTargetDimensions() );
@@ -95,9 +93,8 @@ public class DeformationFieldTest
 				ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 3 ),
 				new FinalInterval( 10, 10, 2 ) );
 
-		final DeformationFieldTransform< FloatType > def2d = new DeformationFieldTransform< >(
-				Views.hyperSlice( defRai, 2, 0 ),
-				Views.hyperSlice( defRai, 2, 1 ));
+		final DeformationFieldTransform< FloatType > def2d =
+				new DeformationFieldTransform< >(convertToDefFieldInput(defRai));
 
 		final double[] p = new double[]{ 5.0, 4.0 };
 		final double[] pxfm = new double[]{ 6.0, 5.0 };
@@ -157,22 +154,21 @@ public class DeformationFieldTest
 				ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 4 ),
 				interval4d );
 
-		final DeformationFieldTransform< FloatType > def3d = new DeformationFieldTransform< >(
-				Views.hyperSlice( defRai, 3, 0 ),
-				Views.hyperSlice( defRai, 3, 1 ),
-				Views.hyperSlice( defRai, 3, 2 ) );
+		final DeformationFieldTransform< FloatType > def3d =
+				new DeformationFieldTransform< >(convertToDefFieldInput(defRai));
 
 		// make a dummy image
 		final ArrayImg< DoubleType, DoubleArray > im = ArrayImgs.doubles( 4, 4, 4 );
 		final ArrayCursor< DoubleType > c = im.cursor();
 		double x = 0;
+		/* Set the x-displacemnt equal to the x-position */
 		while( c.hasNext())
 			c.next().set( x++ );
 
 		final RealTransformRandomAccessible< DoubleType, RealTransform > imXfmReal =
 				new RealTransformRandomAccessible< >(
 					Views.interpolate( Views.extendZero( im ),
-							new NLinearInterpolatorFactory< DoubleType >() ),
+							new NLinearInterpolatorFactory< >() ),
 					def3d);
 
 		final IntervalView< DoubleType > imXfm = Views.interval( Views.raster( imXfmReal ), interval);
@@ -212,10 +208,18 @@ public class DeformationFieldTest
 			if( c.getIntPosition( 2 ) == 0 )
 				c.get().set( c.getFloatPosition(0) );
 		}
+		final RandomAccessibleInterval<FloatType> moved = Views.moveAxis(defRai, 2, 0);
 
-		defgrad = new DeformationFieldTransform< >(
-				Views.hyperSlice( defRai, 2, 0 ),
-				Views.hyperSlice( defRai, 2, 1 ));
+		defgrad = new DeformationFieldTransform<>(moved);
+	}
+
+	private RealRandomAccessible< RealComposite< FloatType > > convertToDefFieldInput(RandomAccessibleInterval< FloatType > rai)
+	{
+
+		return Views.interpolate(
+				Views.extendBorder(
+						Views.collapseReal(rai)),
+				new NLinearInterpolatorFactory<>());
 	}
 
 	@After
