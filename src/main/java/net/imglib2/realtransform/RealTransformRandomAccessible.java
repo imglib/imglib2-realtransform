@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -50,7 +50,7 @@ import net.imglib2.RealRandomAccessible;
  * {@link RandomAccess} on it because each {@link RandomAccess} internally
  * works with a copy of the transform.  Make sure that you request a new
  * {@link RandomAccess} after modifying the transformation.
- * 
+ *
  * @author Stephan Saalfeld
  */
 public class RealTransformRandomAccessible< T, R extends RealTransform > extends RealTransformRealRandomAccessible< T, R > implements RandomAccessible< T >
@@ -84,7 +84,7 @@ public class RealTransformRandomAccessible< T, R extends RealTransform > extends
 		protected RealTransformRandomAccess( final RealTransformRandomAccess a )
 		{
 			super( a );
-			sourceAccess = a.sourceAccess.copyRealRandomAccess();
+			sourceAccess = a.sourceAccess.copy();
 			transformCopy = ( R )a.transformCopy.copy();
 		}
 
@@ -104,12 +104,6 @@ public class RealTransformRandomAccessible< T, R extends RealTransform > extends
 		public RealTransformRandomAccess copy()
 		{
 			return new RealTransformRandomAccess( this );
-		}
-
-		@Override
-		public RealTransformRandomAccess copyRandomAccess()
-		{
-			return copy();
 		}
 	}
 

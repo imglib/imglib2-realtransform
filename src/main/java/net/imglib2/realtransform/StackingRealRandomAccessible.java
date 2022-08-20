@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -291,13 +291,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public StackingRealRandomAccess copyRealRandomAccess()
-		{
-			return copy();
-		}
-
-		@Override
-		public void localize( float[] pos )
+		public void localize( final float[] pos )
 		{
 			for ( int d = 0; d < sourceNumDimensions; ++d )
 				pos[ d ] = sourceAccess.getFloatPosition( d );
@@ -306,7 +300,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public void localize( double[] pos )
+		public void localize( final double[] pos )
 		{
 			for ( int d = 0; d < sourceNumDimensions; ++d )
 				pos[ d ] = sourceAccess.getDoublePosition( d );
@@ -315,7 +309,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public float getFloatPosition( int d )
+		public float getFloatPosition( final int d )
 		{
 			if ( d < sourceNumDimensions )
 				return sourceAccess.getFloatPosition( d );
@@ -323,7 +317,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public double getDoublePosition( int d )
+		public double getDoublePosition( final int d )
 		{
 			if ( d < sourceNumDimensions )
 				return sourceAccess.getDoublePosition( d );

@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -51,7 +51,7 @@ import net.imglib2.RealRandomAccessible;
  * {@link RandomAccess} on it because each {@link RandomAccess} internally
  * works with a copy of the transform.  Make sure that you request a new
  * {@link RandomAccess} after modifying the transformation.
- * 
+ *
  * @author Stephan Saalfeld
  * @author Tobias Pietzsch
  */
@@ -61,7 +61,7 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 	 * {@link RealRandomAccess} that generates its samples from a source
 	 * {@link RealRandomAccessible} at coordinates transformed by a
 	 * {@link RealTransform}.
-	 * 
+	 *
 	 */
 	public class AffineRandomAccess extends RealTransformRandomAccessible< T, R >.RealTransformRandomAccess
 	{
@@ -96,7 +96,7 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 		public void bck( final int d )
 		{
 			super.bck( d );
-			
+
 			/* TODO storing an inverse of all ds would potentially improve the
 			 * performance of bck calls for some overhead on construction of
 			 * the access.
@@ -184,12 +184,6 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 		public AffineRandomAccess copy()
 		{
 			return new AffineRandomAccess( this );
-		}
-
-		@Override
-		public AffineRandomAccess copyRandomAccess()
-		{
-			return copy();
 		}
 	}
 
