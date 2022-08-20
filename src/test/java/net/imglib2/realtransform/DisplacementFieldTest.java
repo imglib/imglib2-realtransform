@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,6 +32,11 @@
  * #L%
  */
 package net.imglib2.realtransform;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
@@ -50,37 +55,28 @@ import net.imglib2.util.ConstantUtils;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.RealComposite;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
-public class DeformationFieldTest
+public class DisplacementFieldTest
 {
-	DeformationFieldTransform< FloatType > defgrad;
+	DisplacementFieldTransform defgrad;
+
 	final double EPS = 1e-5;
 
 	@Test
 	public void testNumSourceTargetDimensions()
 	{
 		// a deformation field representing a 2d transform
-		final IntervalView< FloatType > defRai = Views.interval(
-				ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 3 ),
-				new FinalInterval( 10, 10, 2 ) );
+		final IntervalView< FloatType > defRai = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 3 ), new FinalInterval( 10, 10, 2 ) );
 
-		final DeformationFieldTransform< FloatType > def2d =
-				new DeformationFieldTransform< >(convertToDefFieldInput(defRai));
+		final DisplacementFieldTransform def2d = new DisplacementFieldTransform( convertToDefFieldInput( defRai ) );
 
 		Assert.assertEquals( 2, def2d.numSourceDimensions() );
 		Assert.assertEquals( 2, def2d.numTargetDimensions() );
 
 		// a deformation field representing a 3d transform
-		final IntervalView<FloatType> defRai3d = Views.interval(
-				ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 4 ),
-				new FinalInterval( 10, 10, 10, 3 ) );
+		final IntervalView< FloatType > defRai3d = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 4 ), new FinalInterval( 10, 10, 10, 3 ) );
 
-		final DeformationFieldTransform< FloatType > def3d =
-				new DeformationFieldTransform< >(convertToDefFieldInput(defRai3d));
+		final DisplacementFieldTransform def3d = new DisplacementFieldTransform( convertToDefFieldInput( defRai3d ) );
 
 		Assert.assertEquals( 3, def3d.numSourceDimensions() );
 		Assert.assertEquals( 3, def3d.numTargetDimensions() );
@@ -89,15 +85,12 @@ public class DeformationFieldTest
 	@Test
 	public void testTranslation()
 	{
-		final IntervalView< FloatType > defRai = Views.interval(
-				ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 3 ),
-				new FinalInterval( 10, 10, 2 ) );
+		final IntervalView< FloatType > defRai = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 3 ), new FinalInterval( 10, 10, 2 ) );
 
-		final DeformationFieldTransform< FloatType > def2d =
-				new DeformationFieldTransform< >(convertToDefFieldInput(defRai));
+		final DisplacementFieldTransform def2d = new DisplacementFieldTransform( convertToDefFieldInput( defRai ) );
 
-		final double[] p = new double[]{ 5.0, 4.0 };
-		final double[] pxfm = new double[]{ 6.0, 5.0 };
+		final double[] p = new double[] { 5.0, 4.0 };
+		final double[] pxfm = new double[] { 6.0, 5.0 };
 		final double[] q = new double[ 2 ];
 
 		def2d.apply( p, q );
@@ -105,7 +98,6 @@ public class DeformationFieldTest
 
 		def2d.apply( p, p );
 		Assert.assertArrayEquals( "double apply in place", pxfm, p, EPS );
-
 
 		final RealPoint src = new RealPoint( 5.0, 4.0 );
 		final RealPoint tgt = new RealPoint( 2 );
@@ -122,8 +114,8 @@ public class DeformationFieldTest
 	@Test
 	public void testGradient()
 	{
-		final double[] p = new double[]{ 5.0, 4.0 };
-		final double[] pxfm = new double[]{ 10.0, 4.0 };
+		final double[] p = new double[] { 5.0, 4.0 };
+		final double[] pxfm = new double[] { 10.0, 4.0 };
 		final double[] q = new double[ 2 ];
 
 		defgrad.apply( p, q );
@@ -150,49 +142,42 @@ public class DeformationFieldTest
 		final FinalInterval interval = new FinalInterval( 4, 4, 4 );
 
 		// make a deformation field with a vector [ 1, 1, 1 ] everywhere
-		final IntervalView< FloatType > defRai = Views.interval(
-				ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 4 ),
-				interval4d );
+		final IntervalView< FloatType > defRai = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 4 ), interval4d );
 
-		final DeformationFieldTransform< FloatType > def3d =
-				new DeformationFieldTransform< >(convertToDefFieldInput(defRai));
+		final DisplacementFieldTransform def3d = new DisplacementFieldTransform( convertToDefFieldInput( defRai ) );
 
 		// make a dummy image
 		final ArrayImg< DoubleType, DoubleArray > im = ArrayImgs.doubles( 4, 4, 4 );
 		final ArrayCursor< DoubleType > c = im.cursor();
 		double x = 0;
 		/* Set the x-displacemnt equal to the x-position */
-		while( c.hasNext())
+		while ( c.hasNext() )
 			c.next().set( x++ );
 
-		final RealTransformRandomAccessible< DoubleType, RealTransform > imXfmReal =
-				new RealTransformRandomAccessible< >(
-					Views.interpolate( Views.extendZero( im ),
-							new NLinearInterpolatorFactory< >() ),
-					def3d);
+		final RealTransformRandomAccessible< DoubleType, RealTransform > imXfmReal = new RealTransformRandomAccessible<>( Views.interpolate( Views.extendZero( im ), new NLinearInterpolatorFactory<>() ), def3d );
 
-		final IntervalView< DoubleType > imXfm = Views.interval( Views.raster( imXfmReal ), interval);
+		final IntervalView< DoubleType > imXfm = Views.interval( Views.raster( imXfmReal ), interval );
 
 		final RandomAccess< DoubleType > imraO = im.randomAccess();
-		imraO.setPosition( new int[]{2,2,2} );
+		imraO.setPosition( new int[] { 2, 2, 2 } );
 
 		final RandomAccess< DoubleType > imra = imXfm.randomAccess();
-		imra.setPosition( new int[]{1,1,1} );
+		imra.setPosition( new int[] { 1, 1, 1 } );
 	}
 
 	@Test
 	public void testInverse()
 	{
-		final InvertibleDeformationFieldTransform< FloatType > dfieldGradInv = new InvertibleDeformationFieldTransform<>( defgrad );
+		final InvertibleDisplacementFieldTransform dfieldGradInv = new InvertibleDisplacementFieldTransform( defgrad );
 		dfieldGradInv.getOptimzer().setTolerance( EPS / 2 );
 
-		final double[] p = new double[]{ 5.0, 4.0 };
-		final double[] pxfm = new double[]{ 10.0, 4.0 };
+		final double[] p = new double[] { 5.0, 4.0 };
+		final double[] pxfm = new double[] { 10.0, 4.0 };
 		final double[] q = new double[ 2 ];
 
 		dfieldGradInv.apply( p, q );
 
-		// apply  inverse to destination and ensure it goes to the source point
+		// apply inverse to destination and ensure it goes to the source point
 		dfieldGradInv.applyInverse( q, pxfm );
 		Assert.assertArrayEquals( p, q, EPS );
 	}
@@ -200,26 +185,23 @@ public class DeformationFieldTest
 	@Before
 	public void setUp()
 	{
-		final RandomAccessibleInterval<FloatType> defRai = ArrayImgs.floats( 11, 11, 2 );
-		final Cursor<FloatType> c = Views.flatIterable(defRai).cursor();
-		while( c.hasNext() )
+		final RandomAccessibleInterval< FloatType > defRai = ArrayImgs.floats( 11, 11, 2 );
+		final Cursor< FloatType > c = Views.flatIterable( defRai ).cursor();
+		while ( c.hasNext() )
 		{
 			c.fwd();
-			if( c.getIntPosition( 2 ) == 0 )
-				c.get().set( c.getFloatPosition(0) );
+			if ( c.getIntPosition( 2 ) == 0 )
+				c.get().set( c.getFloatPosition( 0 ) );
 		}
-		final RandomAccessibleInterval<FloatType> moved = Views.moveAxis(defRai, 2, 0);
+		final RandomAccessibleInterval< FloatType > moved = Views.moveAxis( defRai, 2, 0 );
 
-		defgrad = new DeformationFieldTransform<>(moved);
+		defgrad = new DisplacementFieldTransform( moved );
 	}
 
-	private RealRandomAccessible< RealComposite< FloatType > > convertToDefFieldInput(RandomAccessibleInterval< FloatType > rai)
+	private RealRandomAccessible< RealComposite< FloatType > > convertToDefFieldInput( final RandomAccessibleInterval< FloatType > rai )
 	{
 
-		return Views.interpolate(
-				Views.extendBorder(
-						Views.collapseReal(rai)),
-				new NLinearInterpolatorFactory<>());
+		return Views.interpolate( Views.extendBorder( Views.collapseReal( rai ) ), new NLinearInterpolatorFactory<>() );
 	}
 
 	@After

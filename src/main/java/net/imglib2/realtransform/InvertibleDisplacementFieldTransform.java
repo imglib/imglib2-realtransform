@@ -1,4 +1,4 @@
-/*
+/*-
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
@@ -31,36 +31,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-
 package net.imglib2.realtransform;
 
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.RealLocalizable;
-import net.imglib2.RealRandomAccess;
-import net.imglib2.RealRandomAccessible;
-import net.imglib2.type.numeric.RealType;
+import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 
-/**
- * A {@link RealTransform} by continuous offset lookup.
- *
- * @deprecated Use {@link DisplacementFieldTransform} instead because it is a displacement field
- * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
- */
-@Deprecated
-public class DeformationFieldTransform extends DisplacementFieldTransform
+public class InvertibleDisplacementFieldTransform extends WrappedIterativeInvertibleRealTransform< DisplacementFieldTransform >
 {
-	public DeformationFieldTransform( final RealRandomAccess< ? extends RealLocalizable > displacementsAccess )
+	public InvertibleDisplacementFieldTransform( final DisplacementFieldTransform def )
 	{
-		super( displacementsAccess );
-	}
-
-	public DeformationFieldTransform( final RealRandomAccessible< ? extends RealLocalizable > displacements )
-	{
-		super( displacements );
-	}
-
-	public < T extends RealType< T > > DeformationFieldTransform( final RandomAccessibleInterval< T > displacements )
-	{
-		super( displacements );
+		super( def );
 	}
 }

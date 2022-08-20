@@ -36,6 +36,7 @@ package net.imglib2.realtransform;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
 import net.imglib2.type.numeric.RealType;
@@ -43,24 +44,60 @@ import net.imglib2.type.numeric.RealType;
 /**
  * A {@link RealTransform} by continuous offset lookup.
  *
- * @deprecated Use {@link DisplacementFieldTransform} instead because it is a displacement field
  * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
  */
-@Deprecated
-public class DeformationFieldTransform extends DisplacementFieldTransform
+public class DisplacementFieldTransform extends PositionFieldTransform
 {
-	public DeformationFieldTransform( final RealRandomAccess< ? extends RealLocalizable > displacementsAccess )
+	public DisplacementFieldTransform( final RealRandomAccess< ? extends RealLocalizable > displacementsAccess )
 	{
 		super( displacementsAccess );
 	}
 
-	public DeformationFieldTransform( final RealRandomAccessible< ? extends RealLocalizable > displacements )
+	public DisplacementFieldTransform( final RealRandomAccessible< ? extends RealLocalizable > displacements )
 	{
 		super( displacements );
 	}
 
-	public < T extends RealType< T > > DeformationFieldTransform( final RandomAccessibleInterval< T > displacements )
+	/**
+	 *
+	 * @param displacements
+	 * 			interleaved displacement vectors, this means that the
+	 * 			components of the displacement vectors are in the 0th dimension
+	 */
+	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements )
 	{
 		super( displacements );
+	}
+
+	@Override
+	public void apply( final double[] source, final double[] target )
+	{
+		final RealLocalizable comp = access.setPositionAndGet( source );
+		for ( int d = 0; d < numTargetDimensions(); d++ )
+			target[ d ] = comp.getDoublePosition( d ) + source[ d ];
+	}
+
+	@Override
+	public void apply( final float[] source, final float[] target )
+	{
+
+		final RealLocalizable comp = access.setPositionAndGet( source );
+		for ( int d = 0; d < numTargetDimensions(); d++ )
+			target[ d ] = comp.getFloatPosition( d ) + source[ d ];
+	}
+
+	@Override
+	public void apply( final RealLocalizable source, final RealPositionable target )
+	{
+
+		final RealLocalizable comp = access.setPositionAndGet( source );
+		for ( int d = 0; d < numTargetDimensions(); d++ )
+			target.setPosition( comp.getDoublePosition( d ) + source.getDoublePosition( d ), d );
+	}
+
+	@Override
+	public RealTransform copy()
+	{
+		return new DisplacementFieldTransform( access.copy() );
 	}
 }
