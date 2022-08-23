@@ -91,7 +91,7 @@ public class PositionFieldTransform implements RealTransform
 	 */
 	public < T extends RealType< T > > PositionFieldTransform( final RandomAccessibleInterval< T > positions, final AffineGet pixelToPhysical )
 	{
-		this( convertToComposite( positions, pixelToPhysical ) );
+		this( RealViews.affine( convertToComposite( positions ), pixelToPhysical ) );
 	}
 
 	@Override
@@ -140,11 +140,5 @@ public class PositionFieldTransform implements RealTransform
 		return Views.interpolate(
 				Views.extendBorder( collapsedFirst ),
 				new NLinearInterpolatorFactory<>() );
-	}
-
-	private static <T extends RealType< T >> RealRandomAccessible< ? extends RealLocalizable > convertToComposite(
-			final RandomAccessibleInterval< T > position, final AffineGet pixelToPhysical )
-	{
-		return RealViews.affine( convertToComposite( position ), pixelToPhysical );
 	}
 }
