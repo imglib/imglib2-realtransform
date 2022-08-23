@@ -49,6 +49,8 @@ import net.imglib2.view.composite.RealComposite;
  * A {@link RealTransform} by continuous coordinate lookup.
  *
  * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
+ * @author Caleb Hulbert &lt;hulbertc@janelia.hhmi.org&gt;
+ * @author John Bogovic &lt;bogovicj@janelia.hhmi.org&gt;
  */
 public class PositionFieldTransform implements RealTransform
 {
@@ -77,6 +79,19 @@ public class PositionFieldTransform implements RealTransform
 	public < T extends RealType< T > > PositionFieldTransform( final RandomAccessibleInterval< T > positions )
 	{
 		this( convertToComposite( positions ) );
+	}
+
+	/**
+	 *
+	 * @param positions
+	 * 			interleaved target coordinate, this means that the components
+	 * 			of the target coordinates are in the 0th dimension
+	 * @param pixelToPhysical
+	 * 			a transformation from pixel coordinates to physical coordinates
+	 */
+	public < T extends RealType< T > > PositionFieldTransform( final RandomAccessibleInterval< T > positions, final AffineGet pixelToPhysical )
+	{
+		this( convertToComposite( positions, pixelToPhysical ) );
 	}
 
 	@Override
@@ -125,5 +140,11 @@ public class PositionFieldTransform implements RealTransform
 		return Views.interpolate(
 				Views.extendBorder( collapsedFirst ),
 				new NLinearInterpolatorFactory<>() );
+	}
+
+	private static <T extends RealType< T >> RealRandomAccessible< ? extends RealLocalizable > convertToComposite(
+			final RandomAccessibleInterval< T > position, final AffineGet pixelToPhysical )
+	{
+		return RealViews.affine( convertToComposite( position ), pixelToPhysical );
 	}
 }

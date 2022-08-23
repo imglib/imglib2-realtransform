@@ -45,6 +45,8 @@ import net.imglib2.type.numeric.RealType;
  * A {@link RealTransform} by continuous offset lookup.
  *
  * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
+ * @author Caleb Hulbert &lt;hulbertc@janelia.hhmi.org&gt;
+ * @author John Bogovic &lt;bogovicj@janelia.hhmi.org&gt;
  */
 public class DisplacementFieldTransform extends PositionFieldTransform
 {
@@ -68,6 +70,20 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	{
 		super( displacements );
 	}
+
+	/**
+	 *
+	 * @param displacements
+	 * 			interleaved displacement vectors, this means that the
+	 * 			components of the displacement vectors are in the 0th dimension
+	 * @param pixelToPhysical
+	 * 			a transformation from pixel coordinates to physical coordinates
+	 */
+	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements, final AffineGet pixelToPhysical )
+	{
+		super( displacements, pixelToPhysical );
+	}
+
 
 	@Override
 	public void apply( final double[] source, final double[] target )
