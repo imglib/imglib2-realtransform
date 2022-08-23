@@ -94,6 +94,36 @@ public class PositionFieldTransform implements RealTransform
 		this( RealViews.affine( convertToComposite( positions ), pixelToPhysical ) );
 	}
 
+	/**
+	 *
+	 * @param positions
+	 * 			interleaved target coordinate, this means that the components
+	 * 			of the target coordinates are in the 0th dimension
+	 * @param spacing
+	 * 			the pixel spacing
+	 */
+	public < T extends RealType< T > > PositionFieldTransform( final RandomAccessibleInterval< T > positions, final double... spacing )
+	{
+		this( RealViews.affine(
+				convertToComposite( positions ),
+				spacing.length == 2 ? new Scale2D(spacing) : spacing.length == 3 ? new Scale3D( spacing ) : new Scale( spacing ) ) );
+	}
+
+	/**
+	 *
+	 * @param positions
+	 * 			interleaved target coordinate, this means that the components
+	 * 			of the target coordinates are in the 0th dimension
+	 * @param spacing
+	 * 			the pixel spacing
+	 * @param offset
+	 * 			the pixel offset
+	 */
+	public < T extends RealType< T > > PositionFieldTransform( final RandomAccessibleInterval< T > positions, final double[] spacing, final double[] offset )
+	{
+		this( RealViews.affine( convertToComposite( positions ), new ScaleAndTranslation( spacing, offset ) ) );
+	}
+
 	@Override
 	public int numSourceDimensions()
 	{

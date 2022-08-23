@@ -84,6 +84,33 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 		super( displacements, pixelToPhysical );
 	}
 
+	/**
+	 *
+	 * @param displacements
+	 * 			interleaved displacement vectors, this means that the
+	 * 			components of the displacement vectors are in the 0th dimension
+	 * @param spacing
+	 * 			the pixel spacing
+	 */
+	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements, final double... spacing )
+	{
+		super( displacements, spacing );
+	}
+
+	/**
+	 *
+	 * @param displacements
+	 * 			interleaved displacement vectors, this means that the
+	 * 			components of the displacement vectors are in the 0th dimension
+	 * @param spacing
+	 * 			the pixel spacing
+	 * @param offset
+	 * 			the pixel offse
+	 */
+	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements, final double[] spacing, final double[] offset )
+	{
+		super( displacements, spacing, offset);
+	}
 
 	@Override
 	public void apply( final double[] source, final double[] target )
@@ -116,4 +143,9 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	{
 		return new DisplacementFieldTransform( access.copy() );
 	}
+
+	// TODO implement this
+//	public static RandomAccessibleInterval<T> createDisplacementField( final RealTransform transform, final Interval interval, final double[] spacing, final double[] offset )
+//	{
+//	}
 }
