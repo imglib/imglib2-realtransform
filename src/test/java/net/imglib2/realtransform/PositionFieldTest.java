@@ -51,6 +51,7 @@ import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.position.FunctionRandomAccessible;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ConstantUtils;
@@ -58,57 +59,68 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.RealComposite;
 
-public class DisplacementFieldTest
+public class PositionFieldTest
 {
-	DisplacementFieldTransform defgrad;
+	PositionFieldTransform posgrad;
 
 	final double EPS = 1e-5;
 
 	@Test
 	public void testNumSourceTargetDimensions()
 	{
-		// a deformation field representing a 2d transform
-		final IntervalView< FloatType > defRai = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 3 ), new FinalInterval( 10, 10, 2 ) );
+		// a position field representing a 2d transform
+		final IntervalView< FloatType > posRai = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 3 ), new FinalInterval( 10, 10, 2 ) );
 
-		final DisplacementFieldTransform def2d = new DisplacementFieldTransform( convertToDefFieldInput( defRai ) );
+		final PositionFieldTransform pos2d = new PositionFieldTransform( convertToPosFieldInput( posRai ) );
+		Assert.assertEquals( 2, pos2d.numSourceDimensions() );
+		Assert.assertEquals( 2, pos2d.numTargetDimensions() );
 
-		Assert.assertEquals( 2, def2d.numSourceDimensions() );
-		Assert.assertEquals( 2, def2d.numTargetDimensions() );
+		// a position field representing a 3d transform
+		final IntervalView< FloatType > posRai3d = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 4 ), new FinalInterval( 10, 10, 10, 3 ) );
 
-		// a deformation field representing a 3d transform
-		final IntervalView< FloatType > defRai3d = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 4 ), new FinalInterval( 10, 10, 10, 3 ) );
+		final PositionFieldTransform pos3d = new PositionFieldTransform( convertToPosFieldInput( posRai3d ) );
+		Assert.assertEquals( 3, pos3d.numSourceDimensions() );
+		Assert.assertEquals( 3, pos3d.numTargetDimensions() );
 
-		final DisplacementFieldTransform def3d = new DisplacementFieldTransform( convertToDefFieldInput( defRai3d ) );
+		// a position field representing a 3d transform
+		final IntervalView< FloatType > posRai3d2d = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 0.0f ), 4 ), new FinalInterval( 10, 10, 10, 2 ) );
 
-		Assert.assertEquals( 3, def3d.numSourceDimensions() );
-		Assert.assertEquals( 3, def3d.numTargetDimensions() );
+		final PositionFieldTransform pos3d2d = new PositionFieldTransform( convertToPosFieldInput( posRai3d2d ) );
+		Assert.assertEquals( 3, pos3d2d.numSourceDimensions() );
+		Assert.assertEquals( 2, pos3d2d.numTargetDimensions() );
 	}
 
 	@Test
 	public void testTranslation()
 	{
-		final IntervalView< FloatType > defRai = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 3 ), new FinalInterval( 10, 10, 2 ) );
+		final FunctionRandomAccessible<FloatType> posRa = new FunctionRandomAccessible<FloatType>( 3,
+				(p,v) -> {
+					final float t = p.getFloatPosition( p.getIntPosition( 2 ) ) + 1;
+					v.set( t );
+				},
+				FloatType::new );
 
-		final DisplacementFieldTransform def2d = new DisplacementFieldTransform( convertToDefFieldInput( defRai ) );
+		final IntervalView<FloatType> posRai = Views.interval( posRa, new FinalInterval( 10, 10, 2 ));
+		final PositionFieldTransform pos2d = new PositionFieldTransform( convertToPosFieldInput( posRai ) );
 
 		final double[] p = new double[] { 5.0, 4.0 };
 		final double[] pxfm = new double[] { 6.0, 5.0 };
 		final double[] q = new double[ 2 ];
 
-		def2d.apply( p, q );
+		pos2d.apply( p, q );
 		Assert.assertArrayEquals( pxfm, q, EPS );
 
-		def2d.apply( p, p );
+		pos2d.apply( p, p );
 		Assert.assertArrayEquals( "double apply in place", pxfm, p, EPS );
 
 		final RealPoint src = new RealPoint( 5.0, 4.0 );
 		final RealPoint tgt = new RealPoint( 2 );
-		def2d.apply( src, tgt );
+		pos2d.apply( src, tgt );
 		Assert.assertEquals( tgt.getDoublePosition( 0 ), 6.0, EPS );
 		Assert.assertEquals( tgt.getDoublePosition( 1 ), 5.0, EPS );
 
 		// in place
-		def2d.apply( src, src );
+		pos2d.apply( src, src );
 		Assert.assertEquals( "positionable in place x", src.getDoublePosition( 0 ), 6.0, EPS );
 		Assert.assertEquals( "positionable in place y", src.getDoublePosition( 1 ), 5.0, EPS );
 	}
@@ -120,68 +132,14 @@ public class DisplacementFieldTest
 		final double[] pxfm = new double[] { 10.0, 4.0 };
 		final double[] q = new double[ 2 ];
 
-		defgrad.apply( p, q );
+		posgrad.apply( p, q );
 		Assert.assertArrayEquals( pxfm, q, EPS );
-
-//		float[] pf = new float[]{ 5.0f, 4.0f };
-//		float[] pxfmf = new float[]{ 10.0f, 4.0f };
-//		float[] qf = new float[ 2 ];
-//
-//		defgrad.apply( pf, qf );
-//		Assert.assertArrayEquals( pxfmf, qf, (float)EPS );
 
 		final RealPoint src = new RealPoint( p );
 		final RealPoint tgt = new RealPoint( 2 );
-		defgrad.apply( src, tgt );
+		posgrad.apply( src, tgt );
 		Assert.assertEquals( tgt.getDoublePosition( 0 ), pxfm[ 0 ], EPS );
 		Assert.assertEquals( tgt.getDoublePosition( 1 ), pxfm[ 1 ], EPS );
-	}
-
-	@Test
-	public void testRender()
-	{
-		final FinalInterval interval4d = new FinalInterval( 4, 4, 4, 3 );
-		final FinalInterval interval = new FinalInterval( 4, 4, 4 );
-
-		// make a deformation field with a vector [ 1, 1, 1 ] everywhere
-		final IntervalView< FloatType > defRai = Views.interval( ConstantUtils.constantRandomAccessible( new FloatType( 1.0f ), 4 ), interval4d );
-
-		final DisplacementFieldTransform def3d = new DisplacementFieldTransform( convertToDefFieldInput( defRai ) );
-
-		// make a dummy image
-		final ArrayImg< DoubleType, DoubleArray > im = ArrayImgs.doubles( 4, 4, 4 );
-		final ArrayCursor< DoubleType > c = im.cursor();
-		double x = 0;
-		/* Set the x-displacemnt equal to the x-position */
-		while ( c.hasNext() )
-			c.next().set( x++ );
-
-		final RealTransformRandomAccessible< DoubleType, RealTransform > imXfmReal = new RealTransformRandomAccessible<>( Views.interpolate( Views.extendZero( im ), new NLinearInterpolatorFactory<>() ), def3d );
-
-		final IntervalView< DoubleType > imXfm = Views.interval( Views.raster( imXfmReal ), interval );
-
-		final RandomAccess< DoubleType > imraO = im.randomAccess();
-		imraO.setPosition( new int[] { 2, 2, 2 } );
-
-		final RandomAccess< DoubleType > imra = imXfm.randomAccess();
-		imra.setPosition( new int[] { 1, 1, 1 } );
-	}
-
-	@Test
-	public void testInverse()
-	{
-		final InvertibleDisplacementFieldTransform dfieldGradInv = new InvertibleDisplacementFieldTransform( defgrad );
-		dfieldGradInv.getOptimzer().setTolerance( EPS / 2 );
-
-		final double[] p = new double[] { 5.0, 4.0 };
-		final double[] pxfm = new double[] { 10.0, 4.0 };
-		final double[] q = new double[ 2 ];
-
-		dfieldGradInv.apply( p, q );
-
-		// apply inverse to destination and ensure it goes to the source point
-		dfieldGradInv.applyInverse( q, pxfm );
-		Assert.assertArrayEquals( p, q, EPS );
 	}
 
 	@Test
@@ -190,42 +148,41 @@ public class DisplacementFieldTest
 		final double EPS = 1e-9;
 
 		for( int nt = 1; nt < 5; nt++ )
-			for( int ns = nt; ns < 5; ns++ )
+			for( int ns = 1; ns < 5; ns++ )
 			{
 				final RealPoint p = new RealPoint( ns );
-				final RealPoint q = new RealPoint( nt );
 				final RealComposite<DoubleType> vec = DoubleType.createVector(nt);
 				vec.setOne();
 
-				final DisplacementFieldTransform dfield = new DisplacementFieldTransform( ConstantUtils.constantRealRandomAccessible( vec, 1 ));
+				final PositionFieldTransform pfield = new PositionFieldTransform( ConstantUtils.constantRealRandomAccessible( vec, 1 ));
+				for( int tgtdim = nt; tgtdim <= nt; tgtdim++ )
+				{
+					final RealPoint q = new RealPoint( nt );
+					pfield.apply( p, q );
+					assertEquals( q.getDoublePosition(0), 1 , EPS );
+				}
 
-				dfield.apply( p, p );
-				assertEquals( p.getDoublePosition(0), 1 , EPS );
-				p.setPosition(0, 0);
-
-				dfield.apply( p, q );
-				assertEquals( q.getDoublePosition(0), 1 , EPS );
 			}
-
 	}
 
 	@Before
 	public void setUp()
 	{
-		final RandomAccessibleInterval< FloatType > defRai = ArrayImgs.floats( 11, 11, 2 );
-		final Cursor< FloatType > c = Views.flatIterable( defRai ).cursor();
+		final RandomAccessibleInterval< FloatType > posRai = ArrayImgs.floats( 11, 11, 2 );
+		final Cursor< FloatType > c = Views.flatIterable( posRai ).cursor();
 		while ( c.hasNext() )
 		{
 			c.fwd();
 			if ( c.getIntPosition( 2 ) == 0 )
-				c.get().set( c.getFloatPosition( 0 ) );
+				c.get().set( 2 * c.getFloatPosition( 0 ) );
+			else
+				c.get().set( c.getFloatPosition( 1 ) );
 		}
-		final RandomAccessibleInterval< FloatType > moved = Views.moveAxis( defRai, 2, 0 );
-
-		defgrad = new DisplacementFieldTransform( moved );
+		final RandomAccessibleInterval< FloatType > moved = Views.moveAxis( posRai, 2, 0 );
+		posgrad = new PositionFieldTransform( moved );
 	}
 
-	private RealRandomAccessible< RealComposite< FloatType > > convertToDefFieldInput( final RandomAccessibleInterval< FloatType > rai )
+	private RealRandomAccessible< RealComposite< FloatType > > convertToPosFieldInput( final RandomAccessibleInterval< FloatType > rai )
 	{
 
 		return Views.interpolate( Views.extendBorder( Views.collapseReal( rai ) ), new NLinearInterpolatorFactory<>() );
@@ -234,7 +191,7 @@ public class DisplacementFieldTest
 	@After
 	public void tearDown()
 	{
-		defgrad = null;
+		posgrad = null;
 	}
 
 }

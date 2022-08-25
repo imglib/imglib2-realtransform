@@ -34,13 +34,21 @@
 
 package net.imglib2.realtransform;
 
+import java.util.function.Supplier;
+
+import net.imglib2.Interval;
+import net.imglib2.Localizable;
+import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
+import net.imglib2.converter.Converters;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Localizables;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.CompositeIntervalView;
 import net.imglib2.view.composite.RealComposite;
@@ -139,19 +147,22 @@ public class PositionFieldTransform implements RealTransform
 	@Override
 	public void apply( final double[] source, final double[] target )
 	{
-		access.setPositionAndGet( source ).localize( target );
+		access.setPosition( source );
+		access.get().localize( target );
 	}
 
 	@Override
 	public void apply( final float[] source, final float[] target )
 	{
-		access.setPositionAndGet( source ).localize( target );
+		access.setPosition( source );
+		access.get().localize( target );
 	}
 
 	@Override
 	public void apply( final RealLocalizable source, final RealPositionable target )
 	{
-		access.setPositionAndGet( source ).localize( target );
+		access.setPosition( source );
+		access.get().localize( target );
 	}
 
 	@Override
@@ -170,5 +181,27 @@ public class PositionFieldTransform implements RealTransform
 		return Views.interpolate(
 				Views.extendBorder( collapsedFirst ),
 				new NLinearInterpolatorFactory<>() );
+	}
+
+	public static < T extends RealType< T > >  RandomAccessibleInterval<T> createPositionField( 
+			final RealTransform transform,
+			final Interval interval,
+			final double[] spacing,
+			final double[] offset,
+			Supplier<RealComposite<T>> sup )
+	{
+		final ScaleAndTranslation scaleOffset = new ScaleAndTranslation(spacing, offset);
+		final RandomAccessibleInterval<Localizable> pixelCoordinates = Localizables.randomAccessibleInterval(interval);
+		final RandomAccessible< RealComposite < T > > displacements = Converters.convert2(
+				pixelCoordinates,
+				() -> {
+					return (x, y) -> {
+						scaleOffset.apply(x, y);
+						transform.apply(y, y);
+					};
+				},
+				sup );
+
+		return Views.interval( Views.interleave( displacements ), interval );
 	}
 }

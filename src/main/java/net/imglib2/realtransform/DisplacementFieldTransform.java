@@ -34,12 +34,22 @@
 
 package net.imglib2.realtransform;
 
+import java.util.function.Supplier;
+
+import net.imglib2.Interval;
+import net.imglib2.Localizable;
+import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
+import net.imglib2.converter.Converters;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Localizables;
+import net.imglib2.view.Views;
+import net.imglib2.view.composite.RealComposite;
 
 /**
  * A {@link RealTransform} by continuous offset lookup.
@@ -50,14 +60,18 @@ import net.imglib2.type.numeric.RealType;
  */
 public class DisplacementFieldTransform extends PositionFieldTransform
 {
+	protected final int numTargetDimensions;
+
 	public DisplacementFieldTransform( final RealRandomAccess< ? extends RealLocalizable > displacementsAccess )
 	{
 		super( displacementsAccess );
+		this.numTargetDimensions = access.get().numDimensions() < access.numDimensions() ? access.get().numDimensions() : access.numDimensions();
 	}
 
 	public DisplacementFieldTransform( final RealRandomAccessible< ? extends RealLocalizable > displacements )
 	{
 		super( displacements );
+		this.numTargetDimensions = access.get().numDimensions() < access.numDimensions() ? access.get().numDimensions() : access.numDimensions();
 	}
 
 	/**
@@ -69,6 +83,7 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements )
 	{
 		super( displacements );
+		this.numTargetDimensions = access.get().numDimensions() < access.numDimensions() ? access.get().numDimensions() : access.numDimensions();
 	}
 
 	/**
@@ -82,6 +97,7 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements, final AffineGet pixelToPhysical )
 	{
 		super( displacements, pixelToPhysical );
+		this.numTargetDimensions = access.get().numDimensions() < access.numDimensions() ? access.get().numDimensions() : access.numDimensions();
 	}
 
 	/**
@@ -95,6 +111,7 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements, final double... spacing )
 	{
 		super( displacements, spacing );
+		this.numTargetDimensions = access.get().numDimensions() < access.numDimensions() ? access.get().numDimensions() : access.numDimensions();
 	}
 
 	/**
@@ -110,12 +127,20 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements, final double[] spacing, final double[] offset )
 	{
 		super( displacements, spacing, offset);
+		this.numTargetDimensions = access.get().numDimensions() < access.numDimensions() ? access.get().numDimensions() : access.numDimensions();
+	}
+
+	@Override
+	public int numTargetDimensions()
+	{
+		return numTargetDimensions;
 	}
 
 	@Override
 	public void apply( final double[] source, final double[] target )
 	{
-		final RealLocalizable comp = access.setPositionAndGet( source );
+		access.setPosition( source );
+		final RealLocalizable comp = access.get();
 		for ( int d = 0; d < numTargetDimensions(); d++ )
 			target[ d ] = comp.getDoublePosition( d ) + source[ d ];
 	}
@@ -123,8 +148,8 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	@Override
 	public void apply( final float[] source, final float[] target )
 	{
-
-		final RealLocalizable comp = access.setPositionAndGet( source );
+		access.setPosition( source );
+		final RealLocalizable comp = access.get();
 		for ( int d = 0; d < numTargetDimensions(); d++ )
 			target[ d ] = comp.getFloatPosition( d ) + source[ d ];
 	}
@@ -132,8 +157,8 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	@Override
 	public void apply( final RealLocalizable source, final RealPositionable target )
 	{
-
-		final RealLocalizable comp = access.setPositionAndGet( source );
+		access.setPosition( source );
+		final RealLocalizable comp = access.get();
 		for ( int d = 0; d < numTargetDimensions(); d++ )
 			target.setPosition( comp.getDoublePosition( d ) + source.getDoublePosition( d ), d );
 	}
@@ -144,8 +169,29 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 		return new DisplacementFieldTransform( access.copy() );
 	}
 
-	// TODO implement this
-//	public static RandomAccessibleInterval<T> createDisplacementField( final RealTransform transform, final Interval interval, final double[] spacing, final double[] offset )
-//	{
-//	}
+	public static < T extends RealType< T > >  RandomAccessibleInterval<T> createDisplacementField( 
+			final RealTransform transform,
+			final Interval interval,
+			final double[] spacing,
+			final double[] offset,
+			Supplier<RealComposite<T>> sup )
+	{
+		final int nd = transform.numTargetDimensions();	
+		final ScaleAndTranslation scaleOffset = new ScaleAndTranslation(spacing, offset);
+		final RandomAccessibleInterval<Localizable> pixelCoordinates = Localizables.randomAccessibleInterval(interval);
+		final RealPoint tmp = new RealPoint( nd );
+		final RandomAccessible< RealComposite < T > > displacements = Converters.convert2(
+				pixelCoordinates,
+				() -> {
+					return (x, y) -> {
+						scaleOffset.apply(x, tmp);
+						transform.apply(tmp, y);
+						for (int d = 0; d < nd; d++)
+							y.move(-tmp.getDoublePosition(d), d);
+					};
+				},
+				sup );
+
+		return Views.interval( Views.interleave( displacements ), interval );
+	}
 }
