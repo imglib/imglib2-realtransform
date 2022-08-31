@@ -80,6 +80,7 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 
 	/**
 	 *
+	 * @param <T> type of the displacements
 	 * @param displacements
 	 * 			interleaved displacement vectors, this means that the
 	 * 			components of the displacement vectors are in the 0th dimension
@@ -92,6 +93,7 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 
 	/**
 	 *
+	 * @param <T> type of the displacements
 	 * @param displacements
 	 * 			interleaved displacement vectors, this means that the
 	 * 			components of the displacement vectors are in the 0th dimension
@@ -106,6 +108,7 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 
 	/**
 	 *
+	 * @param <T> type of the displacements
 	 * @param displacements
 	 * 			interleaved displacement vectors, this means that the
 	 * 			components of the displacement vectors are in the 0th dimension
@@ -120,13 +123,14 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 
 	/**
 	 *
+	 * @param <T> type of the displacements
 	 * @param displacements
 	 * 			interleaved displacement vectors, this means that the
 	 * 			components of the displacement vectors are in the 0th dimension
 	 * @param spacing
 	 * 			the pixel spacing
 	 * @param offset
-	 * 			the pixel offse
+	 * 			the pixel offset
 	 */
 	public < T extends RealType< T > > DisplacementFieldTransform( final RandomAccessibleInterval< T > displacements, final double[] spacing, final double[] offset )
 	{

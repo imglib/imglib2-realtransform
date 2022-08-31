@@ -83,6 +83,7 @@ public class PositionFieldTransform implements RealTransform
 
 	/**
 	 *
+	 * @param <T> type of the positions
 	 * @param positions
 	 * 			interleaved target coordinate, this means that the components
 	 * 			of the target coordinates are in the 0th dimension
@@ -107,6 +108,7 @@ public class PositionFieldTransform implements RealTransform
 
 	/**
 	 *
+	 * @param <T> type of the positions
 	 * @param positions
 	 * 			interleaved target coordinate, this means that the components
 	 * 			of the target coordinates are in the 0th dimension
@@ -122,6 +124,7 @@ public class PositionFieldTransform implements RealTransform
 
 	/**
 	 *
+	 * @param <T> type of the positions
 	 * @param positions
 	 * 			interleaved target coordinate, this means that the components
 	 * 			of the target coordinates are in the 0th dimension
@@ -279,7 +282,7 @@ public class PositionFieldTransform implements RealTransform
 			final RealTransform transform,
 			final Interval interval,
 			final AffineGet gridToPhysical,
-			Supplier<RealComposite<T>> sup )
+			Supplier<RealComposite<T>> supplier )
 	{
 		final RandomAccessibleInterval<Localizable> pixelCoordinates = Localizables.randomAccessibleInterval(interval);
 		final RandomAccessible< RealComposite < T > > positions = Converters.convert2(
@@ -290,7 +293,7 @@ public class PositionFieldTransform implements RealTransform
 						transform.apply(y, y);
 					};
 				},
-				sup );
+				supplier );
 
 		final long[] pfieldDims = LongStream.concat(
 				LongStream.of(transform.numTargetDimensions()),
