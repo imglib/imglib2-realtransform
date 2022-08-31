@@ -48,7 +48,9 @@ import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
 import net.imglib2.converter.Converters;
+import net.imglib2.position.FunctionRandomAccessible;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.util.Localizables;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.RealComposite;
@@ -142,6 +144,7 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	public void apply( final double[] source, final double[] target )
 	{
 		// TODO replace with setPositionAndGet after new imglib2 release
+		// TODO N = min (target, numTargetDimsensions) ?
 		access.setPosition( source );
 		final RealLocalizable comp = access.get();
 		for ( int d = 0; d < numTargetDimensions(); d++ )
@@ -174,21 +177,109 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 		return new DisplacementFieldTransform( access.copy() );
 	}
 
+	/**
+	 * Creates a {@link RandomAccessibleInterval} containing displacements of a {@link RealTransform}.
+	 * The spacing parameter specify how the discrete coordinates of the output displacement field
+	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
+	 * of the displacement field grid.
+	 * <p>
+	 * The displacement at a discrete point i of the output is:<br>
+	 * x = spacing * i<br>
+	 * transform(x) - x
+	 * 
+	 * @param transform the transform to be converted 
+	 * @param interval interval
+	 * @param spacing the spacing of the grid
+	 * @return the displacement field
+	 */
+	public static RandomAccessibleInterval<DoubleType> createDisplacementField(
+			final RealTransform transform,
+			final Interval interval,
+			final double[] spacing )
+	{
+		return createDisplacementField(transform, interval, new Scale(spacing), () -> DoubleType.createVector(transform.numTargetDimensions()));
+	}
+
+	/**
+	 * Creates a {@link RandomAccessibleInterval} containing displacements of a {@link RealTransform}.
+	 * The spacing and offset parameters specify how the discrete coordinates of the output displacement field
+	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
+	 * of the displacement field grid.
+	 * <p>
+	 * The displacement at a discrete point i of the output is:<br>
+	 * x = spacing * i + offset<br>
+	 * transform(x) - x
+	 * 
+	 * @param transform the transform to be converted 
+	 * @param interval interval
+	 * @param spacing the spacing of the grid
+	 * @param offset the offset of the output in physical units
+	 * @return the displacement field
+	 */
+	public static RandomAccessibleInterval<DoubleType> createDisplacementField(
+			final RealTransform transform,
+			final Interval interval,
+			final double[] spacing,
+			final double[] offset )
+	{
+		return createDisplacementField(transform, interval, new ScaleAndTranslation(spacing, offset), () -> DoubleType.createVector( transform.numTargetDimensions() ));
+	}
+
+	/**
+	 * Creates a {@link RandomAccessibleInterval} containing displacements of a {@link RealTransform}.
+	 * The spacing and offset parameters specify how the discrete coordinates of the output displacement field
+	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
+	 * of the displacement field grid.
+	 * <p>
+	 * The displacement at a discrete point i of the output is:<br>
+	 * x = spacing * i + offset<br>
+	 * transform(x) - x
+	 * 
+	 * @param <T> the type of the output
+	 * @param transform the transform to be converted 
+	 * @param interval interval
+	 * @param spacing the spacing of the grid
+	 * @param offset the offset of the output in physical units
+	 * @param supplier supplier for intermediate {@link RealComposite} type
+	 * @return the displacement field
+	 */
 	public static < T extends RealType< T > > RandomAccessibleInterval<T> createDisplacementField(
 			final RealTransform transform,
 			final Interval interval,
 			final double[] spacing,
 			final double[] offset,
-			Supplier<RealComposite<T>> sup )
+			final Supplier<RealComposite<T>> supplier )
+	{
+		return createDisplacementField(transform, interval, new ScaleAndTranslation(spacing, offset), supplier);
+	}
+
+	/**
+	 * Creates a {@link RandomAccessibleInterval} containing displacements of a {@link RealTransform}.
+	 * The {@link AffineGet} specifies how the discrete coordinates of the output displacement field
+	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
+	 * of the displacement field grid.
+	 * <p>
+	 * The displacement at a discrete point i of the output is:<br>
+	 * transform(gridToPhysical(i)) - gridToPhysical(i)
+	 * 
+	 * @param <T> the type of the output
+	 * @param transform the transform to be converted 
+	 * @param interval interval
+	 * @param gridToPhysical transformation from the discrete grid to the transform's source coordinates
+	 * @param supplier supplier for intermediate {@link RealComposite} type
+	 * @return the displacement field
+	 */
+	public static < T extends RealType< T > > RandomAccessibleInterval<T> createDisplacementField(
+			final RealTransform transform,
+			final Interval interval,
+			final AffineGet gridToPhysical,
+			final Supplier<RealComposite<T>> supplier )
 	{
 		final int nd = transform.numTargetDimensions();	
-		final ScaleAndTranslation scaleOffset = new ScaleAndTranslation(spacing, offset);
-		final RandomAccessibleInterval<Localizable> pixelCoordinates = Localizables.randomAccessibleInterval(interval);
-
-		final RandomAccessible< RealComposite < T > > physical = Converters.convert2(
-				pixelCoordinates,
-				(x, y) -> { scaleOffset.apply( x, y ); },
-				sup );
+		final RandomAccessible< RealComposite < T > > physical = new FunctionRandomAccessible<>(
+				nd, 
+				(x, y) -> { gridToPhysical.apply( x, y ); },
+				 supplier );
 
 		final RandomAccessible< RealComposite < T > > displacements = Converters.convert2(
 				physical,
@@ -197,7 +288,7 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 					for (int d = 0; d < nd; d++)
 						y.move(-x.getDoublePosition(d), d);
 				},
-				sup );
+				supplier );
 
 		final long[] dfieldDims = LongStream.concat(
 			LongStream.of( interval.numDimensions() ),
@@ -205,4 +296,5 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 
 		return Views.interval( Views.interleave( displacements ), new FinalInterval( dfieldDims ) );
 	}
+
 }

@@ -50,6 +50,7 @@ import net.imglib2.RealRandomAccessible;
 import net.imglib2.converter.Converters;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.util.Localizables;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.CompositeIntervalView;
@@ -185,20 +186,107 @@ public class PositionFieldTransform implements RealTransform
 				new NLinearInterpolatorFactory<>() );
 	}
 
-	public static < T extends RealType< T > >  RandomAccessibleInterval<T> createPositionField( 
+	/**
+	 * Creates a {@link RandomAccessibleInterval} containing positions of a {@link RealTransform}.
+	 * The spacing parameter specify how the discrete coordinates of the output position field
+	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
+	 * of the position field grid.
+	 * <p>
+	 * The position at a discrete point i of the output is:<br>
+	 * transform( spacing * i )<br>
+	 * 
+	 * @param transform the transform to be converted 
+	 * @param interval interval
+	 * @param spacing the spacing of the grid
+	 * @return the position field
+	 */
+	public static RandomAccessibleInterval<DoubleType> createPositionField(
+			final RealTransform transform,
+			final Interval interval,
+			final double[] spacing )
+	{
+		return createPositionField(transform, interval, new Scale(spacing), () -> DoubleType.createVector(transform.numTargetDimensions()));
+	}
+
+	/**
+	 * Creates a {@link RandomAccessibleInterval} containing positions of a {@link RealTransform}.
+	 * The spacing and offset parameters specify how the discrete coordinates of the output position field
+	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
+	 * of the position field grid.
+	 * <p>
+	 * The position at a discrete point i of the output is:<br>
+	 * transform( spacing * i + offset ) <br>
+	 * 
+	 * @param transform the transform to be converted 
+	 * @param interval interval
+	 * @param spacing the spacing of the grid
+	 * @param offset the offset of the output in physical units
+	 * @return the position field
+	 */
+	public static RandomAccessibleInterval<DoubleType> createPositionField(
+			final RealTransform transform,
+			final Interval interval,
+			final double[] spacing,
+			final double[] offset )
+	{
+		return createPositionField(transform, interval, spacing, offset, () -> DoubleType.createVector( transform.numTargetDimensions() ));
+	}
+
+	/**
+	 * Creates a {@link RandomAccessibleInterval} containing position of a {@link RealTransform}.
+	 * The spacing and offset parameters specify how the discrete coordinates of the output position field
+	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
+	 * of the position field grid.
+	 * <p>
+	 * The position at a discrete point i of the output is:<br>
+	 * transform( spacing * i + offset )<br>
+	 * 
+	 * @param <T> the type of the output
+	 * @param transform the transform to be converted 
+	 * @param interval interval
+	 * @param spacing the spacing of the grid
+	 * @param offset the offset of the output in physical units
+	 * @param supplier supplier for intermediate {@link RealComposite} type
+	 * @return the position field
+	 */
+	public static < T extends RealType< T > > RandomAccessibleInterval<T> createPositionField(
 			final RealTransform transform,
 			final Interval interval,
 			final double[] spacing,
 			final double[] offset,
+			final Supplier<RealComposite<T>> supplier )
+	{
+		return createPositionField(transform, interval, new ScaleAndTranslation(spacing, offset), supplier);
+	}
+
+	/**
+	 * Creates a {@link RandomAccessibleInterval} containing positions of a {@link RealTransform}.
+	 * The {@link AffineGet} specifies how the discrete coordinates of the output position field
+	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
+	 * of the position field grid.
+	 * <p>
+	 * The position at a discrete point i of the output is:<br>
+	 * transform(gridToPhysical(i))
+	 * 
+	 * @param <T> the type of the output
+	 * @param transform the transform to be converted 
+	 * @param interval interval
+	 * @param gridToPhysical transformation from the discrete grid to the transform's source coordinates
+	 * @param supplier supplier for intermediate {@link RealComposite} type
+	 * @return the position field
+	 */
+	public static < T extends RealType< T > >  RandomAccessibleInterval<T> createPositionField(
+			final RealTransform transform,
+			final Interval interval,
+			final AffineGet gridToPhysical,
 			Supplier<RealComposite<T>> sup )
 	{
-		final ScaleAndTranslation scaleOffset = new ScaleAndTranslation(spacing, offset);
 		final RandomAccessibleInterval<Localizable> pixelCoordinates = Localizables.randomAccessibleInterval(interval);
-		final RandomAccessible< RealComposite < T > > displacements = Converters.convert2(
+		final RandomAccessible< RealComposite < T > > positions = Converters.convert2(
 				pixelCoordinates,
 				() -> {
 					return (x, y) -> {
-						scaleOffset.apply(x, y);
+						gridToPhysical.apply(x, y);
 						transform.apply(y, y);
 					};
 				},
@@ -209,6 +297,6 @@ public class PositionFieldTransform implements RealTransform
 				Arrays.stream(interval.dimensionsAsLongArray()))
 				.toArray();
 
-		return Views.interval(Views.interleave(displacements), new FinalInterval(pfieldDims));
+		return Views.interval(Views.interleave(positions), new FinalInterval(pfieldDims));
 	}
 }
