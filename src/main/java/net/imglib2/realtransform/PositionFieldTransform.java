@@ -34,14 +34,16 @@
 
 package net.imglib2.realtransform;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
+import java.util.stream.LongStream;
 
+import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
@@ -202,6 +204,11 @@ public class PositionFieldTransform implements RealTransform
 				},
 				sup );
 
-		return Views.interval( Views.interleave( displacements ), interval );
+		final long[] pfieldDims = LongStream.concat(
+				LongStream.of(transform.numTargetDimensions()),
+				Arrays.stream(interval.dimensionsAsLongArray()))
+				.toArray();
+
+		return Views.interval(Views.interleave(displacements), new FinalInterval(pfieldDims));
 	}
 }

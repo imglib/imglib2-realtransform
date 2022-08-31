@@ -33,6 +33,7 @@
  */
 package net.imglib2.realtransform;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
@@ -42,19 +43,17 @@ import org.junit.Test;
 
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
-import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.RealRandomAccessible;
-import net.imglib2.img.array.ArrayCursor;
-import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.img.basictypeaccess.array.DoubleArray;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.iterator.IntervalIterator;
 import net.imglib2.position.FunctionRandomAccessible;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ConstantUtils;
+import net.imglib2.util.Intervals;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.RealComposite;
@@ -163,6 +162,37 @@ public class PositionFieldTest
 				}
 
 			}
+	}
+
+	@Test
+	public void testRasterize()
+	{
+		final double EPS = 1e-9;
+		final AffineTransform2D xfm = new AffineTransform2D();
+		xfm.translate( 3, 4 );
+		xfm.scale( 0.3, 1.3 );
+
+		final FinalInterval interval = Intervals.createMinMax( 0, 0, 3, 3 );
+		final double[] spacing = new double[] { 0.5, 2 };
+		final double[] offset = new double[] { -1, 2 };
+		final ScaleAndTranslation toPhysical = new ScaleAndTranslation( spacing, offset );
+
+		final RandomAccessibleInterval< DoubleType > pfieldImg = PositionFieldTransform.createPositionField( xfm, interval, spacing, offset, () -> { return DoubleType.createVector(2); } );
+		final PositionFieldTransform pfield = new PositionFieldTransform( pfieldImg, spacing, offset );
+
+		final RealPoint p = new RealPoint(2);
+		final RealPoint qTrue = new RealPoint(2);
+		final RealPoint qPfield = new RealPoint(2);
+		final IntervalIterator it = new IntervalIterator( interval );
+		while( it.hasNext())
+		{
+			it.fwd();
+			toPhysical.apply( it, p );
+
+			xfm.apply( p, qTrue );
+			pfield.apply( p, qPfield );
+			assertArrayEquals( qTrue.positionAsDoubleArray(), qPfield.positionAsDoubleArray(), EPS );
+		}
 	}
 
 	@Before

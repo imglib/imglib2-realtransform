@@ -33,7 +33,12 @@
  */
 package net.imglib2.realtransform;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+
+import java.util.function.BiConsumer;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -51,9 +56,12 @@ import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.iterator.IntervalIterator;
+import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ConstantUtils;
+import net.imglib2.util.Intervals;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.RealComposite;
@@ -185,28 +193,58 @@ public class DisplacementFieldTest
 	}
 
 	@Test
-	public void testDifferentDimensions() {
-		
+	public void testDifferentDimensions()
+	{
 		final double EPS = 1e-9;
-
-		for( int nt = 1; nt < 5; nt++ )
-			for( int ns = nt; ns < 5; ns++ )
+		for ( int nt = 1; nt < 5; nt++ )
+			for ( int ns = nt; ns < 5; ns++ )
 			{
 				final RealPoint p = new RealPoint( ns );
 				final RealPoint q = new RealPoint( nt );
-				final RealComposite<DoubleType> vec = DoubleType.createVector(nt);
+				final RealComposite< DoubleType > vec = DoubleType.createVector( nt );
 				vec.setOne();
 
-				final DisplacementFieldTransform dfield = new DisplacementFieldTransform( ConstantUtils.constantRealRandomAccessible( vec, 1 ));
+				final DisplacementFieldTransform dfield = new DisplacementFieldTransform(
+						ConstantUtils.constantRealRandomAccessible( vec, 1 ) );
 
 				dfield.apply( p, p );
-				assertEquals( p.getDoublePosition(0), 1 , EPS );
-				p.setPosition(0, 0);
+				assertEquals( p.getDoublePosition( 0 ), 1, EPS );
+				p.setPosition( 0, 0 );
 
 				dfield.apply( p, q );
-				assertEquals( q.getDoublePosition(0), 1 , EPS );
+				assertEquals( q.getDoublePosition( 0 ), 1, EPS );
 			}
+	}
 
+	@Test
+	public void testRasterize()
+	{
+		final double EPS = 1e-9;
+		final AffineTransform2D xfm = new AffineTransform2D();
+		xfm.translate( 3, 4 );
+		xfm.scale( 0.3, 1.3 );
+
+		final FinalInterval interval = Intervals.createMinMax( 0, 0, 3, 3 );
+		final double[] spacing = new double[] { 0.5, 2 };
+		final double[] offset = new double[] { -1, 2 };
+		final ScaleAndTranslation toPhysical = new ScaleAndTranslation( spacing, offset );
+
+		final RandomAccessibleInterval< DoubleType > dfieldImg = DisplacementFieldTransform.createDisplacementField( xfm, interval, spacing, offset, () -> { return DoubleType.createVector(2); } );
+		final DisplacementFieldTransform dfield = new DisplacementFieldTransform( dfieldImg, spacing, offset );
+
+		final RealPoint p = new RealPoint(2);
+		final RealPoint qTrue = new RealPoint(2);
+		final RealPoint qDfield = new RealPoint(2);
+		final IntervalIterator it = new IntervalIterator( interval );
+		while( it.hasNext())
+		{
+			it.fwd();
+			toPhysical.apply( it, p );
+
+			xfm.apply( p, qTrue );
+			dfield.apply( p, qDfield );
+			assertArrayEquals( qTrue.positionAsDoubleArray(), qDfield.positionAsDoubleArray(), EPS );
+		}
 	}
 
 	@Before
