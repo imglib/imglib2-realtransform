@@ -34,13 +34,10 @@
 
 package net.imglib2.realtransform;
 
-import java.util.Arrays;
 import java.util.function.Supplier;
-import java.util.stream.LongStream;
 
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
-import net.imglib2.Localizable;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
@@ -51,7 +48,6 @@ import net.imglib2.converter.Converters;
 import net.imglib2.position.FunctionRandomAccessible;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
-import net.imglib2.util.Localizables;
 import net.imglib2.view.Views;
 import net.imglib2.view.composite.RealComposite;
 
@@ -182,18 +178,18 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} of {@link DoubleType} containing the displacements of a {@link DisplacementFieldTransform} 
+	 * Creates a {@link RandomAccessibleInterval} of {@link DoubleType} containing the displacements of a {@link DisplacementFieldTransform}
 	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
 	 * but generally should be not used to create a {@link DisplacementFieldTransform}.
 	 * <p>
-	 * Components of the displacements are in the 0th dimension, the extents of the field are given by 
+	 * Components of the displacements are in the 0th dimension, the extents of the field are given by
 	 * the given {@link Interval}. The output interval will therefore be of size: <br>
 	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
 	 * <p>
 	 * The spacing parameter specifies how the discrete coordinates of the output displacement field
 	 * map to the input source coordinates of the transform.
-	 * 
-	 * @param transform the transform to be converted 
+	 *
+	 * @param transform the transform to be converted
 	 * @param interval interval
 	 * @param spacing the spacing of the grid
 	 * @return the displacement field
@@ -207,18 +203,18 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} of {@link DoubleType} containing the displacements of a {@link DisplacementFieldTransform} 
+	 * Creates a {@link RandomAccessibleInterval} of {@link DoubleType} containing the displacements of a {@link DisplacementFieldTransform}
 	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
 	 * but generally should be not used to create a {@link DisplacementFieldTransform}.
 	 * <p>
-	 * Components of the displacements are in the 0th dimension, the extents of the field are given by 
+	 * Components of the displacements are in the 0th dimension, the extents of the field are given by
 	 * the given {@link Interval}. The output interval will therefore be of size: <br>
 	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
 	 * <p>
 	 * The spacing and offset parameters specify how the discrete coordinates of the output displacement field
 	 * map to the input source coordinates of the transform.
-	 * 
-	 * @param transform the transform to be converted 
+	 *
+	 * @param transform the transform to be converted
 	 * @param interval interval
 	 * @param spacing the spacing of the grid
 	 * @param offset the offset of the output in physical units
@@ -234,11 +230,11 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing the displacements of a {@link DisplacementFieldTransform} 
+	 * Creates a {@link RandomAccessibleInterval} containing the displacements of a {@link DisplacementFieldTransform}
 	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
 	 * but generally should be not used to create a {@link DisplacementFieldTransform}.
 	 * <p>
-	 * Components of the displacements are in the 0th dimension, the extents of the field are given by 
+	 * Components of the displacements are in the 0th dimension, the extents of the field are given by
 	 * the given {@link Interval}. The output interval will therefore be of size: <br>
 	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
 	 * <p>
@@ -249,10 +245,10 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	 * For example,
 	 * <pre>
 	 * {@code () -> DoubleType.createVector(transform.numTargetDimensions())}
-	 * </pre> 
-	 * 
+	 * </pre>
+	 *
 	 * @param <T> the type of the output
-	 * @param transform the transform to be converted 
+	 * @param transform the transform to be converted
 	 * @param interval interval
 	 * @param spacing the spacing of the grid
 	 * @param offset the offset of the output in physical units
@@ -270,15 +266,15 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing the displacements of a {@link DisplacementFieldTransform} 
+	 * Creates a {@link RandomAccessibleInterval} containing the displacements of a {@link DisplacementFieldTransform}
 	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
 	 * but generally should be not used to create a {@link DisplacementFieldTransform}.
 	 * <p>
-	 * Components of the displacements are in the 0th dimension, the extents of the field are given by 
+	 * Components of the displacements are in the 0th dimension, the extents of the field are given by
 	 * the given {@link Interval}. The output interval will therefore be of size: <br>
 	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
 	 * <p>
-	 * The {@link AffineGet} specifies how the discrete coordinates of the output displacement field
+	 * The {@link RealTransform} specifies how the discrete coordinates of the output displacement field
 	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
 	 * of the displacement field grid.
 	 * <p>
@@ -286,29 +282,29 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	 * For example,
 	 * <pre>
 	 * {@code () -> DoubleType.createVector(transform.numTargetDimensions())}
-	 * </pre> 
-	 * 
+	 * </pre>
+	 *
 	 * @param <T> the type of the output
-	 * @param transform the transform to be converted 
+	 * @param transform the transform to be converted
 	 * @param interval interval
-	 * @param gridToPhysical transformation from the discrete grid to the transform's source coordinates
+	 * @param gridTransform transformation from the discrete grid to the transform's source coordinates
 	 * @param supplier supplier for intermediate {@link RealComposite} type
 	 * @return the displacement field
 	 */
 	public static < T extends RealType< T > > RandomAccessibleInterval<T> createDisplacementField(
 			final RealTransform transform,
 			final Interval interval,
-			final AffineGet gridToPhysical,
-			final Supplier<RealComposite<T>> supplier )
+			final RealTransform gridTransform,
+			final Supplier< RealComposite< T > > supplier )
 	{
-		final int nd = transform.numTargetDimensions();	
-		final RandomAccessible< RealComposite < T > > physical = new FunctionRandomAccessible<>(
-				nd, 
-				(x, y) -> { gridToPhysical.apply( x, y ); },
+		final int nd = transform.numTargetDimensions();
+		final RandomAccessible< RealComposite < T > > transformedGrid = new FunctionRandomAccessible<>(
+				nd,
+				(x, y) -> { gridTransform.apply( x, y ); },
 				 supplier );
 
 		final RandomAccessible< RealComposite < T > > displacements = Converters.convert2(
-				physical,
+				transformedGrid,
 				(x, y) -> {
 					transform.apply(x, y);
 					for (int d = 0; d < nd; d++)
@@ -316,9 +312,10 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 				},
 				supplier );
 
-		final long[] dfieldDims = LongStream.concat(
-			LongStream.of( interval.numDimensions() ),
-			Arrays.stream( interval.dimensionsAsLongArray() )).toArray();
+		final long[] dfieldDims = new long[interval.numDimensions() + 1];
+		dfieldDims[ 0 ] = interval.numDimensions();
+		for ( int i = 0; i < interval.numDimensions(); ++i )
+			dfieldDims[ i + 1 ] = interval.dimension( i );
 
 		return Views.interval( Views.interleave( displacements ), new FinalInterval( dfieldDims ) );
 	}
