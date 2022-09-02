@@ -190,14 +190,17 @@ public class PositionFieldTransform implements RealTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing positions of a {@link RealTransform}.
-	 * The spacing parameter specify how the discrete coordinates of the output position field
-	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
-	 * of the position field grid.
+	 * Creates a {@link RandomAccessibleInterval} of {@link DoubleType} containing the positions of a {@link PositionFieldTransform} 
+	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
+	 * but generally should be not used to create a {@link PositionFieldTransform}.
 	 * <p>
-	 * The position at a discrete point i of the output is:<br>
-	 * transform( spacing * i )<br>
-	 * 
+	 * Components of the positions are in the 0th dimension, the extents of the field are given by 
+	 * the given {@link Interval}. The output interval will therefore be of size: <br>
+	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
+	 * <p>
+	 * The spacing parameter specifies how the discrete coordinates of the output position field
+	 * map to the input source coordinates of the transform.
+	 *
 	 * @param transform the transform to be converted 
 	 * @param interval interval
 	 * @param spacing the spacing of the grid
@@ -212,13 +215,16 @@ public class PositionFieldTransform implements RealTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing positions of a {@link RealTransform}.
-	 * The spacing and offset parameters specify how the discrete coordinates of the output position field
-	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
-	 * of the position field grid.
+	 * Creates a {@link RandomAccessibleInterval} of {@link DoubleType} containing the positions of a {@link PositionFieldTransform} 
+	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
+	 * but generally should be not used to create a {@link PositionFieldTransform}.
 	 * <p>
-	 * The position at a discrete point i of the output is:<br>
-	 * transform( spacing * i + offset ) <br>
+	 * Components of the positions are in the 0th dimension, the extents of the field are given by 
+	 * the given {@link Interval}. The output interval will therefore be of size: <br>
+	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
+	 * <p>
+	 * The spacing and offset parameters specify how the discrete coordinates of the output position field
+	 * map to the input source coordinates of the transform.
 	 * 
 	 * @param transform the transform to be converted 
 	 * @param interval interval
@@ -236,13 +242,22 @@ public class PositionFieldTransform implements RealTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing position of a {@link RealTransform}.
-	 * The spacing and offset parameters specify how the discrete coordinates of the output position field
-	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
-	 * of the position field grid.
+	 * Creates a {@link RandomAccessibleInterval} containing the positions of a {@link PositionFieldTransform} 
+	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
+	 * but generally should be not used to create a {@link PositionFieldTransform}.
 	 * <p>
-	 * The position at a discrete point i of the output is:<br>
-	 * transform( spacing * i + offset )<br>
+	 * Components of the positions are in the 0th dimension, the extents of the field are given by 
+	 * the given {@link Interval}. The output interval will therefore be of size: <br>
+	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
+	 * <p>
+	 * The spacing and offset parameters specify how the discrete coordinates of the output position field
+	 * map to the input source coordinates of the transform.
+	 * <p>
+	 * The given supplier determines the output type and must provide {@link RealComposite}s of size greater than or equal to the transforms target dimension.
+	 * For example,
+	 * <pre>
+	 * {@code () -> DoubleType.createVector(transform.numTargetDimensions())}
+	 * </pre> 
 	 * 
 	 * @param <T> the type of the output
 	 * @param transform the transform to be converted 
@@ -263,13 +278,23 @@ public class PositionFieldTransform implements RealTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing positions of a {@link RealTransform}.
+	 * Creates a {@link RandomAccessibleInterval} containing the positions of a {@link PositionFieldTransform} 
+	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
+	 * but generally should be not used to create a {@link PositionFieldTransform}.
+	 * <p>
+	 * Components of the positions are in the 0th dimension, the extents of the field are given by 
+	 * the given {@link Interval}. The output interval will therefore be of size: <br>
+	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
+	 * <p>
 	 * The {@link AffineGet} specifies how the discrete coordinates of the output position field
 	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
-	 * of the position field grid.
+	 * of the displacement field grid.
 	 * <p>
-	 * The position at a discrete point i of the output is:<br>
-	 * transform(gridToPhysical(i))
+	 * The given supplier determines the output type and must provide {@link RealComposite}s of size greater than or equal to the transforms target dimension.
+	 * For example,
+	 * <pre>
+	 * {@code () -> DoubleType.createVector(transform.numTargetDimensions())}
+	 * </pre> 
 	 * 
 	 * @param <T> the type of the output
 	 * @param transform the transform to be converted 

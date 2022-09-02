@@ -182,14 +182,16 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing displacements of a {@link RealTransform}.
-	 * The spacing parameter specify how the discrete coordinates of the output displacement field
-	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
-	 * of the displacement field grid.
+	 * Creates a {@link RandomAccessibleInterval} of {@link DoubleType} containing the displacements of a {@link DisplacementFieldTransform} 
+	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
+	 * but generally should be not used to create a {@link DisplacementFieldTransform}.
 	 * <p>
-	 * The displacement at a discrete point i of the output is:<br>
-	 * x = spacing * i<br>
-	 * transform(x) - x
+	 * Components of the displacements are in the 0th dimension, the extents of the field are given by 
+	 * the given {@link Interval}. The output interval will therefore be of size: <br>
+	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
+	 * <p>
+	 * The spacing parameter specifies how the discrete coordinates of the output displacement field
+	 * map to the input source coordinates of the transform.
 	 * 
 	 * @param transform the transform to be converted 
 	 * @param interval interval
@@ -205,14 +207,16 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing displacements of a {@link RealTransform}.
-	 * The spacing and offset parameters specify how the discrete coordinates of the output displacement field
-	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
-	 * of the displacement field grid.
+	 * Creates a {@link RandomAccessibleInterval} of {@link DoubleType} containing the displacements of a {@link DisplacementFieldTransform} 
+	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
+	 * but generally should be not used to create a {@link DisplacementFieldTransform}.
 	 * <p>
-	 * The displacement at a discrete point i of the output is:<br>
-	 * x = spacing * i + offset<br>
-	 * transform(x) - x
+	 * Components of the displacements are in the 0th dimension, the extents of the field are given by 
+	 * the given {@link Interval}. The output interval will therefore be of size: <br>
+	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
+	 * <p>
+	 * The spacing and offset parameters specify how the discrete coordinates of the output displacement field
+	 * map to the input source coordinates of the transform.
 	 * 
 	 * @param transform the transform to be converted 
 	 * @param interval interval
@@ -230,14 +234,22 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing displacements of a {@link RealTransform}.
-	 * The spacing and offset parameters specify how the discrete coordinates of the output displacement field
-	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
-	 * of the displacement field grid.
+	 * Creates a {@link RandomAccessibleInterval} containing the displacements of a {@link DisplacementFieldTransform} 
+	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
+	 * but generally should be not used to create a {@link DisplacementFieldTransform}.
 	 * <p>
-	 * The displacement at a discrete point i of the output is:<br>
-	 * x = spacing * i + offset<br>
-	 * transform(x) - x
+	 * Components of the displacements are in the 0th dimension, the extents of the field are given by 
+	 * the given {@link Interval}. The output interval will therefore be of size: <br>
+	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
+	 * <p>
+	 * The spacing and offset parameters specify how the discrete coordinates of the output displacement field
+	 * map to the input source coordinates of the transform.
+	 * <p>
+	 * The given supplier determines the output type and must provide {@link RealComposite}s of size greater than or equal to the transforms target dimension.
+	 * For example,
+	 * <pre>
+	 * {@code () -> DoubleType.createVector(transform.numTargetDimensions())}
+	 * </pre> 
 	 * 
 	 * @param <T> the type of the output
 	 * @param transform the transform to be converted 
@@ -258,13 +270,23 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 	}
 
 	/**
-	 * Creates a {@link RandomAccessibleInterval} containing displacements of a {@link RealTransform}.
+	 * Creates a {@link RandomAccessibleInterval} containing the displacements of a {@link DisplacementFieldTransform} 
+	 * for a given {@link RealTransform}. This can be useful for saving a transformation as a displacement field,
+	 * but generally should be not used to create a {@link DisplacementFieldTransform}.
+	 * <p>
+	 * Components of the displacements are in the 0th dimension, the extents of the field are given by 
+	 * the given {@link Interval}. The output interval will therefore be of size: <br>
+	 * [ transform.numTargetDimensions(), interval.dimension(0), ..., interval.dimension( N-1 )]
+	 * <p>
 	 * The {@link AffineGet} specifies how the discrete coordinates of the output displacement field
 	 * map to the input source coordinates of the transform, i.e. it enables setting the spacing and offset
 	 * of the displacement field grid.
 	 * <p>
-	 * The displacement at a discrete point i of the output is:<br>
-	 * transform(gridToPhysical(i)) - gridToPhysical(i)
+	 * The given supplier determines the output type and must provide {@link RealComposite}s of size greater than or equal to the transforms target dimension.
+	 * For example,
+	 * <pre>
+	 * {@code () -> DoubleType.createVector(transform.numTargetDimensions())}
+	 * </pre> 
 	 * 
 	 * @param <T> the type of the output
 	 * @param transform the transform to be converted 
