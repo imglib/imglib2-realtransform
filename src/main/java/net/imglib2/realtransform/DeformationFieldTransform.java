@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,84 +34,33 @@
 
 package net.imglib2.realtransform;
 
-import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.RealPositionable;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
-import net.imglib2.interpolation.InterpolatorFactory;
-import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.type.numeric.RealType;
 
 /**
  * A {@link RealTransform} by continuous offset lookup.
  *
+ * @deprecated Use {@link DisplacementFieldTransform} instead because it is a displacement field
  * @author Stephan Saalfeld &lt;saalfelds@janelia.hhmi.org&gt;
  */
-public class DeformationFieldTransform< T extends RealType< T > > extends PositionFieldTransform< T >
+@Deprecated
+public class DeformationFieldTransform extends DisplacementFieldTransform
 {
-
-	@SuppressWarnings( "unchecked" )
-	public DeformationFieldTransform( final RealRandomAccess< T >... positionAccesses )
+	public DeformationFieldTransform( final RealRandomAccess< ? extends RealLocalizable > displacementsAccess )
 	{
-		super( positionAccesses );
+		super( displacementsAccess );
 	}
 
-	@SafeVarargs
-	public DeformationFieldTransform( final RealRandomAccessible< T >... positions )
+	public DeformationFieldTransform( final RealRandomAccessible< ? extends RealLocalizable > displacements )
 	{
-		super( positions );
+		super( displacements );
 	}
 
-	@SafeVarargs
-	public DeformationFieldTransform( final RandomAccessibleInterval< T >... positions )
+	public < T extends RealType< T > > DeformationFieldTransform( final RandomAccessibleInterval< T > displacements )
 	{
-		super( positions );
-	}
-
-	@SafeVarargs
-	public DeformationFieldTransform(
-			final OutOfBoundsFactory< T, RandomAccessibleInterval< T > > outOfBoundsFactory,
-			final InterpolatorFactory< T, RandomAccessible< T > > interpolatorFactory,
-			final RandomAccessibleInterval< T >... positions )
-	{
-		super( outOfBoundsFactory, interpolatorFactory, positions );
-	}
-
-	@Override
-	public void apply( final double[] source, final double[] target )
-	{
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			positionAccesses[ d ].setPosition( source );
-
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			target[ d ] = positionAccesses[ d ].get().getRealDouble() + source[ d ];
-	}
-
-	@Override
-	public void apply( final float[] source, final float[] target )
-	{
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			positionAccesses[ d ].setPosition( source );
-
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			target[ d ] = ( float ) ( positionAccesses[ d ].get().getRealDouble() + source[ d ] );
-	}
-
-	@Override
-	public void apply( final RealLocalizable source, final RealPositionable target )
-	{
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			positionAccesses[ d ].setPosition( source );
-
-		for ( int d = 0; d < positionAccesses.length; d++ )
-			target.setPosition( positionAccesses[ d ].get().getRealDouble() + source.getDoublePosition( d ), d );
-	}
-
-	@Override
-	public RealTransform copy()
-	{
-		return new DeformationFieldTransform<>( copyAccesses() );
+		super( displacements );
 	}
 }
