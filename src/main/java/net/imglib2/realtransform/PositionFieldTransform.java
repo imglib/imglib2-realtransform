@@ -356,9 +356,11 @@ public class PositionFieldTransform implements RealTransform
 		final RandomAccessible< RealComposite< T > > positions = Converters.convert2(
 				pixelCoordinates,
 				() -> {
+					final RealTransform gridCopy = gridTransform.copy();
+					final RealTransform copy = transform.copy();
 					return ( x, y ) -> {
-						gridTransform.apply( x, y );
-						transform.apply( y, y );
+						gridCopy.apply( x, y );
+						copy.apply( y, y );
 					};
 				},
 				supplier );

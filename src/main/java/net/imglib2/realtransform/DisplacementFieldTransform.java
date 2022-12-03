@@ -352,17 +352,23 @@ public class DisplacementFieldTransform extends PositionFieldTransform
 		final int nd = transform.numTargetDimensions();
 		final RandomAccessible< RealComposite< T > > transformedGrid = new FunctionRandomAccessible<>(
 				nd,
-				( x, y ) -> {
-					gridTransform.apply( x, y );
+				() -> {
+					final RealTransform copy = gridTransform.copy();
+					return ( x, y ) -> {
+						copy.apply( x, y );
+					};
 				},
 				supplier );
 
 		final RandomAccessible< RealComposite< T > > displacements = Converters.convert2(
 				transformedGrid,
-				( x, y ) -> {
-					transform.apply( x, y );
-					for ( int d = 0; d < nd; d++ )
-						y.move( -x.getDoublePosition( d ), d );
+				() -> {
+					final RealTransform copy = transform.copy();
+					return ( x, y ) -> {
+						copy.apply( x, y );
+						for ( int d = 0; d < nd; d++ )
+							y.move( -x.getDoublePosition( d ), d );
+					};
 				},
 				supplier );
 
