@@ -94,6 +94,7 @@ public class PositionFieldTransform implements RealTransform
 
 	/**
 	 *
+	 * @param <T>
 	 * @param positions
 	 *            interleaved target coordinate, this means that the components
 	 *            of the target coordinates are in the 0th dimension

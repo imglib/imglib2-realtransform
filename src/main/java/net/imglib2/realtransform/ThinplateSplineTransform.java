@@ -120,7 +120,7 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 	}
 
 	/**
-	 * Create a copy of this {@link ThinplateSplineTranform} appropriate for use in
+	 * Create a copy of this {@link ThinplateSplineTransform} appropriate for use in
 	 * concurrent code.
 	 * <p>
 	 * For efficiency, this implementation does not make a deep copy of the wrapped {@link ThinPlateR2LogRSplineKernelTransform},
