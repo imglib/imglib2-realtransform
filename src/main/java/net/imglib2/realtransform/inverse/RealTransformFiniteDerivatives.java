@@ -89,7 +89,6 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 
 	public RealTransformFiniteDerivatives copy()
 	{
-		System.out.println( "RealTransformFiniteDerivatives copy" );
 		return new RealTransformFiniteDerivatives( transform.copy() );
 	}
 
