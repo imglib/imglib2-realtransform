@@ -215,7 +215,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 	@Override
 	public RealTransform copy()
 	{
-		InverseRealTransformGradientDescent copy = new InverseRealTransformGradientDescent( ndims, xfm );
+		InverseRealTransformGradientDescent copy = new InverseRealTransformGradientDescent( ndims, xfm.copy() );
 		copy.setBeta( this.beta );
 		copy.setC( this.c );
 		copy.setTolerance( this.tolerance );
