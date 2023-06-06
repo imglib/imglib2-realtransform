@@ -1071,7 +1071,7 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 			rMin[ d ] = interval.realMin( d );
 			rMax[ d ] = interval.realMax( d );
 		}
-		return new FinalRealInterval( rMin, rMax );
+		return FinalRealInterval.wrap( rMin, rMax );
 	}
 
 	@Override
