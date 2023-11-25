@@ -259,7 +259,7 @@ public class RealViewsSimplifyUtils
 				s[ d ] = affineGet.get( d, d );
 			}
 
-			return new ScaleAndTranslation( t, s );
+			return new ScaleAndTranslation( s, t );
 
 		}
 		return ( AffineGet ) affineGet.copy();
