@@ -32,7 +32,7 @@
 		<developer>
 			<id>axtimwalde</id>
 			<name>Stephan Saalfeld</name>
-			<url>https://imagej.net/User:Saalfeld</url>
+			<url>https://imagej.net/people/axtimwalde</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -46,7 +46,7 @@
 		<developer>
 			<id>tpietzsch</id>
 			<name>Tobias Pietzsch</name>
-			<url>https://imagej.net/User:Pietzsch</url>
+			<url>https://imagej.net/people/tpietzsch</url>
 			<roles>
 				<role>lead</role>
 				<role>developer</role>
@@ -59,7 +59,7 @@
 		<developer>
 			<id>StephanPreibisch</id>
 			<name>Stephan Preibisch</name>
-			<url>https://imagej.net/User:StephanP</url>
+			<url>https://imagej.net/people/StephanPreibisch</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -73,7 +73,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>https://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/people/ctrueden</url>
 			<roles>
 				<role>maintainer</role>
 			</roles>
@@ -82,7 +82,7 @@
 	<contributors>
 		<contributor>
 			<name>John Bogovic</name>
-			<url>https://imagej.net/User:Bogovic</url>
+			<url>https://imagej.net/people/bogovicj</url>
 			<properties><id>bogovicj</id></properties>
 		</contributor>
 		<contributor>
@@ -91,32 +91,32 @@
 		</contributor>
 		<contributor>
 			<name>Christian Dietz</name>
-			<url>https://imagej.net/User:Dietzc</url>
+			<url>https://imagej.net/people/dietzc</url>
 			<properties><id>dietzc</id></properties>
 		</contributor>
 		<contributor>
 			<name>Robert Haase</name>
-			<url>https://imagej.net/User:Haesleinhuepf</url>
+			<url>https://imagej.net/people/haesleinhuepf</url>
 			<properties><id>haesleinhuepf</id></properties>
 		</contributor>
 		<contributor>
 			<name>Alison Walter</name>
-			<url>https://imagej.net/User:Awalter2</url>
+			<url>https://imagej.net/people/awalter17</url>
 			<properties><id>awalter17</id></properties>
 		</contributor>
 		<contributor>
 			<name>Jan Funke</name>
-			<url>https://imagej.net/User:Funke</url>
+			<url>https://imagej.net/people/funkey</url>
 			<properties><id>funkey</id></properties>
 		</contributor>
 		<contributor>
 			<name>Albert Cardona</name>
-			<url>https://imagej.net/User:Albertcardona</url>
+			<url>https://imagej.net/people/acardona</url>
 			<properties><id>acardona</id></properties>
 		</contributor>
 		<contributor>
 			<name>Mark Hiner</name>
-			<url>https://imagej.net/User:Hinerm</url>
+			<url>https://imagej.net/people/hinerm</url>
 			<properties><id>hinerm</id></properties>
 		</contributor>
 	</contributors>
