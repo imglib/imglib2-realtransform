@@ -2,7 +2,7 @@
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
- * Copyright (C) 2009 - 2020 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
+ * Copyright (C) 2009 - 2024 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
  * John Bogovic, Albert Cardona, Barry DeZonia, Christian Dietz, Jan Funke,
  * Aivar Grislis, Jonathan Hale, Grant Harris, Stefan Helfrich, Mark Hiner,
  * Martin Horn, Steffen Jaensch, Lee Kamentsky, Larry Lindsey, Melissa Linkert,
@@ -48,7 +48,7 @@ import net.imglib2.RealRandomAccessible;
  * {@link RealRandomAccess} on it because each {@link RealRandomAccess}
  * internally works with a copy of the transform.  Make sure that you request
  * a new {@link RandomAccess} after modifying the transformation.
- * 
+ *
  * @author Stephan Saalfeld
  */
 public class RealTransformRealRandomAccessible< T, R extends RealTransform > implements RealRandomAccessible< T >
@@ -61,7 +61,7 @@ public class RealTransformRealRandomAccessible< T, R extends RealTransform > imp
 	 * {@link RealRandomAccess} that generates its samples from a source
 	 * {@link RealRandomAccessible} at coordinates transformed by a
 	 * {@link RealTransform}.
-	 * 
+	 *
 	 */
 	public class RealTransformRealRandomAccess extends RealPoint implements RealRandomAccess< T >
 	{
@@ -81,7 +81,7 @@ public class RealTransformRealRandomAccessible< T, R extends RealTransform > imp
 		private RealTransformRealRandomAccess( final RealTransformRealRandomAccess a )
 		{
 			super( a );
-			this.sourceAccess = a.sourceAccess.copyRealRandomAccess();
+			this.sourceAccess = a.sourceAccess.copy();
 			transformCopy = ( R )a.transformCopy.copy();
 		}
 
@@ -102,13 +102,6 @@ public class RealTransformRealRandomAccessible< T, R extends RealTransform > imp
 		{
 			return new RealTransformRealRandomAccess( this );
 		}
-
-		@Override
-		public RealRandomAccess< T > copyRealRandomAccess()
-		{
-			return copy();
-		}
-
 	}
 
 	public RealTransformRealRandomAccessible( final RealRandomAccessible< T > source, final R transformToSource )

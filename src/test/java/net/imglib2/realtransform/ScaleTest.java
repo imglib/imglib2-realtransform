@@ -1,4 +1,4 @@
-/*
+/*-
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
@@ -35,84 +35,92 @@ package net.imglib2.realtransform;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.util.PrimitiveIterator;
-import java.util.Random;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import net.imglib2.FinalRealInterval;
-import net.imglib2.test.ImgLib2Assert;
+public class ScaleTest {
 
-/**
- * @author Stephan Saalfeld
- *
- */
-public class AffineTransform2DTest {
+	double[] v23 = new double[] { 2, 3 };
+	double[] v45 = new double[] { 4, 5 };
+	double[] result2;
 
-	protected Random rnd = new Random( 0 );
+	double[] v234 = new double[] { 2, 3, 4 };
+	double[] v567 = new double[] { 5, 6, 7 };
+	double[] result3;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
+	private Scale s2;
+	private Scale s3;
+
+	private Scale2D s2d;
+	private Scale3D s3d;
+
 	@Before
-	public void setUp() throws Exception
-	{
-		 rnd.setSeed( 0 );
+	public void setUp() throws Exception {
+		s2 = new Scale( v23 );
+		s2d = new Scale2D( v45 );
+
+		result2 = new double[2];
+		for( int i = 0; i < 2; i++ )
+			result2[i] = v23[i]*v45[i];
+
+		s3 = new Scale( v234 );
+		s3d = new Scale3D( v567 );
+
+		result3 = new double[3];
+		for( int i = 0; i < 3; i++ )
+			result3[i] = v234[i]*v567[i];
 	}
 
 	@Test
-	public void testRotate()
+	public void testScaleConcatenate()
 	{
-		final AffineTransform2D affine = new AffineTransform2D();
-		affine.set(
-				rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(),
-				rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble() );
+		s2.set(v23);
+		s2d.set(v45);
+		s2.preConcatenate(s2d);
+		assertArrayEquals("scale 2d preConcatenate", result2, s2.getScaleCopy(), 1e-9 );
 
-		final AffineTransform2D dR = new AffineTransform2D();
+		s2.set(v23); // reset
+		s2.concatenate(s2d);
+		assertArrayEquals("scale 2d concatenate", result2, s2.getScaleCopy(), 1e-9 );
 
-		for ( int i = 0; i < 100; ++i )
-		{
-			final double d = rnd.nextDouble() * 8 * Math.PI - 4 * Math.PI;
-			final double dcos = Math.cos( d );
-			final double dsin = Math.sin( d );
 
-			dR.set(
-					dcos, -dsin, 0.0,
-					dsin, dcos, 0.0 );
+		s3.set(v234);
+		s3d.set(v567);
+		s3.preConcatenate(s3d);
+		assertArrayEquals("scale 3d preConcatenate", result3, s3.getScaleCopy(), 1e-9 );
 
-			dR.concatenate( affine );
-			affine.rotate( d );
-
-			assertArrayEquals( dR.getRowPackedCopy(), affine.getRowPackedCopy(), 0.001 );
-		}
+		s3.set(v234); // reset
+		s3.concatenate(s3d);
+		assertArrayEquals("scale 3d concatenate", result3, s3.getScaleCopy(), 1e-9 );
 	}
 
 	@Test
-	public void testEstimateBounds()
+	public void testScale2dConcatenate()
 	{
-		final int numIterations = 1000;
-		final PrimitiveIterator.OfDouble random = rnd.doubles( -100, 100 ).iterator();
+		s2.set(v23);
+		s2d.set(v45);
 
-		for ( int i = 0; i < numIterations; i++ )
-		{
-			final double[] min = new double[ 2 ];
-			final double[] max = new double[ 2 ];
-			for ( int d = 0; d < 2; d++ )
-			{
-				final double a = random.nextDouble();
-				final double b = random.nextDouble();
-				min[ d ] = Math.min( a, b );
-				max[ d ] = Math.max( a, b );
-			}
-			final FinalRealInterval interval = new FinalRealInterval( min, max );
+		// test Scale class
+		s2d.preConcatenate(s2);
+		assertArrayEquals("preConcatenate", result2, s2d.getScaleCopy(), 1e-9 );
 
-			final AffineTransform2D affine = new AffineTransform2D();
-			for ( int r = 0; r < 2; r++ )
-				for ( int c = 0; c < 3; c++ )
-					affine.set( random.nextDouble(), r, c );
+		s2d.set(v45); // reset
+		s2d.concatenate(s2);
+		assertArrayEquals("concatenate", result2, s2d.getScaleCopy(), 1e-9 );
+	}
 
-			ImgLib2Assert.assertIntervalEquals( affine.estimateBounds( interval ), AffineTransform3DTest.estimateBoundsFromCorners( affine, interval ), 0.0000001 );
-		}
+	@Test
+	public void testScale3dConcatenate()
+	{
+		s3.set(v234);
+		s3d.set(v567);
+
+		// test Scale class
+		s3d.preConcatenate(s3);
+		assertArrayEquals("preConcatenate", result3, s3d.getScaleCopy(), 1e-9 );
+
+		s3d.set(v567); // reset
+		s3d.concatenate(s3);
+		assertArrayEquals("concatenate", result3, s3d.getScaleCopy(), 1e-9 );
 	}
 }

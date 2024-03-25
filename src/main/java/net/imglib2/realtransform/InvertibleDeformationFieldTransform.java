@@ -2,7 +2,7 @@
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
- * Copyright (C) 2009 - 2020 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
+ * Copyright (C) 2009 - 2024 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
  * John Bogovic, Albert Cardona, Barry DeZonia, Christian Dietz, Jan Funke,
  * Aivar Grislis, Jonathan Hale, Grant Harris, Stefan Helfrich, Mark Hiner,
  * Martin Horn, Steffen Jaensch, Lee Kamentsky, Larry Lindsey, Melissa Linkert,
@@ -33,15 +33,15 @@
  */
 package net.imglib2.realtransform;
 
-import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
-import net.imglib2.type.numeric.RealType;
-
-public class InvertibleDeformationFieldTransform< T extends RealType< T > > extends WrappedIterativeInvertibleRealTransform< DeformationFieldTransform< T > >
+/**
+ *
+ * @deprecated use {@link InvertibleDisplacementFieldTransform} instead
+ */
+@Deprecated
+public class InvertibleDeformationFieldTransform extends InvertibleDisplacementFieldTransform
 {
-
-	public InvertibleDeformationFieldTransform( final DeformationFieldTransform< T > def )
+	public InvertibleDeformationFieldTransform( final DisplacementFieldTransform def )
 	{
 		super( def );
 	}
-
 }

@@ -2,7 +2,7 @@
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
- * Copyright (C) 2009 - 2020 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
+ * Copyright (C) 2009 - 2024 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
  * John Bogovic, Albert Cardona, Barry DeZonia, Christian Dietz, Jan Funke,
  * Aivar Grislis, Jonathan Hale, Grant Harris, Stefan Helfrich, Mark Hiner,
  * Martin Horn, Steffen Jaensch, Lee Kamentsky, Larry Lindsey, Melissa Linkert,
@@ -44,6 +44,11 @@ import net.imglib2.realtransform.inverse.AbstractDifferentiableRealTransform;
  * An <em>n</em>-dimensional thin plate spline transform backed by John
  * Bogovic's <a href="https://github.com/saalfeldlab/jitk-tps">jitk-tps</a>
  * library.
+ * <p>
+ * For efficiency, this implementation does not deep copies of the wrapped {@link ThinPlateR2LogRSplineKernelTransform},
+ * since it is stateless and the same instance may be used concurrently. However, take care not to modify
+ * the wrapped instance concurrently, as that could cause race conditions.
+ * </p>
  *
  * @author Stephan Saalfeld
  * @author John Bogovic
@@ -114,6 +119,17 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 			target.setPosition( b[ d ], d );
 	}
 
+	/**
+	 * Create a copy of this {@link ThinplateSplineTransform} appropriate for use in
+	 * concurrent code.
+	 * <p>
+	 * For efficiency, this implementation does not make a deep copy of the wrapped {@link ThinPlateR2LogRSplineKernelTransform},
+	 * since it is stateless and the same instance may be used concurrently. However, take care not to modify
+	 * the wrapped instance concurrently, as that could cause race conditions.
+	 * </p>
+	 *
+	 * @return a copy
+	 */
 	@Override
 	public ThinplateSplineTransform copy()
 	{
@@ -150,6 +166,16 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 		jacobian.set( jflat );
 
 		return jacobian;
+	}
+
+	/**
+	 * Returns the instance of the wrapped {@link ThinPlateR2LogRSplineKernelTransform}.
+	 *
+	 * @return the kernel transform
+	 */
+	public ThinPlateR2LogRSplineKernelTransform getKernelTransform()
+	{
+		return tps;
 	}
 
 }

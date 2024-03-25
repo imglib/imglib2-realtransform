@@ -2,7 +2,7 @@
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
- * Copyright (C) 2009 - 2020 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
+ * Copyright (C) 2009 - 2024 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
  * John Bogovic, Albert Cardona, Barry DeZonia, Christian Dietz, Jan Funke,
  * Aivar Grislis, Jonathan Hale, Grant Harris, Stefan Helfrich, Mark Hiner,
  * Martin Horn, Steffen Jaensch, Lee Kamentsky, Larry Lindsey, Melissa Linkert,
@@ -291,13 +291,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public StackingRealRandomAccess copyRealRandomAccess()
-		{
-			return copy();
-		}
-
-		@Override
-		public void localize( float[] pos )
+		public void localize( final float[] pos )
 		{
 			for ( int d = 0; d < sourceNumDimensions; ++d )
 				pos[ d ] = sourceAccess.getFloatPosition( d );
@@ -306,7 +300,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public void localize( double[] pos )
+		public void localize( final double[] pos )
 		{
 			for ( int d = 0; d < sourceNumDimensions; ++d )
 				pos[ d ] = sourceAccess.getDoublePosition( d );
@@ -315,7 +309,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public float getFloatPosition( int d )
+		public float getFloatPosition( final int d )
 		{
 			if ( d < sourceNumDimensions )
 				return sourceAccess.getFloatPosition( d );
@@ -323,7 +317,7 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
-		public double getDoublePosition( int d )
+		public double getDoublePosition( final int d )
 		{
 			if ( d < sourceNumDimensions )
 				return sourceAccess.getDoublePosition( d );

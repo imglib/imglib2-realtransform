@@ -2,7 +2,7 @@
  * #%L
  * ImgLib2: a general-purpose, multidimensional image processing library.
  * %%
- * Copyright (C) 2009 - 2020 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
+ * Copyright (C) 2009 - 2024 Tobias Pietzsch, Stephan Preibisch, Stephan Saalfeld,
  * John Bogovic, Albert Cardona, Barry DeZonia, Christian Dietz, Jan Funke,
  * Aivar Grislis, Jonathan Hale, Grant Harris, Stefan Helfrich, Mark Hiner,
  * Martin Horn, Steffen Jaensch, Lee Kamentsky, Larry Lindsey, Melissa Linkert,
@@ -51,7 +51,7 @@ import net.imglib2.RealRandomAccessible;
  * {@link RandomAccess} on it because each {@link RandomAccess} internally
  * works with a copy of the transform.  Make sure that you request a new
  * {@link RandomAccess} after modifying the transformation.
- * 
+ *
  * @author Stephan Saalfeld
  * @author Tobias Pietzsch
  */
@@ -61,7 +61,7 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 	 * {@link RealRandomAccess} that generates its samples from a source
 	 * {@link RealRandomAccessible} at coordinates transformed by a
 	 * {@link RealTransform}.
-	 * 
+	 *
 	 */
 	public class AffineRandomAccess extends RealTransformRandomAccessible< T, R >.RealTransformRandomAccess
 	{
@@ -96,7 +96,7 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 		public void bck( final int d )
 		{
 			super.bck( d );
-			
+
 			/* TODO storing an inverse of all ds would potentially improve the
 			 * performance of bck calls for some overhead on construction of
 			 * the access.
@@ -184,12 +184,6 @@ public class AffineRandomAccessible< T, R extends AffineGet > extends RealTransf
 		public AffineRandomAccess copy()
 		{
 			return new AffineRandomAccess( this );
-		}
-
-		@Override
-		public AffineRandomAccess copyRandomAccess()
-		{
-			return copy();
 		}
 	}
 
