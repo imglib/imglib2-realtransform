@@ -74,6 +74,12 @@ public class RealPositionRealRandomAccessible implements RealRandomAccessible< D
 		}
 
 		@Override
+		public DoubleType getType()
+		{
+			return t;
+		}
+
+		@Override
 		public RealPositionRealRandomAccess copy()
 		{
 			return new RealPositionRealRandomAccess();
