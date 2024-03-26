@@ -127,4 +127,10 @@ public class RealTransformRandomAccessible< T, R extends RealTransform > extends
 	{
 		return randomAccess();
 	}
+
+	@Override
+	public T getType()
+	{
+		return source.getType();
+	}
 }
