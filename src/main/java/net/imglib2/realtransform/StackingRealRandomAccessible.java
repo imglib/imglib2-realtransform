@@ -364,4 +364,10 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 	{
 		return numDimensions;
 	}
+
+	@Override
+	public T getType()
+	{
+		return source.getType();
+	}
 }
