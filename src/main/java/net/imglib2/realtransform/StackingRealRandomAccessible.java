@@ -285,6 +285,12 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
+		public T getType()
+		{
+			return sourceAccess.getType();
+		}
+
+		@Override
 		public StackingRealRandomAccess copy()
 		{
 			return new StackingRealRandomAccess();
