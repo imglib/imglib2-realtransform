@@ -101,6 +101,12 @@ public class RealTransformRandomAccessible< T, R extends RealTransform > extends
 		}
 
 		@Override
+		public T getType()
+		{
+			return sourceAccess.getType();
+		}
+
+		@Override
 		public RealTransformRandomAccess copy()
 		{
 			return new RealTransformRandomAccess( this );
@@ -126,5 +132,11 @@ public class RealTransformRandomAccessible< T, R extends RealTransform > extends
 	public RealTransformRandomAccess randomAccess( final Interval interval )
 	{
 		return randomAccess();
+	}
+
+	@Override
+	public T getType()
+	{
+		return source.getType();
 	}
 }
