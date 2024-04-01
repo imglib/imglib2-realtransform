@@ -94,6 +94,8 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 	private double[] guess; // initialization for iterative inverse
 
+	private boolean guessSet = false;
+
 	protected static Logger logger = LoggerFactory.getLogger( InverseRealTransformGradientDescent.class );
 
 	public InverseRealTransformGradientDescent( int ndims, DifferentiableRealTransform xfm )
@@ -109,6 +111,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		target = new double[ ndims ];
 		estimate = new double[ ndims ];
 		estimateXfm = new double[ ndims ];
+		guess = new double[ ndims ];
 	}
 
 	public void setBeta( final double beta )
@@ -226,12 +229,18 @@ public class InverseRealTransformGradientDescent implements RealTransform
 	public void setGuess( final double[] guess )
 	{
 		this.guess = guess;
+		guessSet = true;
 	}
 
 	public void apply( final double[] s, final double[] t )
 	{
+		// try to be smart about initial estimate
+		// if it was not set manually
+		if( !guessSet )
+			initialize( t, guess );
+
 		// invTol sets the error
-		inverseTol( s, s, tolerance, maxIters );
+		inverseTol( s, guess, tolerance, maxIters );
 
 		// copy estimate into t
 		System.arraycopy( estimate, 0, t, 0, t.length );
@@ -260,13 +269,52 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		tgt.setPosition( tgtd );
 	}
 
+	public double initialize( final double[] target, final double[] guess )
+	{
+		// use estimate variable to store result, rename for readability
+		final double[] result = estimate;
+
+		// self
+		xfm.apply(target, result);
+		LinAlgHelpers.subtract(result, target, result);
+		final double selfErr = LinAlgHelpers.length(result);
+
+		// origin
+		Arrays.fill(guess, 0);
+		xfm.apply(guess, result);
+		LinAlgHelpers.subtract(result, target, result);
+		final double originErr = LinAlgHelpers.length(result);
+
+		final ScaleTranslation st = estimateScaleAndTranslation(xfm);
+		LinAlgHelpers.subtract(target, st.t, guess);
+		LinAlgHelpers.scale(guess, 1/st.s, guess);
+
+		xfm.apply(guess, result);
+		LinAlgHelpers.subtract(result, target, result);
+		final double stErr = LinAlgHelpers.length(result);
+
+		if( stErr < selfErr && stErr < originErr )
+		{
+			// guess currently holds st estimate
+			return stErr;
+		}
+		if( selfErr < originErr && selfErr < stErr )
+		{
+			System.arraycopy(target, 0, guess, 0, guess.length);
+			return selfErr;
+		}
+		else
+		{
+			Arrays.fill(guess, 0);
+			return originErr;
+		}
+	}
+
 	public double inverseTol( final double[] target, final double[] guess, final double tolerance, final int maxIters )
 	{
 		// TODO - have a flag in the apply method to also return the derivative
-		// if requested
-		// to prevent duplicated effort
+		// if requested to prevent duplicated effort
 
-		// TODO should this be
 		this.target = target;
 
 		/*
@@ -275,7 +323,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		 */
 		error = 999 * tolerance;
 
-		setEstimate( guess );
+		setEstimate(guess);
 
 		xfm.apply( estimate, estimateXfm );
 		updateError();
@@ -284,7 +332,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		int k = 0;
 		while ( error >= tolerance && k < maxIters )
 		{
-
 			/*
 			 * xfm.jacobian( estimate );
 			 * 
@@ -306,11 +353,10 @@ public class InverseRealTransformGradientDescent implements RealTransform
 			xfm.apply( estimate, estimateXfm );
 			updateError();
 
-			error = getError();
-
 			k++;
 		}
 
+		guessSet = false;
 		return error;
 	}
 
@@ -496,6 +542,47 @@ public class InverseRealTransformGradientDescent implements RealTransform
 			err += ( y[ i ] - x[ i ] ) * ( y[ i ] - x[ i ] );
 
 		return err;
+	}
+
+	public static double estimateGlobalScale( RealTransform tform ) {
+
+		return estimateScaleAndTranslation(tform).s;
+	}
+
+	private static ScaleTranslation estimateScaleAndTranslation( RealTransform tform ) {
+
+		final int N = tform.numSourceDimensions();
+		final double[] t = new double[N];
+		final double[] p = new double[N];
+
+		tform.apply(t, t);
+
+		double s = 0.0;
+		for( int i = 0; i < N; i++ )
+		{
+			p[i] = 1.0;
+
+			tform.apply(p, p);
+			LinAlgHelpers.subtract(p, t, p);
+			s += LinAlgHelpers.length(p);
+
+			Arrays.fill(p, 0);
+		}
+		s /= N;
+
+		return new ScaleTranslation(s, t);
+	}
+
+	private static class ScaleTranslation {
+
+		final double s;
+		final double[] t;
+
+		public ScaleTranslation( double s, double[] t )
+		{
+			this.s = s;
+			this.t = t;
+		}
 	}
 
 }
