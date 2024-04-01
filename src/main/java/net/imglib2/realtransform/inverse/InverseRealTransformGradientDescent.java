@@ -111,12 +111,12 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		estimateXfm = new double[ ndims ];
 	}
 
-	public void setBeta( double beta )
+	public void setBeta( final double beta )
 	{
 		this.beta = beta;
 	}
 
-	public void setC( double c )
+	public void setC( final double c )
 	{
 		this.c = c;
 	}
@@ -131,22 +131,22 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		this.maxIters = maxIters;
 	}
 
-	public void setFixZ( boolean fixZ )
+	public void setFixZ( final boolean fixZ )
 	{
 		this.fixZ = fixZ;
 	}
 
-	public void setStepSize( double stepSize )
+	public void setStepSize( final double stepSize )
 	{
 		stepSz = stepSize;
 	}
 
-	public void setMinStep( double minStep )
+	public void setMinStep( final double minStep )
 	{
 		this.minStepSize = minStep;
 	}
 
-	public void setMaxStep( double maxStep )
+	public void setMaxStep( final double maxStep )
 	{
 		this.maxStepSize = maxStep;
 	}
@@ -161,12 +161,12 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		this.jacobianRegularizationEps = e;
 	}
 
-	public void setStepSizeMaxTries( int stepSizeMaxTries )
+	public void setStepSizeMaxTries( final int stepSizeMaxTries )
 	{
 		this.stepSizeMaxTries = stepSizeMaxTries;
 	}
 
-	public void setTarget( double[] tgt )
+	public void setTarget( final double[] tgt )
 	{
 		System.arraycopy( tgt, 0, target, 0, ndims );
 	}
@@ -181,12 +181,12 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		return dir;
 	}
 
-	public void setEstimate( double[] est )
+	public void setEstimate( final double[] est )
 	{
 		System.arraycopy( est, 0, estimate, 0, ndims );
 	}
 
-	public void setEstimateXfm( double[] est )
+	public void setEstimateXfm( final double[] est )
 	{
 		System.arraycopy( est, 0, estimateXfm, 0, ndims );
 	}
@@ -407,7 +407,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 	 *            the step size
 	 * @return true if the step size satisfies the condition
 	 */
-	public boolean armijoCondition( double c, double t )
+	public boolean armijoCondition( final double c, final double t )
 	{
 		double[] d = dir;
 		double[] x = estimate; // give a convenient name
@@ -434,7 +434,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 			return false;
 	}
 
-	public double squaredError( double[] x )
+	public double squaredError( final double[] x )
 	{
 		double error = 0;
 		for ( int i = 0; i < ndims; i++ )
@@ -443,7 +443,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		return error;
 	}
 
-	public void updateEstimate( double stepSize )
+	public void updateEstimate( final double stepSize )
 	{
 		for ( int i = 0; i < ndims; i++ )
 			estimate[ i ] += stepSize * dir[ i ];
