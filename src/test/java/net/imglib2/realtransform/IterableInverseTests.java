@@ -33,6 +33,8 @@
  */
 package net.imglib2.realtransform;
 
+import org.ejml.data.DMatrix;
+import org.ejml.data.DMatrixRMaj;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -298,10 +300,13 @@ public class IterableInverseTests
 	{
 		final AffineTransform jacobian;
 
+		final DMatrixRMaj jacobianMtx;
+
 		public IterativeAffineInverse( final int n )
 		{
 			super( n );
 			jacobian = new AffineTransform( n );
+			jacobianMtx = new DMatrixRMaj(n, n);
 		}
 
 		@Override
@@ -310,7 +315,7 @@ public class IterableInverseTests
 			RealTransformFiniteDerivatives.directionToward( jacobian( x ), displacement, x, y );
 		}
 
-		@Override
+		@Deprecated
 		public AffineTransform jacobian( final double[] x )
 		{
 			jacobian.set( this.getRowPackedCopy() );
@@ -318,6 +323,13 @@ public class IterableInverseTests
 				jacobian.set( 0.0, d, n );
 
 			return jacobian;
+		}
+
+		@Override
+		public DMatrixRMaj jacobianMatrix(final double[] x) {
+
+			jacobianMtx.setData(this.getRowPackedCopy());
+			return jacobianMtx;
 		}
 
 		@Override

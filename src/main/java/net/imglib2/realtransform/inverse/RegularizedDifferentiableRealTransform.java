@@ -33,10 +33,11 @@
  */
 package net.imglib2.realtransform.inverse;
 
+import org.ejml.data.DMatrixRMaj;
+
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.realtransform.AffineTransform;
-import net.imglib2.realtransform.RealTransform;
 
 /**
  * Wraps and regularizes a {@link DifferentiableRealTransform}.
@@ -57,6 +58,7 @@ public class RegularizedDifferentiableRealTransform extends AbstractDifferentiab
 
 	public RegularizedDifferentiableRealTransform( final DifferentiableRealTransform dxfm, final double epsilon )
 	{
+		super(dxfm.numSourceDimensions());
 		this.dxfm = dxfm;
 		this.epsilon = epsilon;
 	}
@@ -68,11 +70,21 @@ public class RegularizedDifferentiableRealTransform extends AbstractDifferentiab
 	 *            the point
 	 * @return the jacobian
 	 */
-	public AffineTransform jacobian( double[] x )
+	@Deprecated
+	public AffineTransform jacobian( final double[] x )
 	{
 		AffineTransform jac = dxfm.jacobian( x );
 		for ( int i = 0; i < jac.numSourceDimensions(); i++ )
 			jac.set( epsilon + ( 1 - epsilon ) * jac.get( i, i ), i, i );
+
+		return jac;
+	}
+
+	public DMatrixRMaj jacobianMatrix( final double[] x )
+	{
+		final DMatrixRMaj jac = dxfm.jacobianMatrix(x);
+		for (int i = 0; i < numSourceDimensions(); i++)
+			jac.set(i, i, epsilon + (1 - epsilon) * jac.get(i, i));
 
 		return jac;
 	}

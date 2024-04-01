@@ -33,6 +33,8 @@
  */
 package net.imglib2.realtransform.inverse;
 
+import org.ejml.data.DMatrixRMaj;
+
 import net.imglib2.realtransform.AffineTransform;
 import net.imglib2.realtransform.RealTransform;
 
@@ -57,7 +59,17 @@ public interface DifferentiableRealTransform extends RealTransform
 	 *            the point
 	 * @return the jacobian
 	 */
-	public AffineTransform jacobian( double[] x );
+	@Deprecated
+	public AffineTransform jacobian( final double[] x );
+
+	/**
+	 * Returns the jacobian matrix of this transform at the point x.
+	 * 
+	 * @param x
+	 *            the point
+	 * @return the jacobian
+	 */
+	public DMatrixRMaj jacobianMatrix( final double[] x );
 
 	/**
 	 * Writes the direction <em>displacement</em> in which to move the input

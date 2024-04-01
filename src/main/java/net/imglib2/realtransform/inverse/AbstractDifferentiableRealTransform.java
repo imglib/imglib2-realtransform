@@ -33,10 +33,28 @@
  */
 package net.imglib2.realtransform.inverse;
 
+import org.ejml.data.DMatrix;
+import org.ejml.data.DMatrixRMaj;
+import org.ejml.dense.row.NormOps_DDRM;
+import org.ejml.dense.row.mult.MatrixVectorMult_DDRM;
+
 import net.imglib2.realtransform.AffineTransform;
 
 public abstract class AbstractDifferentiableRealTransform implements DifferentiableRealTransform
 {
+	protected final int n;
+
+	protected final DMatrixRMaj err;
+
+	protected final DMatrixRMaj dir;
+
+	public AbstractDifferentiableRealTransform( int n )
+	{
+		this.n = n;
+		err = new DMatrixRMaj(n, 1);
+		dir = new DMatrixRMaj(n, 1);
+	}
+
 	/**
 	 * Returns the jacobian matrix of this transform at the point x.
 	 * 
@@ -44,7 +62,30 @@ public abstract class AbstractDifferentiableRealTransform implements Differentia
 	 *            the point
 	 * @return the jacobian
 	 */
-	public abstract AffineTransform jacobian( double[] x );
+	@Deprecated
+	public AffineTransform jacobian( double[] x )
+	{
+		 return toAffine(jacobianMatrix(x));
+	}
+
+	private AffineTransform toAffine( final DMatrix mtx )
+	{
+		final AffineTransform out = new AffineTransform(numSourceDimensions());
+
+		final DMatrixRMaj mtxRMaj;
+		if( mtx instanceof DMatrixRMaj )
+		{
+			mtxRMaj = ((DMatrixRMaj)mtx);
+		}
+		else {
+			mtxRMaj = new DMatrixRMaj(mtx);
+		}
+
+		out.set(mtxRMaj.data);
+		return out;
+	}
+
+	public abstract DMatrixRMaj jacobianMatrix( final double[] x );
 
 	/**
 	 * Writes the direction <em>displacement</em> in which to move the input
@@ -62,9 +103,10 @@ public abstract class AbstractDifferentiableRealTransform implements Differentia
 	 */
 	public void directionToward( final double[] displacement, final double[] x, final double[] y )
 	{
-		directionToward( jacobian( x ), displacement, x, y );
+		directionToward( jacobianMatrix( x ), displacement, x, y );
 	}
 
+	@Deprecated
 	public static void directionToward( final AffineTransform jacobian, final double[] displacement, final double[] x, final double[] y )
 	{
 		double[] err = new double[ x.length ];
@@ -72,7 +114,6 @@ public abstract class AbstractDifferentiableRealTransform implements Differentia
 			err[ i ] = y[ i ] - x[ i ];
 
 		double[] dir = new double[ x.length ];
-		//jacobian.inverse().apply( err, dir );
 		matrixTranspose( jacobian ).apply( err, dir );
 
 		double norm = 0.0;
@@ -80,23 +121,23 @@ public abstract class AbstractDifferentiableRealTransform implements Differentia
 			norm += ( dir[ i ] * dir[ i ] );
 
 		norm = Math.sqrt( norm );
-
 		for ( int i = 0; i < dir.length; i++ )
 			dir[ i ] /= norm;
 
 		System.arraycopy( dir, 0, displacement, 0, dir.length );
-
-		/* compute the directional derivative
-		  double[] directionalDerivative = new double[ dir.length ];
-		*/
-
-		//jacobian.apply( dir, displacement );
-
-//		double descentDirectionMag = 0.0;
-//		for ( int i = 0; i < displacement.length; i++ )
-//			descentDirectionMag += ( displacement[ i ] * directionalDerivative[ i ] );
 	}
 
+	public void directionToward( final DMatrixRMaj jacobian, final double[] displacement, final double[] x, final double[] y )
+	{
+		for ( int i = 0; i < x.length; i++ )
+			err.set(i, y[ i ] - x[ i ]);
+
+		MatrixVectorMult_DDRM.multTransA_small(jacobian, err, dir);
+		NormOps_DDRM.normalizeF(dir);
+		System.arraycopy(dir.data, 0, displacement, 0, n);
+	}
+
+	@Deprecated
 	public static AffineTransform matrixTranspose( final AffineTransform a )
 	{
 		int nd = a.numDimensions();

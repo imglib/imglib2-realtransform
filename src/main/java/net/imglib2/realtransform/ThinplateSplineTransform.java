@@ -34,6 +34,9 @@
 
 package net.imglib2.realtransform;
 
+import org.ejml.data.DMatrix;
+import org.ejml.data.DMatrixRMaj;
+
 import jitk.spline.ThinPlateR2LogRSplineKernelTransform;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
@@ -68,9 +71,14 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 	double[] estimateXfm;
 
 	/*
-	 * The jacobian matrix
+	 * The jacobian affine
 	 */
 	private AffineTransform jacobian;
+
+	/*
+	 * The jacobian matrix
+	 */
+	final private DMatrixRMaj jacMtx;
 
 	final static private ThinPlateR2LogRSplineKernelTransform init( final double[][] p, final double[][] q )
 	{
@@ -83,12 +91,16 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 
 	public ThinplateSplineTransform( final ThinPlateR2LogRSplineKernelTransform tps )
 	{
+
+		super(tps.getNumDims());
 		this.tps = tps;
 		a = new double[ tps.getNumDims() ];
 		b = new double[ a.length ];
 		tmp = new double[ a.length ];
 		rpa = RealPoint.wrap( a );
 		estimateXfm = new double[ tps.getNumDims() ];
+
+		jacMtx = new DMatrixRMaj(tps.getNumDims(), tps.getNumDims());
 	}
 
 	public ThinplateSplineTransform( final double[][] p, final double[][] q )
@@ -149,6 +161,7 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 		return tps.getNumDims();
 	}
 
+	@Deprecated
 	public AffineTransform jacobian( final double[] x )
 	{
 		double[][] jac = tps.jacobian( x );
@@ -166,6 +179,16 @@ public class ThinplateSplineTransform extends AbstractDifferentiableRealTransfor
 		jacobian.set( jflat );
 
 		return jacobian;
+	}
+
+	public DMatrixRMaj jacobianMatrix( final double[] x )
+	{
+		final double[][] jac = tps.jacobian( x );
+		for (int i = 0; i < x.length; i++)
+			for (int j = 0; j < x.length; j++)
+				jacMtx.set(i, j, jac[i][j]);
+
+		return jacMtx;
 	}
 
 	/**

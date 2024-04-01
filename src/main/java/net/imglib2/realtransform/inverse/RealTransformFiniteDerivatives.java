@@ -33,6 +33,8 @@
  */
 package net.imglib2.realtransform.inverse;
 
+import org.ejml.data.DMatrixRMaj;
+
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.realtransform.AffineTransform;
@@ -49,17 +51,25 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 {
 	protected final RealTransform transform;
 
-	protected final AffineTransform jacobian;
+	protected final DMatrixRMaj jacobian;
 
 	protected double step;
+	private final double[] p;
+	private final double[] q;
+	private final double[] qc;
 
 	public RealTransformFiniteDerivatives( final RealTransform transform )
 	{
+		super(transform.numSourceDimensions());
 		this.transform = transform;
 		int srcD = transform.numSourceDimensions();
 		int tgtD = transform.numTargetDimensions();
-		jacobian = new AffineTransform( srcD > tgtD ? srcD : tgtD );
+		jacobian = new DMatrixRMaj(srcD, tgtD);
+
 		step = 0.01;
+		p = new double[transform.numSourceDimensions()];
+		q = new double[transform.numTargetDimensions()];
+		qc = new double[transform.numTargetDimensions()];
 	}
 
 	public void setStep( double step )
@@ -102,12 +112,13 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 	 */
 	public AffineTransform jacobian( double[] x )
 	{
-		int ndims = numSourceDimensions();
-		double[] p = new double[ ndims ];
-		double[] q = new double[ ndims ];
-		double[] qc = new double[ ndims ];
+		final int ndims = numSourceDimensions();
+		final double[] p = new double[ ndims ];
+		final double[] q = new double[ ndims ];
+		final double[] qc = new double[ ndims ];
 
-		double[][] newjac = new double[ ndims ][ ndims+1 ];
+		final double[][] newjac = new double[ ndims ][ ndims+1 ];
+		final AffineTransform jacobian = new AffineTransform(ndims);
 
 		transform.apply( x, qc );
 
@@ -127,6 +138,38 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 			}
 		}
 		jacobian.set( newjac );
+
+
+		return jacobian;
+	}
+
+	/**
+	 * Estimates the jacobian matrix at x of the wrapped RealTransform. Returns
+	 * an {@link AffineTransform} so that matrix operations are convenient.
+	 * 
+	 * @param x
+	 *            the point at which to estimate the jacobian
+	 * @return the jacobian
+	 */
+	public DMatrixRMaj jacobianMatrix( double[] x )
+	{
+		final int ndims = numSourceDimensions();
+		transform.apply( x, qc );
+		for ( int i = 0; i < ndims; i++ )
+		{
+			for ( int j = 0; j < ndims; j++ )
+				if ( j == i )
+					p[ j ] = x[ j ] + step;
+				else
+					p[ j ] = x[ j ];
+
+			transform.apply( p, q );
+
+			for ( int j = 0; j < ndims; j++ )
+			{
+				jacobian.set(i, j, (q[j] - qc[j]) / step);
+			}
+		}
 
 		return jacobian;
 	}
