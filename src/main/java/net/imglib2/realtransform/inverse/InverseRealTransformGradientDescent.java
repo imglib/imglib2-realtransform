@@ -37,6 +37,7 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.realtransform.AffineTransform;
 import net.imglib2.realtransform.RealTransform;
+import net.imglib2.util.LinAlgHelpers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -382,7 +383,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 	 */
 	public double backtrackingLineSearch( double t0 )
 	{
-		double t = t0; // step size
+		double t = Math.min(t0, maxStepSize);
 
 		int k = 0;
 		// boolean success = false;
@@ -396,14 +397,11 @@ public class InverseRealTransformGradientDescent implements RealTransform
 			else
 				t *= beta;
 
+			if ( t < minStepSize )
+				return minStepSize;
+
 			k++;
 		}
-
-		if ( t < minStepSize )
-			return minStepSize;
-
-		if ( t > maxStepSize )
-			return maxStepSize;
 
 		return t;
 	}
