@@ -74,6 +74,12 @@ public class PositionRandomAccessible implements RandomAccessible< LongType >
 		}
 
 		@Override
+		public LongType getType()
+		{
+			return t;
+		}
+
+		@Override
 		public PositionRandomAccess copy()
 		{
 			return new PositionRandomAccess();
@@ -96,5 +102,11 @@ public class PositionRandomAccessible implements RandomAccessible< LongType >
 	public RandomAccess< LongType > randomAccess( final Interval interval )
 	{
 		return randomAccess();
+	}
+
+	@Override
+	public LongType getType()
+	{
+		return new LongType();
 	}
 }
