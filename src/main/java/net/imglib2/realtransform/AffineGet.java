@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,7 +41,7 @@ import net.imglib2.RealLocalizable;
  * An <em>n</em>-dimensional affine transformation whose <em>n</em>&times;(
  * <em>n</em>+1) affine transformation matrix can be accessed via row and column
  * index.
- * 
+ *
  * @author Stephan Saalfeld
  */
 public interface AffineGet extends InvertibleRealTransform, EuclideanSpace
@@ -49,7 +49,7 @@ public interface AffineGet extends InvertibleRealTransform, EuclideanSpace
 	/**
 	 * Get a field of the <em>n</em>&times;(<em>n</em>+1) affine transformation
 	 * matrix.
-	 * 
+	 *
 	 * @param row
 	 *            the row index
 	 * @param column
@@ -60,15 +60,15 @@ public interface AffineGet extends InvertibleRealTransform, EuclideanSpace
 
 	/**
 	 * Get a copy of the <em>n</em>&times;(<em>n</em>+1) affine transformation
-	 * matrix as a row packed array similar to Jama.
-	 * 
+	 * matrix as a row packed array.
+	 *
 	 * @return the array of values
 	 */
 	public double[] getRowPackedCopy();
 
 	/**
 	 * Get the constant partial differential vector for dimension d.
-	 * 
+	 *
 	 * @param d
 	 *            the dimension
 	 * @return the partial differential vector
