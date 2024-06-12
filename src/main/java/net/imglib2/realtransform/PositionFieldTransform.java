@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -82,7 +82,7 @@ public class PositionFieldTransform implements RealTransform
 	/**
 	 *
 	 * @param <T>
-	 *            type of the positions
+	 *            position type
 	 * @param positions
 	 *            interleaved target coordinate, this means that the components
 	 *            of the target coordinates are in the 0th dimension
@@ -95,6 +95,7 @@ public class PositionFieldTransform implements RealTransform
 	/**
 	 *
 	 * @param <T>
+	 *            position type
 	 * @param positions
 	 *            interleaved target coordinate, this means that the components
 	 *            of the target coordinates are in the 0th dimension
@@ -110,7 +111,7 @@ public class PositionFieldTransform implements RealTransform
 	/**
 	 *
 	 * @param <T>
-	 *            type of the positions
+	 *            position type
 	 * @param positions
 	 *            interleaved target coordinate, this means that the components
 	 *            of the target coordinates are in the 0th dimension
@@ -127,7 +128,7 @@ public class PositionFieldTransform implements RealTransform
 	/**
 	 *
 	 * @param <T>
-	 *            type of the positions
+	 *            position type
 	 * @param positions
 	 *            interleaved target coordinate, this means that the components
 	 *            of the target coordinates are in the 0th dimension
@@ -282,11 +283,13 @@ public class PositionFieldTransform implements RealTransform
 	 * target dimension. For example,
 	 *
 	 * <pre>
-	 * {@code () -> DoubleType.createVector(transform.numTargetDimensions())}
+	 * {@code
+	 * () -> DoubleType.createVector( transform.numTargetDimensions() )
+	 * }
 	 * </pre>
 	 *
 	 * @param <T>
-	 *            the type of the output
+	 *            output type
 	 * @param transform
 	 *            the transform to be converted
 	 * @param interval
@@ -331,11 +334,13 @@ public class PositionFieldTransform implements RealTransform
 	 * target dimension. For example,
 	 *
 	 * <pre>
-	 * {@code () -> DoubleType.createVector(transform.numTargetDimensions())}
+	 * {@code
+	 * () -> DoubleType.createVector( transform.numTargetDimensions() )
+	 * }
 	 * </pre>
 	 *
 	 * @param <T>
-	 *            the type of the output
+	 *            output type
 	 * @param transform
 	 *            the transform to be converted
 	 * @param interval

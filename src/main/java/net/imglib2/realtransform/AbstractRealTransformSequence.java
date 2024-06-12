@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,8 +44,10 @@ import net.imglib2.RealPositionable;
  * Shared properties of {@link RealTransformSequence} and
  * {@link InvertibleRealTransformSequence}, sequences of something that extends
  * {@link RealTransform RealTransforms}. If empty, will behave as the identity transformation.
- * 
+ *
  * @author Stephan Saalfeld
+ *
+ * @param <R> transformation
  */
 public class AbstractRealTransformSequence< R extends RealTransform > implements RealTransform
 {
@@ -104,10 +106,10 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 
 	/**
 	 * Returns true if either the sequence is empty, or if
-	 * every transform in the sequence returns true for {@link isIdentity}.  This 
+	 * every transform in the sequence returns true for {@link isIdentity}.  This
 	 * sequence could behave as the identity even if this method returns false,
 	 * for example, if it contains only a transform and its inverse.
-	 * 
+	 *
 	 * @return true if empty or contains only identity transforms.
 	 */
 	@Override
@@ -121,7 +123,7 @@ public class AbstractRealTransformSequence< R extends RealTransform > implements
 		{
 			// if any transform in the sequence is not identity, this sequence
 			// is not the identity
-			for ( R t : transforms )
+			for ( final R t : transforms )
 			{
 				if ( !t.isIdentity() )
 					return false;

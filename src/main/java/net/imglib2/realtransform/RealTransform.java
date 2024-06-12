@@ -99,7 +99,7 @@ public interface RealTransform
 	 *            set this to the target coordinates, length must be {@code >=}
 	 *            {@link #numTargetDimensions()}
 	 *
-	 * @TODO override for this to be more efficient
+	 * TODO override for this to be more efficient
 	 */
 	public default void apply( final long[] source, final double[] target )
 	{
@@ -169,6 +169,8 @@ public interface RealTransform
 	 *            target dimension, must be {@code >=}
 	 *            {@link #numTargetDimensions()}
 	 *
+	 * @return the d-th dimension of the transformed target vector
+	 *
 	 * TODO This default implementation creates and calculates the entire
 	 *            target vector and extracts the dimension from that vector.
 	 *            Override for this to be more efficient.
@@ -193,6 +195,8 @@ public interface RealTransform
 	 *            target dimension, must be {@code >=}
 	 *            {@link #numTargetDimensions()}
 	 *
+	 * @return the d-th dimension of the transformed target vector
+	 *
 	 * TODO This default implementation creates and calculates the entire
 	 *            target vector and extracts the dimension from that vector.
 	 *            Override for this to be more efficient.
@@ -216,6 +220,8 @@ public interface RealTransform
 	 * @param d
 	 *            target dimension, must be {@code >=}
 	 *            {@link #numTargetDimensions()}
+	 *
+	 * @return the d-th dimension of the transformed target vector
 	 *
 	 * TODO This default implementation creates and calculates the entire
 	 *            target vector and extracts the dimension from that vector.
