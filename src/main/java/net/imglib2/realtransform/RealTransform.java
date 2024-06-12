@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,6 +35,7 @@
 package net.imglib2.realtransform;
 
 import net.imglib2.RealLocalizable;
+import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 
 /**
@@ -98,6 +99,31 @@ public interface RealTransform
 	 *            set this to the target coordinates, length must be {@code >=}
 	 *            {@link #numTargetDimensions()}
 	 *
+	 * @TODO override for this to be more efficient
+	 */
+	public default void apply( final long[] source, final double[] target )
+	{
+		assert source.length >= numSourceDimensions() && target.length >= numTargetDimensions() : "Input dimensions too small.";
+
+		final double[] doubleSource = new double[ source.length ];
+
+		for ( int d = 0; d < numSourceDimensions(); ++d )
+			doubleSource[ d ] = source[ d ];
+
+		apply( doubleSource, target );
+	}
+
+	/**
+	 * Apply the {@link RealTransform} to a source vector to obtain a target
+	 * vector.
+	 *
+	 * @param source
+	 *            source coordinates, length must be {@code >=}
+	 *            {@link #numSourceDimensions()}
+	 * @param target
+	 *            set this to the target coordinates, length must be {@code >=}
+	 *            {@link #numTargetDimensions()}
+	 *
 	 * @deprecated use double precision instead
 	 */
 	@Deprecated
@@ -133,6 +159,78 @@ public interface RealTransform
 	public void apply( final RealLocalizable source, final RealPositionable target );
 
 	/**
+	 * Apply the {@link RealTransform} to a source vector to obtain one
+	 * dimension of the resulting target vector.
+	 *
+	 * @param source
+	 *            source coordinates, length must be {@code >=}
+	 *            {@link #numSourceDimensions()}
+	 * @param d
+	 *            target dimension, must be {@code >=}
+	 *            {@link #numTargetDimensions()}
+	 *
+	 * TODO This default implementation creates and calculates the entire
+	 *            target vector and extracts the dimension from that vector.
+	 *            Override for this to be more efficient.
+	 */
+	public default double applyDimension( final double[] source, final int d )
+	{
+		assert source.length >= numSourceDimensions() && d < numTargetDimensions() : "Input dimensions too small.";
+
+		final double[] target = new double[ numTargetDimensions() ];
+		apply( source, target );
+		return target[ d ];
+	}
+
+	/**
+	 * Apply the {@link RealTransform} to a source vector to obtain one
+	 * dimension of the resulting target vector.
+	 *
+	 * @param source
+	 *            source coordinates, length must be {@code >=}
+	 *            {@link #numSourceDimensions()}
+	 * @param d
+	 *            target dimension, must be {@code >=}
+	 *            {@link #numTargetDimensions()}
+	 *
+	 * TODO This default implementation creates and calculates the entire
+	 *            target vector and extracts the dimension from that vector.
+	 *            Override for this to be more efficient.
+	 */
+	public default double applyDimension( final long[] source, final int d )
+	{
+		assert source.length >= numSourceDimensions() && d < numTargetDimensions() : "Input dimensions too small.";
+
+		final double[] target = new double[ numTargetDimensions() ];
+		apply( source, target );
+		return target[ d ];
+	}
+
+	/**
+	 * Apply the {@link RealTransform} to a source vector to obtain one
+	 * dimension of the resulting target vector.
+	 *
+	 * @param source
+	 *            source coordinates, {@link RealLocalizable#numDimensions()}
+	 *            must be {@code >=} {@link #numSourceDimensions()}
+	 * @param d
+	 *            target dimension, must be {@code >=}
+	 *            {@link #numTargetDimensions()}
+	 *
+	 * TODO This default implementation creates and calculates the entire
+	 *            target vector and extracts the dimension from that vector.
+	 *            Override for this to be more efficient.
+	 */
+	public default double applyDimension( final RealLocalizable source, final int d )
+	{
+		assert source.numDimensions() >= numSourceDimensions() && d < numTargetDimensions() : "Input dimensions too small.";
+
+		final RealPoint target = new RealPoint( numTargetDimensions() );
+		apply( source, target );
+		return target.getDoublePosition( d );
+	}
+
+	/**
 	 * Create a deep copy of this {@link RealTransform}.
 	 *
 	 * <p>
@@ -146,7 +244,7 @@ public interface RealTransform
 
 	/**
 	 * Check if the {@link RealTransform} is identity.
-	 * 
+	 *
 	 * @return true if identity
 	 */
 	default boolean isIdentity()
