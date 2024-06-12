@@ -168,6 +168,7 @@ Jean-Yves Tinevez and Michael Zinsmaier.</license.copyrightOwners>
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
 		<imglib2.version>7.0.1</imglib2.version>
+		<jitk-tps.version>3.0.4</jitk-tps.version>
 		<ejml-core.version>0.41</ejml-core.version>
 		<ejml-ddense.version>0.41</ejml-ddense.version>
 	</properties>
@@ -180,7 +181,7 @@ Jean-Yves Tinevez and Michael Zinsmaier.</license.copyrightOwners>
 		</dependency>
 
 		<!-- Third-party dependencies -->
-				<dependency>
+		<dependency>
 			<groupId>org.ejml</groupId>
 			<artifactId>ejml-core</artifactId>
 			<version>${ejml-core.version}</version>
