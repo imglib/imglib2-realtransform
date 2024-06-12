@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,7 +34,9 @@
 
 package net.imglib2.realtransform;
 
-import Jama.Matrix;
+import org.ejml.data.DMatrixRMaj;
+import org.ejml.dense.row.CommonOps_DDRM;
+
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.concatenate.Concatenable;
@@ -57,7 +59,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 		inverse.updateDs();
 	}
 
-	protected AffineTransform( final Matrix a, final double[] t )
+	protected AffineTransform( final DMatrixRMaj a, final double[] t )
 	{
 		super( a, t );
 
@@ -66,7 +68,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 		inverse.updateDs();
 	}
 
-	public AffineTransform( final Matrix matrix )
+	public AffineTransform( final DMatrixRMaj matrix )
 	{
 		super( matrix );
 
@@ -101,8 +103,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 
 	protected void invert()
 	{
-		final Matrix ii = a.inverse();
-		inverse.a.setMatrix( 0, n - 1, 0, n - 1, ii );
+		CommonOps_DDRM.invert( a, inverse.a );
 		invertT();
 	}
 
@@ -175,7 +176,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 	{
 		assert affine.numSourceDimensions() == n: "Dimensions do not match.";
 
-		final Matrix matrix = new Matrix( n, n );
+		final DMatrixRMaj matrix = new DMatrixRMaj(n, n);
 		final double[] translation = new double[ n ];
 		for ( int r = 0; r < n; ++r )
 		{
@@ -191,7 +192,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 				tr += get( r, k ) * affine.get( k, n );
 			translation[ r ] = tr;
 		}
-		a.setMatrix( 0, n - 1, 0, n - 1, matrix );
+		a.setTo( matrix );
 		System.arraycopy( translation, 0, t, 0, t.length );
 
 		updateDs();
@@ -212,7 +213,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 	{
 		assert affine.numSourceDimensions() == n: "Dimensions do not match.";
 
-		final Matrix matrix = new Matrix( n, n );
+		final DMatrixRMaj matrix = new DMatrixRMaj(n, n);
 		final double[] translation = new double[ n ];
 		for ( int r = 0; r < n; ++r )
 		{
@@ -228,7 +229,7 @@ public class AffineTransform extends AbstractAffineTransform implements Concaten
 				tr += affine.get( r, k ) * get( k, n );
 			translation[ r ] = tr;
 		}
-		a.setMatrix( 0, n - 1, 0, n - 1, matrix );
+		a.setTo( matrix );
 		System.arraycopy( translation, 0, t, 0, t.length );
 
 		updateDs();
