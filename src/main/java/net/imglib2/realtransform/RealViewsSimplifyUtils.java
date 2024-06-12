@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -139,12 +139,12 @@ public class RealViewsSimplifyUtils
 
 	/**
 	 * See {@link RealViews}{@link #simplifyReal(RealRandomAccessible)}
-	 * 
+	 *
 	 * @param source
 	 *            to be simplified.
 	 * @param <T> the type
 	 * @return a (potentially) simplified version of the source.
-	 * 
+	 *
 	 */
 	public static < T > RealRandomAccessible< T > simplifyReal( final RealRandomAccessible< T > source )
 	{
@@ -157,12 +157,12 @@ public class RealViewsSimplifyUtils
 
 	/**
 	 * See {@link RealViews}{@link #simplify(RealRandomAccessible)}
-	 * 
+	 *
 	 * @param source
 	 *            to be simplified.
 	 * @param <T> the type
 	 * @return a (potentially) simplified version of the source.
-	 * 
+	 *
 	 */
 	@SuppressWarnings( "unchecked" )
 	public static < T > RandomAccessible< T > simplify( final RealRandomAccessible< T > source )
@@ -280,15 +280,14 @@ public class RealViewsSimplifyUtils
 		{
 			if ( t instanceof AffineGet )
 			{
-				return new AffineRandomAccessible<>( rra, ( AffineGet ) t );
+				return new AffineRealRandomAccessible<>( rra, ( AffineGet ) t );
 			}
-			return new RealTransformRandomAccessible<>( rra, t );
+			return new RealTransformRealRandomAccessible<>( rra, t );
 		}
 
 		return rra;
 	}
 
-	@SuppressWarnings( "unchecked" )
 	private static < T > Pair< RealRandomAccessible< T >, RealTransform > findSourceAndSimplifyTransforms( final RealRandomAccessible< T > source )
 	{
 		final List< RealTransform > transforms = new LinkedList<>();
