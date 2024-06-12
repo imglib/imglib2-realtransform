@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,33 +34,33 @@
 
 package net.imglib2.realtransform;
 
+import org.ejml.data.DMatrixRMaj;
+
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
-import Jama.Matrix;
 
 /**
  * An abstract implementation of an affine transformation that returns default
  * values referring to the identity transformation for all fields.  This
  * implementation is not thread safe.  Create a {@link #copy()} for each
  * consumer.
- * 
+ *
  * @author Stephan Saalfeld
  */
 public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 {
 	final protected int n;
 
-	final protected Matrix a;
+	final protected DMatrixRMaj a;
 
 	final protected double[] t, tmp;
 
 	final protected RealPoint[] ds;
 
-	protected AbstractAffineTransform( final Matrix a, final double[] t )
+	protected AbstractAffineTransform( final DMatrixRMaj a, final double[] t )
 	{
-		assert a.getRowDimension() == t.length &&
-				a.getColumnDimension() == t.length: "The passed arrays must be n*n and the t-vector n.";
+		assert a.getNumRows() == t.length && a.getNumCols() == t.length: "The passed arrays must be n*n and the t-vector n.";
 
 		this.n = t.length;
 		this.a = a;
@@ -73,17 +73,17 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 		updateDs();
 	}
 
-	public AbstractAffineTransform( final Matrix matrix )
+	public AbstractAffineTransform( final DMatrixRMaj matrix )
 	{
-		assert matrix.getRowDimension() == matrix.getColumnDimension() - 1: "The passed affine matrix must be of the format (n-1)*n.";
+		assert matrix.getNumRows() == matrix.getNumCols() - 1: "The passed affine matrix must be of the format (n-1)*n.";
 
-		n = matrix.getRowDimension();
-		a = new Matrix( n, n );
+		n = matrix.getNumRows();
+		a = new DMatrixRMaj( n, n );
 		t = new double[ n ];
 		tmp = new double[ n ];
 		ds = new RealPoint[ n ];
 
-		a.setMatrix( 0, n - 1, 0, n - 1, matrix );
+		a.setTo( matrix );
 		for ( int r = 0; r < n; ++r )
 		{
 			t[ r ] = matrix.get( r, n );
@@ -95,7 +95,7 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 	public AbstractAffineTransform( final int n )
 	{
 		this.n = n;
-		a = new Matrix( n, n );
+		a = new DMatrixRMaj( n, n );
 		t = new double[ n ];
 		tmp = new double[ n ];
 		ds = new RealPoint[ n ];
@@ -136,7 +136,7 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 	{
 		return n;
 	}
-	
+
 	@Override
 	public void apply( final double[] source, final double[] target )
 	{
@@ -148,11 +148,11 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 			for ( int c = 0; c < n; ++c )
 				tmp[ r ] += source[ c ] * a.get( r, c );
 		}
-		
+
 		for ( int r = 0; r < n; ++r )
 			target[ r ] = tmp[ r ] + t[ r ];
 	}
-	
+
 	@Override
 	public void apply( final float[] source, final float[] target )
 	{
@@ -164,7 +164,7 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 			for ( int c = 0; c < n; ++c )
 				tmp[ r ] += source[ c ] * a.get( r, c );
 		}
-		
+
 		for ( int r = 0; r < n; ++r )
 			target[ r ] = ( float )( tmp[ r ] + t[ r ] );
 	}
@@ -180,7 +180,7 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 			for ( int c = 0; c < n; ++c )
 				tmp[ r ] += source.getDoublePosition( c ) * a.get( r, c );
 		}
-		
+
 		for ( int r = 0; r < n; ++r )
 			target.setPosition( tmp[ r ] + t[ r ], r );
 	}

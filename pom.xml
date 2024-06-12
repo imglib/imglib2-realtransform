@@ -168,6 +168,9 @@ Jean-Yves Tinevez and Michael Zinsmaier.</license.copyrightOwners>
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 
 		<imglib2.version>7.0.1</imglib2.version>
+		<jitk-tps.version>3.0.4</jitk-tps.version>
+		<ejml-core.version>0.41</ejml-core.version>
+		<ejml-ddense.version>0.41</ejml-ddense.version>
 	</properties>
 
 	<dependencies>
@@ -179,8 +182,14 @@ Jean-Yves Tinevez and Michael Zinsmaier.</license.copyrightOwners>
 
 		<!-- Third-party dependencies -->
 		<dependency>
-			<groupId>gov.nist.math</groupId>
-			<artifactId>jama</artifactId>
+			<groupId>org.ejml</groupId>
+			<artifactId>ejml-core</artifactId>
+			<version>${ejml-core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ejml</groupId>
+			<artifactId>ejml-ddense</artifactId>
+			<version>${ejml-ddense.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->

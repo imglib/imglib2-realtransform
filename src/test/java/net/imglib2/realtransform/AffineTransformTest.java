@@ -31,53 +31,53 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-
 package net.imglib2.realtransform;
 
-import net.imglib2.EuclideanSpace;
-import net.imglib2.RealLocalizable;
+import static org.junit.Assert.assertArrayEquals;
 
-/**
- * An <em>n</em>-dimensional affine transformation whose <em>n</em>&times;(
- * <em>n</em>+1) affine transformation matrix can be accessed via row and column
- * index.
- *
- * @author Stephan Saalfeld
- */
-public interface AffineGet extends InvertibleRealTransform, EuclideanSpace
-{
-	/**
-	 * Get a field of the <em>n</em>&times;(<em>n</em>+1) affine transformation
-	 * matrix.
-	 *
-	 * @param row
-	 *            the row index
-	 * @param column
-	 *            the column index
-	 * @return the value
-	 */
-	public double get(final int row, final int column);
+import java.util.Random;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class AffineTransformTest {
+
+	protected static final double EPS = 1e-9;
+	protected static final double[] FLAT_IDENTITY_2D = new double[]{1, 0, 0, 0, 1, 0};
+	protected static final double[] FLAT_IDENTITY_3D = new double[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0};
+
+	protected Random rnd = new Random( 0 );
 
 	/**
-	 * Get a copy of the <em>n</em>&times;(<em>n</em>+1) affine transformation
-	 * matrix as a row packed array.
-	 *
-	 * @return the array of values
+	 * @throws java.lang.Exception
 	 */
-	public double[] getRowPackedCopy();
+	@Before
+	public void setUp() throws Exception
+	{
+		 rnd.setSeed( 0 );
+	}
 
-	/**
-	 * Get the constant partial differential vector for dimension d.
-	 *
-	 * @param d
-	 *            the dimension
-	 * @return the partial differential vector
-	 */
-	public RealLocalizable d(int d);
+	@Test
+	public void testInverse()
+	{
+		// 2D
+		final AffineTransform affine2 = new AffineTransform(2);
+		affine2.set(
+				2 + rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(),
+				rnd.nextDouble(), 3 + rnd.nextDouble(), rnd.nextDouble());
 
-	@Override
-	AffineGet inverse();
+		final AffineTransform id2 = affine2.preConcatenate(affine2.inverse());
+		assertArrayEquals(FLAT_IDENTITY_2D, id2.getRowPackedCopy(), EPS);
 
-	@Override
-	AffineGet copy();
+		// 3D
+		final AffineTransform affine3 = new AffineTransform(3);
+		affine3.set(
+				2 + rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(),
+				rnd.nextDouble(), 3 + rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(),
+				rnd.nextDouble(), rnd.nextDouble(), 4 + rnd.nextDouble(), rnd.nextDouble());
+
+		final AffineTransform id3 = affine3.preConcatenate(affine3.inverse());
+		assertArrayEquals(FLAT_IDENTITY_3D, id3.getRowPackedCopy(), EPS);
+	}
+
 }
