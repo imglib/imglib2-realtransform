@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -48,6 +48,8 @@ import net.imglib2.RealRandomAccessible;
  * f(5) = g(5,2,3) = g(5,1,6) = g(5,18,-20)...
  *
  * @author Stephan Saalfeld
+ *
+ * @param <T> data type
  */
 public class StackingRealRandomAccessible< T > implements RealRandomAccessible< T >
 {
@@ -285,6 +287,12 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 		}
 
 		@Override
+		public T getType()
+		{
+			return sourceAccess.getType();
+		}
+
+		@Override
 		public StackingRealRandomAccess copy()
 		{
 			return new StackingRealRandomAccess();
@@ -363,5 +371,11 @@ public class StackingRealRandomAccessible< T > implements RealRandomAccessible< 
 	public int numDimensions()
 	{
 		return numDimensions;
+	}
+
+	@Override
+	public T getType()
+	{
+		return source.getType();
 	}
 }
