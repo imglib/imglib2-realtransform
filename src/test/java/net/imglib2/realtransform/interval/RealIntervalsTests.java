@@ -12,13 +12,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,9 +32,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-package net.imglib2.util;
+package net.imglib2.realtransform.interval;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import net.imglib2.FinalRealInterval;
@@ -47,7 +48,7 @@ import net.imglib2.realtransform.PositionFieldTransform;
 public class RealIntervalsTests {
 
 	static final double EPS = 1e-9;
-	static final FinalRealInterval itvl = new FinalRealInterval( 
+	static final FinalRealInterval itvl = new FinalRealInterval(
 			new double[] { 0, 0, 0 }, new double[] { 40, 30, 20 });
 
 	@Test
@@ -56,7 +57,7 @@ public class RealIntervalsTests {
 		final AffineTransform3D xfm = new AffineTransform3D();
 		xfm.scale(2, 3, 4);
 
-		final RealInterval bbox = RealIntervals.boundingIntervalCorners( itvl, xfm );
+		final RealInterval bbox = xfm.boundingInterval( itvl, IntervalSamplingMethod.CORNERS );
 		assertEquals( "max x ", itvl.realMax(0) * 2, bbox.realMax(0), EPS );
 		assertEquals( "max y ", itvl.realMax(1) * 3, bbox.realMax(1), EPS );
 		assertEquals( "max z ", itvl.realMax(2) * 4, bbox.realMax(2), EPS );
@@ -68,7 +69,7 @@ public class RealIntervalsTests {
 		final AffineTransform3D xfm = new AffineTransform3D();
 		xfm.scale(2, 3, 4);
 
-		final RealInterval bbox = RealIntervals.boundingIntervalFaces( itvl, xfm, 10, 10, 10 );
+		final RealInterval bbox = xfm.boundingInterval( itvl, new FacesSpacing( 10, 10, 10 ) );
 		assertEquals( "max x ", itvl.realMax(0) * 2, bbox.realMax(0), EPS );
 		assertEquals( "max y ", itvl.realMax(1) * 3, bbox.realMax(1), EPS );
 		assertEquals( "max z ", itvl.realMax(2) * 4, bbox.realMax(2), EPS );
@@ -80,7 +81,7 @@ public class RealIntervalsTests {
 		final AffineTransform3D xfm = new AffineTransform3D();
 		xfm.scale(2, 3, 4);
 
-		final RealInterval bbox = RealIntervals.boundingIntervalVolume( itvl, xfm, 10 );
+		final RealInterval bbox = xfm.boundingInterval( itvl, new VolumeSpacing( 10 ) );
 		assertEquals( "max x ", itvl.realMax(0) * 2, bbox.realMax(0), EPS );
 		assertEquals( "max y ", itvl.realMax(1) * 3, bbox.realMax(1), EPS );
 		assertEquals( "max z ", itvl.realMax(2) * 4, bbox.realMax(2), EPS );
@@ -91,10 +92,10 @@ public class RealIntervalsTests {
 	{
 		final PositionFieldTransform xfm = pfield();
 
-		// estimating with the corners does NOT correctly estimate the bounding box 
-		// for this transformation.  Make sure that it behaves as expected - 
+		// estimating with the corners does NOT correctly estimate the bounding box
+		// for this transformation.  Make sure that it behaves as expected -
 		// returning the original interval.
-		final RealInterval bbox = RealIntervals.boundingIntervalCorners( itvl, xfm );
+		final RealInterval bbox = xfm.boundingInterval( itvl, IntervalSamplingMethod.CORNERS );
 		assertEquals( "min x ", itvl.realMin(0), bbox.realMin(0), EPS );
 		assertEquals( "max x ", itvl.realMax(0), bbox.realMax(0), EPS );
 
@@ -109,7 +110,7 @@ public class RealIntervalsTests {
 	public void testBboxFacesPfield()
 	{
 		final PositionFieldTransform xfm = pfield();
-		final RealInterval bbox = RealIntervals.boundingIntervalFaces( itvl, xfm, 5, 5, 5 );
+		final RealInterval bbox = xfm.boundingInterval( itvl, new FacesSpacing( 5, 5, 5 ) );
 		assertEquals( "min x ", itvl.realMin(0), bbox.realMin(0), EPS );
 		assertEquals( "max x ", itvl.realMax(0) + 5, bbox.realMax(0), EPS );
 
@@ -118,8 +119,8 @@ public class RealIntervalsTests {
 
 		assertEquals( "min z ", itvl.realMin(2), bbox.realMin(2), EPS );
 		assertEquals( "max z ", itvl.realMax(2), bbox.realMax(2), EPS );
-		
-		final RealInterval bboxSamples = RealIntervals.boundingIntervalFacesSamples( itvl, xfm, 8, 6, 4 );
+
+		final RealInterval bboxSamples = xfm.boundingInterval( itvl, new FacesSteps( 8, 6, 4 ) );
 		assertEquals( "min x ", itvl.realMin(0), bboxSamples.realMin(0), EPS );
 		assertEquals( "max x ", itvl.realMax(0) + 5, bboxSamples.realMax(0), EPS );
 
@@ -134,7 +135,7 @@ public class RealIntervalsTests {
 	public void testBboxVolumePfield()
 	{
 		final PositionFieldTransform xfm = pfield();
-		final RealInterval bbox = RealIntervals.boundingIntervalVolume( itvl, xfm, 5 );
+		final RealInterval bbox = xfm.boundingInterval( itvl, new VolumeSpacing( 5 ) );
 		assertEquals( "min x ", itvl.realMin(0), bbox.realMin(0), EPS );
 		assertEquals( "max x ", itvl.realMax(0) + 5, bbox.realMax(0), EPS );
 
@@ -143,8 +144,8 @@ public class RealIntervalsTests {
 
 		assertEquals( "min z ", itvl.realMin(2), bbox.realMin(2), EPS );
 		assertEquals( "max z ", itvl.realMax(2), bbox.realMax(2), EPS );
-		
-		final RealInterval bboxSamples = RealIntervals.boundingIntervalVolumeSamples( itvl, xfm, 8, 6, 4 );
+
+		final RealInterval bboxSamples = xfm.boundingInterval( itvl, new VolumeSteps( 8, 6, 4 ) );
 		assertEquals( "min x samples", itvl.realMin(0), bboxSamples.realMin(0), EPS );
 		assertEquals( "max x samples", itvl.realMax(0) + 5, bboxSamples.realMax(0), EPS );
 

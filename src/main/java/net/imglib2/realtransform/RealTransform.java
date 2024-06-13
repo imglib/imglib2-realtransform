@@ -34,9 +34,11 @@
 
 package net.imglib2.realtransform;
 
+import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
+import net.imglib2.realtransform.interval.IntervalSamplingMethod;
 
 /**
  * Transformation from R<sup><em>n</em></sup> to R<sup><em>m</em></sup>.
@@ -256,5 +258,27 @@ public interface RealTransform
 	default boolean isIdentity()
 	{
 		return false;
+	}
+
+	/**
+	 * Estimate the {@link RealInterval} that bounds the given RealInterval
+	 * after being transformed by a {@link RealTransform}.
+	 * <p>
+	 * For arbitrary transformations, it is not necessarily possible to
+	 * directly calculate the resulting bounding box trivially, therefore,
+	 * a sampling methods for coordinates in the source interval must be
+	 * provided.  {@link RealTransform}s that can calculate the bounding
+	 * interval more efficiently than by sampling coordinates are encouraged
+	 * to override this method and to ignore the provided sampling method.
+	 *
+	 * @param interval
+	 *            the real interval
+	 * @param samplingMethod
+	 *            the method used to sample coordinates of the source interval
+	 * @return the bounding interval
+	 */
+	default RealInterval boundingInterval( final RealInterval interval, final IntervalSamplingMethod samplingMethod )
+	{
+		return samplingMethod.bounds( interval, this );
 	}
 }
