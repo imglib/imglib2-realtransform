@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,9 +34,12 @@
 
 package net.imglib2.realtransform;
 
+import net.imglib2.FinalRealInterval;
+import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
+import net.imglib2.realtransform.interval.IntervalSamplingMethod;
 
 /**
  * <em>n</em>-d arbitrary scaling.  Abstract base implementation.
@@ -63,7 +66,7 @@ abstract public class AbstractScale implements ScaleGet
 
 	/**
 	 * Set the scale vector.
-	 * 
+	 *
 	 * @param s
 	 *            s.length &lt;= the number of dimensions of this
 	 *            {@link AbstractScale}
@@ -74,7 +77,7 @@ abstract public class AbstractScale implements ScaleGet
 	public void applyInverse( final double[] source, final double[] target )
 	{
 		assert source.length >= s.length && target.length >= s.length : "Input dimensions too small.";
-		
+
 		for ( int d = 0; d < s.length; ++d )
 			source[ d ] = target[ d ] / s[ d ];
 	}
@@ -83,17 +86,17 @@ abstract public class AbstractScale implements ScaleGet
 	public void applyInverse( final float[] source, final float[] target )
 	{
 		assert source.length >= s.length && target.length >= s.length : "Input dimensions too small.";
-		
+
 		for ( int d = 0; d < s.length; ++d )
 			source[ d ] = ( float )( target[ d ] / s[ d ] );
-		
+
 	}
 
 	@Override
 	public void applyInverse( final RealPositionable source, final RealLocalizable target )
 	{
 		assert source.numDimensions() >= s.length && target.numDimensions() >= s.length : "Input dimensions too small.";
-		
+
 		for ( int d = 0; d < s.length; ++d )
 			source.setPosition( target.getDoublePosition( d ) / s[ d ], d );
 	}
@@ -123,7 +126,7 @@ abstract public class AbstractScale implements ScaleGet
 	public void apply( final double[] source, final double[] target )
 	{
 		assert source.length >= s.length && target.length >= s.length : "Input dimensions too small.";
-		
+
 		for ( int d = 0; d < s.length; ++d )
 			target[ d ] = source[ d ] * s[ d ];
 	}
@@ -132,7 +135,7 @@ abstract public class AbstractScale implements ScaleGet
 	public void apply( final float[] source, final float[] target )
 	{
 		assert source.length >= s.length && target.length >= s.length : "Input dimensions too small.";
-		
+
 		for ( int d = 0; d < s.length; ++d )
 			target[ d ] = ( float )( source[ d ] * s[ d ] );
 	}
@@ -141,7 +144,7 @@ abstract public class AbstractScale implements ScaleGet
 	public void apply( final RealLocalizable source, final RealPositionable target )
 	{
 		assert source.numDimensions() >= s.length && target.numDimensions() >= s.length : "Input dimensions too small.";
-		
+
 		for ( int d = 0; d < s.length; ++d )
 			target.setPosition( source.getDoublePosition( d ) * s[ d ], d );
 	}
@@ -150,7 +153,7 @@ abstract public class AbstractScale implements ScaleGet
 	public double get( final int row, final int column )
 	{
 		assert row >= 0 && row < numDimensions() : "Dimension index out of bounds.";
-		
+
 		return row == column ? s[ row ] : 0;
 	}
 
@@ -168,7 +171,7 @@ abstract public class AbstractScale implements ScaleGet
 	public RealLocalizable d( final int d )
 	{
 		assert d >= 0 && d < numDimensions() : "Dimension index out of bounds.";
-		
+
 		return ds[ d ];
 	}
 
@@ -186,14 +189,33 @@ abstract public class AbstractScale implements ScaleGet
 	{
 		return s.clone();
 	}
-	
+
 	@Override
-	public double getTranslation( final int d ) {
+	public double getTranslation( final int d )
+	{
 		return 0.0;
 	}
 
 	@Override
-	public double[] getTranslationCopy() {
+	public double[] getTranslationCopy()
+	{
 		return new double[ s.length ];
+	}
+
+	@Override
+	public RealInterval boundingInterval( final RealInterval interval, final IntervalSamplingMethod samplingMethdod )
+	{
+		assert interval.numDimensions() >= s.length : "Interval does not have enough dimensions.";
+
+		final double[] min = interval.minAsDoubleArray();
+		final double[] max = interval.maxAsDoubleArray();
+
+		for ( int d = 0; d < s.length; ++d )
+		{
+			min[ d ] *= s[ d ];
+			max[ d ] *= s[ d ];
+		}
+
+		return new FinalRealInterval( min, max, false );
 	}
 }

@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,13 +34,16 @@
 
 package net.imglib2.realtransform;
 
+import net.imglib2.FinalRealInterval;
+import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
+import net.imglib2.realtransform.interval.IntervalSamplingMethod;
 
 /**
  * <em>n</em>-d translation.  Abstract base implementation.
- * 
+ *
  * @author Stephan Saalfeld
  */
 abstract public class AbstractTranslation implements TranslationGet
@@ -77,7 +80,7 @@ abstract public class AbstractTranslation implements TranslationGet
 
 	/**
 	 * Set the translation vector.
-	 * 
+	 *
 	 * @param t
 	 *            t.length &lt;= the number of dimensions of this
 	 *            {@link AbstractTranslation}
@@ -86,7 +89,7 @@ abstract public class AbstractTranslation implements TranslationGet
 
 	/**
 	 * Set one value of the translation vector.
-	 * 
+	 *
 	 * @param t
 	 *            t.length &lt;= the number of dimensions of this
 	 *            {@link AbstractTranslation}
@@ -197,7 +200,7 @@ abstract public class AbstractTranslation implements TranslationGet
 
 		return ds[ d ];
 	}
-	
+
 	@Override
 	public double getScale( final int d ) {
 		return 0.0;
@@ -224,4 +227,21 @@ abstract public class AbstractTranslation implements TranslationGet
 
 	@Override
 	abstract public AbstractTranslation inverse();
+
+	@Override
+	public RealInterval boundingInterval( final RealInterval interval, final IntervalSamplingMethod samplingMethdod )
+	{
+		assert interval.numDimensions() >= t.length : "Interval does not have enough dimensions.";
+
+		final double[] min = interval.minAsDoubleArray();
+		final double[] max = interval.maxAsDoubleArray();
+
+		for ( int d = 0; d < t.length; ++d )
+		{
+			min[ d ] += t[ d ];
+			max[ d ] += t[ d ];
+		}
+
+		return new FinalRealInterval( min, max, false );
+	}
 }

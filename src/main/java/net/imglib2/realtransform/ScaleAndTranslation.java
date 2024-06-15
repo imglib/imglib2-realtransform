@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,11 +36,14 @@
  */
 package net.imglib2.realtransform;
 
+import net.imglib2.FinalRealInterval;
+import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.concatenate.Concatenable;
 import net.imglib2.concatenate.PreConcatenable;
+import net.imglib2.realtransform.interval.IntervalSamplingMethod;
 
 /**
  * An <em>n</em> transform that applies a scaling first and then shifts coordinates.
@@ -319,11 +322,28 @@ public class ScaleAndTranslation implements ScaleAndTranslationGet, Concatenable
 	{
 		return ScaleAndTranslationGet.class;
 	}
-  
-	
+
+
 	@Override
 	public boolean isIdentity()
 	{
 		return RealViewsSimplifyUtils.isIdentity( this );
+	}
+
+	@Override
+	public RealInterval boundingInterval( final RealInterval interval, final IntervalSamplingMethod samplingMethdod )
+	{
+		assert interval.numDimensions() >= n : "Interval does not have enough dimensions.";
+
+		final double[] min = interval.minAsDoubleArray();
+		final double[] max = interval.maxAsDoubleArray();
+
+		for ( int d = 0; d < n; ++d )
+		{
+			min[ d ] = min[ d ] * scales[ d ] + translations[ d ];
+			max[ d ] = max[ d ] * scales[ d ] + translations[ d ];
+		}
+
+		return new FinalRealInterval( min, max, false );
 	}
 }

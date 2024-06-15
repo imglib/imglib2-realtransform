@@ -11,13 +11,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,17 +34,19 @@
 
 package net.imglib2.realtransform;
 
+import Jama.Matrix;
+import net.imglib2.RealInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
-import Jama.Matrix;
+import net.imglib2.realtransform.interval.IntervalSamplingMethod;
 
 /**
  * An abstract implementation of an affine transformation that returns default
  * values referring to the identity transformation for all fields.  This
  * implementation is not thread safe.  Create a {@link #copy()} for each
  * consumer.
- * 
+ *
  * @author Stephan Saalfeld
  */
 public abstract class AbstractAffineTransform implements AffineGet, AffineSet
@@ -136,7 +138,7 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 	{
 		return n;
 	}
-	
+
 	@Override
 	public void apply( final double[] source, final double[] target )
 	{
@@ -148,11 +150,11 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 			for ( int c = 0; c < n; ++c )
 				tmp[ r ] += source[ c ] * a.get( r, c );
 		}
-		
+
 		for ( int r = 0; r < n; ++r )
 			target[ r ] = tmp[ r ] + t[ r ];
 	}
-	
+
 	@Override
 	public void apply( final float[] source, final float[] target )
 	{
@@ -164,7 +166,7 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 			for ( int c = 0; c < n; ++c )
 				tmp[ r ] += source[ c ] * a.get( r, c );
 		}
-		
+
 		for ( int r = 0; r < n; ++r )
 			target[ r ] = ( float )( tmp[ r ] + t[ r ] );
 	}
@@ -180,7 +182,7 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 			for ( int c = 0; c < n; ++c )
 				tmp[ r ] += source.getDoublePosition( c ) * a.get( r, c );
 		}
-		
+
 		for ( int r = 0; r < n; ++r )
 			target.setPosition( tmp[ r ] + t[ r ], r );
 	}
@@ -214,5 +216,11 @@ public abstract class AbstractAffineTransform implements AffineGet, AffineSet
 		assert d >= 0 && d < n: "Dimension out of bounds.";
 
 		return ds[ d ];
+	}
+
+	@Override
+	public RealInterval boundingInterval( final RealInterval interval, final IntervalSamplingMethod samplingMethdod )
+	{
+		return AffineGet.super.boundingInterval( interval, IntervalSamplingMethod.CORNERS );
 	}
 }
