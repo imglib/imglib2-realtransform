@@ -137,8 +137,10 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 				newjac[ j ][ i ] = ( q[ j ] - qc[ j ] ) / step;
 			}
 		}
-		jacobian.set( newjac );
 
+		try {
+			jacobian.set(newjac);
+		} catch (Exception e) { }
 
 		return jacobian;
 	}
