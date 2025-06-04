@@ -33,16 +33,23 @@
  */
 package net.imglib2.realtransform;
 
+import static org.junit.Assert.assertArrayEquals;
+
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import net.imglib2.RealInterval;
 import net.imglib2.RealPoint;
+import net.imglib2.iterator.LocalizingRealIntervalIterator;
 import net.imglib2.position.FunctionRealRandomAccessible;
 import net.imglib2.realtransform.inverse.DifferentiableRealTransform;
 import net.imglib2.realtransform.inverse.InverseRealTransformGradientDescent;
 import net.imglib2.realtransform.inverse.RealTransformFiniteDerivatives;
 import net.imglib2.realtransform.inverse.WrappedIterativeInvertibleRealTransform;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Intervals;
 import net.imglib2.view.composite.RealComposite;
 
 public class IterableInverseTests
@@ -292,6 +299,39 @@ public class IterableInverseTests
 		rotinverter.apply( pxfm, q );
 
 		Assert.assertArrayEquals( "rotation matrix inverse", p, q, EPS );
+	}
+
+	/**
+	 * Tests that the provided {@lin InvertibleRealTransform} is within EPSILON
+	 * of being invertible over the given interval.
+	 * 
+	 * @param tform
+	 * 		the transformation to tests
+	 * @param interval 
+	 * 		over which to test
+	 * @param step
+	 * 		the step  
+	 * @param EPSILON
+	 * 		the allowable error
+	 */
+	static void inverseTransformTestHelper( InvertibleRealTransform tform, final RealInterval interval, double[] step, final double EPSILON )
+	{
+		int nd = interval.numDimensions();
+		final LocalizingRealIntervalIterator it = new LocalizingRealIntervalIterator( interval, step );
+		final RealPoint p = new RealPoint( nd );
+		final RealPoint q = new RealPoint( nd );
+		while ( it.hasNext() )
+		{
+			it.fwd();
+			tform.apply( it, p );
+			tform.applyInverse( q, p );
+			assertArrayEquals( 
+					String.format( "not invertible at point %s", Arrays.toString( it.positionAsDoubleArray() ) ),
+					it.positionAsDoubleArray(),
+					q.positionAsDoubleArray(),
+					EPSILON );
+		}
+
 	}
 
 	private class IterativeAffineInverse extends AffineTransform implements DifferentiableRealTransform
