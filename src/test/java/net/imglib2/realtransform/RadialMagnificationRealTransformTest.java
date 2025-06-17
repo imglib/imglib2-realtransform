@@ -3,6 +3,7 @@ package net.imglib2.realtransform;
 import org.junit.Test;
 
 import net.imglib2.FinalRealInterval;
+import net.imglib2.realtransform.distortion.RadialMagnificationDistortion;
 import net.imglib2.util.Intervals;
 
 public class RadialMagnificationRealTransformTest
