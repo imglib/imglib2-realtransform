@@ -94,8 +94,8 @@ public class RadialMagnificationDistortion implements InvertibleRealTransform
 		return inverse;
 	}
 	
-	private static double squaredRadius( int axialDirection, double[] position ) {
-
+	private static double squaredRadius(int axialDirection, double[] position)
+	{
 		double r = 0;
 		for( int i = 0; i < position.length; i++ )
 			if( i != axialDirection)
@@ -104,8 +104,8 @@ public class RadialMagnificationDistortion implements InvertibleRealTransform
 		return r;
 	}
 
-	private static double squaredRadius( int axialDirection, RealLocalizable position ) {
-
+	private static double squaredRadius( int axialDirection, RealLocalizable position )
+	{
 		double r = 0;
 		for( int i = 0; i < position.numDimensions(); i++ )
 			if( i != axialDirection)
@@ -119,8 +119,8 @@ public class RadialMagnificationDistortion implements InvertibleRealTransform
 	 * so for the inverse:
 	 * in = out / (M0 + MR*r2)
 	 */
-	private class Inverse implements InvertibleRealTransform {
-
+	private class Inverse implements InvertibleRealTransform
+	{
 		@Override
 		public int numSourceDimensions()
 		{
