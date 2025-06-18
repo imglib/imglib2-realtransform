@@ -84,7 +84,7 @@ public class SphericalCurvatureZDistortion implements InvertibleRealTransform
 		}
 	}
 	
-	public void apply( double s, RealLocalizable source, RealPositionable target )
+	private void apply( double s, RealLocalizable source, RealPositionable target )
 	{
 
 		for ( int i = 0; i < numDimensions; i++ )
@@ -137,7 +137,7 @@ public class SphericalCurvatureZDistortion implements InvertibleRealTransform
 
 		return r;
 	}
-	
+
 	private double axialOffset( double r2 )
 	{
 		return R - Math.sqrt( ( R * R ) - r2 );
