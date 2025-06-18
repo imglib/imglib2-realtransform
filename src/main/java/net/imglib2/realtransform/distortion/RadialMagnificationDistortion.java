@@ -4,6 +4,13 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.RealPositionable;
 import net.imglib2.realtransform.InvertibleRealTransform;
 
+/**
+ * Applies radial magnification distortion where magnification varies with distance from the optical axis.
+ * The magnification factor is M = M0 + Mr * r², where r is the radial distance from the axial dimension.
+ * <p>
+ * The parameters M0 and Mr should be strictly positive, in which case this transformation is invertible
+ * everywhere.
+ */
 public class RadialMagnificationDistortion implements InvertibleRealTransform
 {
 	private final int numDimensions;
@@ -16,6 +23,14 @@ public class RadialMagnificationDistortion implements InvertibleRealTransform
 
 	private final Inverse inverse;
 
+	/**
+	 * Creates a radial magnification distortion transform.
+	 * 
+	 * @param numDimensions number of dimensions
+	 * @param axialDimension the dimension index of the optical axis (unchanged by magnification)
+	 * @param m0 base magnification factor
+	 * @param mr radial magnification coefficient (magnification change per unit squared radius)
+	 */
 	public RadialMagnificationDistortion(
 			final int numDimensions,
 			final int axialDimension,
@@ -114,10 +129,9 @@ public class RadialMagnificationDistortion implements InvertibleRealTransform
 		return r;
 	}
 
-	/*
-	 * out = (M0 + MR*r2) * in
-	 * so for the inverse:
-	 * in = out / (M0 + MR*r2)
+	/**
+	 * Inverse transform that divides by the magnification factor instead of multiplying.
+	 * Applies the transformation: in = out / (M0 + Mr*r²)
 	 */
 	private class Inverse implements InvertibleRealTransform
 	{
