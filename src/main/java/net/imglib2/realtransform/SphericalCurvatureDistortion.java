@@ -49,13 +49,6 @@ public class SphericalCurvatureDistortion implements InvertibleRealTransform
 	@Override
 	public void apply( RealLocalizable source, RealPositionable target )
 	{
-//		final double x = source.getDoublePosition( 0 );
-//		final double y = source.getDoublePosition( 1 );
-//		final double t = t(x, y);
-//		final double r = r(source);
-//
-//		target.setPosition( r, 0 );
-//		target.setPosition( r * Math.sin( t ), 1 );
 
 		final double r = r( source );
 		for ( int i = 0; i < numDimensions; i++ )
@@ -100,17 +93,17 @@ public class SphericalCurvatureDistortion implements InvertibleRealTransform
 		return Math.atan2( y, x );
 	}
 
-	private static double r( final double[] p )
+	private double r( final double[] p )
 	{
 		return Math.sqrt( squaredRadius( p ) );
 	}
 
-	private static double r( final RealLocalizable p )
+	private double r( final RealLocalizable p )
 	{
 		return Math.sqrt( squaredRadius( p ) );
 	}
 	
-	private static double squaredRadius( double[] position )
+	private double squaredRadius( double[] position )
 	{
 		double r = 0;
 		for( int i = 0; i < position.length; i++ )
@@ -119,7 +112,7 @@ public class SphericalCurvatureDistortion implements InvertibleRealTransform
 		return r;
 	}
 
-	private static double squaredRadius( RealLocalizable position )
+	private double squaredRadius( RealLocalizable position )
 	{
 		double r = 0;
 		for( int i = 0; i < position.numDimensions(); i++ )
@@ -146,30 +139,10 @@ public class SphericalCurvatureDistortion implements InvertibleRealTransform
 		@Override
 		public void apply( double[] source, double[] target )
 		{
-			// FIXME
-//			final double tht = t(source[0], source[1]);
-//			final double r = r(source[0], source[1]);
-//
-//			target[0] = r;
-//			target[1] = r * Math.sin( tht );
-
-//			final double r = r( source );
-//			for ( int i = 0; i < numDimensions; i++ )
-//			{
-//				if ( i == radialDimension )
-//					target[ radialDimension ] = r;
-//				else
-//				{
-//					final double t = t( source[ radialDimension ], source[ i ] );
-//					target[ i ] = r * Math.sin( t );
-//				}
-//			}
-			
 			/**
 			 *  v = r*sin(t)
 			 *  v / r
 			 */
-
 			final double r = source[radialDimension];
 
 			for ( int i = 0; i < numDimensions; i++ )
@@ -188,16 +161,6 @@ public class SphericalCurvatureDistortion implements InvertibleRealTransform
 		@Override
 		public void apply( RealLocalizable source, RealPositionable target )
 		{
-//			// FIXME
-//			final double x = source.getDoublePosition( 0 );
-//			final double y = source.getDoublePosition( 1 );
-//			final double t = t(x, y);
-//			final double r = r(source);
-//
-//			target.setPosition( r, 0 );
-//			target.setPosition( r * Math.sin( t ), 1 );
-
-
 			final double r = source.getDoublePosition( radialDimension );
 			double partialR = 0;
 			for ( int i = 0; i < numDimensions; i++ )

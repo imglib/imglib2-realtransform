@@ -120,20 +120,22 @@ public class SphericalCurvatureZDistortion implements InvertibleRealTransform
 		return new SphericalCurvatureZDistortion( numDimensions, axialDimension, R, -1 * sign );
 	}
 
-	private static double squaredRadius( double[] position )
+	private double squaredRadius( double[] position )
 	{
 		double r = 0;
 		for ( int i = 0; i < position.length; i++ )
-			r += position[ i ] * position[ i ];
+			if ( i != axialDimension )
+				r += position[ i ] * position[ i ];
 
 		return r;
 	}
 
-	private static double squaredRadius( RealLocalizable position )
+	private double squaredRadius( RealLocalizable position )
 	{
 		double r = 0;
 		for ( int i = 0; i < position.numDimensions(); i++ )
-			r += position.getDoublePosition( i ) * position.getDoublePosition( i );
+			if ( i != axialDimension )
+				r += position.getDoublePosition( i ) * position.getDoublePosition( i );
 
 		return r;
 	}
