@@ -41,8 +41,6 @@ import net.imglib2.realtransform.RealTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-
 public class InverseRealTransformGradientDescent implements RealTransform
 {
 	int ndims;
@@ -93,6 +91,12 @@ public class InverseRealTransformGradientDescent implements RealTransform
 	private DifferentiableRealTransform xfm;
 
 	private double[] guess; // initialization for iterative inverse
+
+	private int stagnationCount = 0;
+
+	private final int maxStagnation = 3;
+
+	private double stagnationThreshold = 0.01; // relative threshold for detecting stagnation
 
 	protected static Logger logger = LoggerFactory.getLogger( InverseRealTransformGradientDescent.class );
 
@@ -282,9 +286,10 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 		double t = 1.0;
 		int k = 0;
+		double previousError = Double.MAX_VALUE;
+		stagnationCount = 0; // Reset stagnation counter
 		while ( error >= tolerance && k < maxIters )
 		{
-
 			/*
 			 * xfm.jacobian( estimate );
 			 * 
@@ -305,9 +310,12 @@ public class InverseRealTransformGradientDescent implements RealTransform
 			updateEstimate( t ); // go in negative direction to reduce cost
 			xfm.apply( estimate, estimateXfm );
 			updateError();
-
 			error = getError();
 
+			if (checkStagnation(error, previousError, k))
+				return error;
+
+			previousError = error;
 			k++;
 		}
 
@@ -485,6 +493,41 @@ public class InverseRealTransformGradientDescent implements RealTransform
 			errDeriv += ( y[ i ] - x[ i ] ) * ( y[ i ] - x[ i ] );
 
 		return 2 * errDeriv;
+	}
+
+	/**
+	 * Checks for stagnation in the optimization.
+	 * 
+	 * @param currentError the current error value
+	 * @param previousError the previous error value
+	 * @param iteration the current iteration number
+	 * @return true if optimization stagnated.
+	 */
+	private boolean checkStagnation( double currentError, double previousError, int iteration )
+	{
+		// negative if error increases
+		final double errorChange = previousError - currentError;
+		if( errorChange < 0 )
+			return true;
+
+		final double relativeChange = errorChange / Math.max( currentError, tolerance );
+		if ( relativeChange < stagnationThreshold )
+		{
+			stagnationCount++;
+			if ( stagnationCount >= maxStagnation )
+			{
+				// Consider adding a perturbation in the future
+				logger.info( String.format( "Error increase or stagnation detected after %d iterations with error %f",
+					iteration, currentError ));
+
+				return true;
+			}
+		}
+		else
+		{
+			stagnationCount = 0;
+		}
+		return false;
 	}
 
 	public static double sumSquaredErrors( double[] y, double[] x )
