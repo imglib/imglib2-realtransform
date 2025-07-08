@@ -70,7 +70,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 	double stepSz = 1.0;
 
-	double beta = 0.7;
+	double beta = 0.5;
 
 	double tolerance = 0.5;
 
@@ -82,7 +82,7 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 	double jacobianRegularizationEps = 0.1;
 
-	int stepSizeMaxTries = 10;
+	int stepSizeMaxTries = 1000;
 
 	double maxStepSize = Double.MAX_VALUE;
 
