@@ -90,11 +90,13 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 	private DifferentiableRealTransform xfm;
 
-	private double[] guess; // initialization for iterative inverse
-
-
-
 	protected static Logger logger = LoggerFactory.getLogger( InverseRealTransformGradientDescent.class );
+
+	private double[] srcd;
+	private double[] tgtd;
+
+	private double[] x_ap;
+	private double[] phix_ap;
 
 	public InverseRealTransformGradientDescent( int ndims, DifferentiableRealTransform xfm )
 	{
@@ -109,6 +111,11 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		target = new double[ ndims ];
 		estimate = new double[ ndims ];
 		estimateXfm = new double[ ndims ];
+
+		srcd = new double[ ndims ];
+		tgtd = new double[ ndims ];
+		x_ap = new double[ ndims ];
+		phix_ap = new double[ ndims ];
 	}
 
 	public void setBeta( double beta )
@@ -223,9 +230,16 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		return copy;
 	}
 
+	/**
+	 * Unused. Pass guess as parameter.
+	 *
+	 * @param guess 
+	 * 	initial guess.
+	 */
+	@Deprecated
 	public void setGuess( final double[] guess )
 	{
-		this.guess = guess;
+		// no op
 	}
 
 	public void apply( final double[] s, final double[] t )
@@ -240,8 +254,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 	@Deprecated
 	public void apply( final float[] src, final float[] tgt )
 	{
-		double[] srcd = new double[ src.length ];
-		double[] tgtd = new double[ tgt.length ];
 		for ( int i = 0; i < src.length; i++ )
 			srcd[ i ] = src[ i ];
 
@@ -253,8 +265,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 
 	public void apply( final RealLocalizable src, final RealPositionable tgt )
 	{
-		double[] srcd = new double[ src.numDimensions() ];
-		double[] tgtd = new double[ tgt.numDimensions() ];
 		src.localize( srcd );
 		apply( srcd, tgtd );
 		tgt.setPosition( tgtd );
@@ -409,7 +419,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		double[] d = dir;
 		double[] x = estimate; // give a convenient name
 
-		double[] x_ap = new double[ ndims ];
 		for ( int i = 0; i < ndims; i++ )
 			x_ap[ i ] = x[ i ] + t * d[ i ];
 
@@ -417,7 +426,6 @@ public class InverseRealTransformGradientDescent implements RealTransform
 		// double[] phix = xfm.apply( x );
 		// TODO make sure estimateXfm is updated at the correct time
 		double[] phix = estimateXfm;
-		double[] phix_ap = new double[ this.ndims ];
 		xfm.apply( x_ap, phix_ap );
 
 		double fx = squaredError( phix );
