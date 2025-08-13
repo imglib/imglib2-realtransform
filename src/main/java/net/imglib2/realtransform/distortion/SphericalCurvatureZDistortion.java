@@ -57,7 +57,13 @@ public class SphericalCurvatureZDistortion implements InvertibleRealTransform
 	@Override
 	public void apply( double[] source, double[] target )
 	{
-		apply(1, source, target);
+		for ( int i = 0; i < numDimensions; i++ )
+		{
+			if ( i == axialDimension )
+				target[ i ] = source[ i ] + sign * axialOffset( squaredRadius( source ) );
+			else
+				target[ i ] = source[ i ];
+		}
 	}
 	
 	private void apply( double s, double[] source, double[] target )
