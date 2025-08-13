@@ -111,7 +111,7 @@ public class SphericalCurvatureZDistortion implements InvertibleRealTransform
 	@Override
 	public SphericalCurvatureZDistortion copy()
 	{
-		return new SphericalCurvatureZDistortion( numDimensions, axialDimension, R );
+		return new SphericalCurvatureZDistortion( numDimensions, axialDimension, R, sign );
 	}
 
 	@Override
