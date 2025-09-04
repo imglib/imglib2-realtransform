@@ -33,10 +33,16 @@
  */
 package net.imglib2.realtransform;
 
+import static org.junit.Assert.assertArrayEquals;
+
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import net.imglib2.RealInterval;
 import net.imglib2.RealPoint;
+import net.imglib2.iterator.LocalizingRealIntervalIterator;
 import net.imglib2.position.FunctionRealRandomAccessible;
 import net.imglib2.realtransform.inverse.DifferentiableRealTransform;
 import net.imglib2.realtransform.inverse.InverseRealTransformGradientDescent;
@@ -292,6 +298,39 @@ public class IterableInverseTests
 		rotinverter.apply( pxfm, q );
 
 		Assert.assertArrayEquals( "rotation matrix inverse", p, q, EPS );
+	}
+
+	/**
+	 * Tests that the provided {@link InvertibleRealTransform} is within epsilon
+	 * of being invertible over the given {@link RealInterval}. Points to test
+	 * are sampled at a given spacing.
+	 *
+	 * @param tform
+	 * 		the transformation to tests
+	 * @param interval 
+	 * 		over which to test
+	 * @param sampleSpacing
+	 * 		the spacing between samples
+	 * @param epsilon
+	 * 		the allowable error
+	 */
+	public static void inverseTransformTestHelper( InvertibleRealTransform tform, final RealInterval interval, double[] sampleSpacing, final double epsilon )
+	{
+		int nd = interval.numDimensions();
+		final LocalizingRealIntervalIterator it = new LocalizingRealIntervalIterator( interval, sampleSpacing );
+		final RealPoint p = new RealPoint( nd );
+		final RealPoint q = new RealPoint( nd );
+		while ( it.hasNext() )
+		{
+			it.fwd();
+			tform.apply( it, p );
+			tform.applyInverse( q, p );
+			assertArrayEquals( 
+					String.format( "not invertible at point %s", Arrays.toString( it.positionAsDoubleArray() ) ),
+					it.positionAsDoubleArray(),
+					q.positionAsDoubleArray(),
+					epsilon );
+		}
 	}
 
 	private class IterativeAffineInverse extends AffineTransform implements DifferentiableRealTransform
