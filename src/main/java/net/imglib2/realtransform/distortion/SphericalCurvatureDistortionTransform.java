@@ -11,7 +11,7 @@ import net.imglib2.realtransform.InvertibleRealTransform;
  * and r is the distance from the optical axis.
  * <p>
  * Note: This transform is only invertible for points within radius R from the optical axis.
- * Points at radius r > R will produce NaN values.
+ * Points at radius r greater than R will produce NaN values.
  */
 public class SphericalCurvatureDistortionTransform implements InvertibleRealTransform
 {
