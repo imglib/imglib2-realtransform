@@ -41,6 +41,7 @@ import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.concatenate.Concatenable;
 import net.imglib2.concatenate.PreConcatenable;
+import net.imglib2.realtransform.interval.IntervalSamplingMethod;
 
 /**
  * 2d-affine transformation.
@@ -707,5 +708,11 @@ public class AffineTransform2D implements AffineGet, AffineSet, Concatenable< Af
 			rMax[ d ] = interval.realMax( d );
 		}
 		return FinalRealInterval.wrap( rMin, rMax );
+	}
+
+	@Override
+	public RealInterval boundingInterval( final RealInterval interval, final IntervalSamplingMethod samplingMethod )
+	{
+		return estimateBounds( interval );
 	}
 }

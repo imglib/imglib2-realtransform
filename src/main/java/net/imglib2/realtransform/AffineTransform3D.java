@@ -41,6 +41,7 @@ import net.imglib2.RealPoint;
 import net.imglib2.RealPositionable;
 import net.imglib2.concatenate.Concatenable;
 import net.imglib2.concatenate.PreConcatenable;
+import net.imglib2.realtransform.interval.IntervalSamplingMethod;
 
 /**
  * 3d-affine transformation.
@@ -1078,5 +1079,11 @@ public class AffineTransform3D implements AffineGet, AffineSet, Concatenable< Af
 	public boolean isIdentity()
 	{
 		return RealViewsSimplifyUtils.isIdentity( this );
+	}
+
+	@Override
+	public RealInterval boundingInterval( final RealInterval interval, final IntervalSamplingMethod samplingMethod )
+	{
+		return estimateBounds( interval );
 	}
 }
