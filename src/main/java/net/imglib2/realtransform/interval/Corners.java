@@ -64,8 +64,8 @@ public class Corners implements IntervalSamplingMethod
 
 		final double[] min = new double[ nd ];
 		final double[] max = new double[ nd ];
-		Arrays.fill( min, Double.MAX_VALUE );
-		Arrays.fill( max, Double.MIN_VALUE );
+		Arrays.fill( min, Double.POSITIVE_INFINITY );
+		Arrays.fill( max, Double.NEGATIVE_INFINITY );
 
 		// iterate over the corners of an nd-hypercube
 		final long[] unitInterval = new long[ nd ];

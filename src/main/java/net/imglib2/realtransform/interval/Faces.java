@@ -75,8 +75,8 @@ public abstract class Faces implements IntervalSamplingMethod
 		final double[] min = new double[ nTarget ];
 		final double[] max = new double[ nTarget ];
 
-		Arrays.fill( min, Double.MAX_VALUE );
-		Arrays.fill( max, Double.MIN_VALUE );
+		Arrays.fill( min, Double.POSITIVE_INFINITY );
+		Arrays.fill( max, Double.NEGATIVE_INFINITY );
 
 		final double[] itMin = new double[ nTarget ];
 		final double[] itMax = new double[ nTarget ];
