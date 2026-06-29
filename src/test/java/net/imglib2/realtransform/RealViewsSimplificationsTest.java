@@ -85,6 +85,19 @@ public class RealViewsSimplificationsTest
 			0.0, 0.0, 0.0, 1.0, 10.5,
 	}, 4 );
 
+	// Pure axis permutation (X <-> Y swap) plus translation. NOT a translation.
+	private static final AffineGet PERMUTATION2D = create( new double[] {
+			0.0, 1.0, 2.0,
+			1.0, 0.0, 5.5
+	}, 2 );
+
+	// Pure axis permutation (Y <-> Z swap) plus translation. NOT a translation.
+	private static final AffineGet PERMUTATION3D = create( new double[] {
+			1.0, 0.0, 0.0, 2.0,
+			0.0, 0.0, 1.0, 5.5,
+			0.0, 1.0, 0.0, 7.5
+	}, 3 );
+
 	private static final AffineGet SCALE2D = create( new double[] {
 			2.0, 0.0, 0.0,
 			0.0, 1.0, 0.0
@@ -208,6 +221,35 @@ public class RealViewsSimplificationsTest
 		Assert.assertFalse( RealViewsSimplifyUtils.isExlusiveTranslation( SCALE2D ) );
 		Assert.assertFalse( RealViewsSimplifyUtils.isExlusiveTranslation( SCALE3D ) );
 		Assert.assertFalse( RealViewsSimplifyUtils.isExlusiveTranslation( SCALE4D ) );
+
+		// An axis permutation is not a pure translation.
+		Assert.assertFalse( RealViewsSimplifyUtils.isExlusiveTranslation( PERMUTATION2D ) );
+		Assert.assertFalse( RealViewsSimplifyUtils.isExlusiveTranslation( PERMUTATION3D ) );
+	}
+
+	@Test
+	public void testSimplifyingPermutationIsNotTranslation()
+	{
+		// A permutation must not be collapsed to a Translation: that would silently
+		// drop the axis swap. It should fall through to a generic affine.
+		Assert.assertFalse( RealViewsSimplifyUtils.simplifyRealTransform( PERMUTATION2D ) instanceof Translation );
+		Assert.assertFalse( RealViewsSimplifyUtils.simplifyRealTransform( PERMUTATION2D ) instanceof Translation2D );
+		Assert.assertFalse( RealViewsSimplifyUtils.simplifyRealTransform( PERMUTATION3D ) instanceof Translation );
+		Assert.assertFalse( RealViewsSimplifyUtils.simplifyRealTransform( PERMUTATION3D ) instanceof Translation3D );
+	}
+
+	@Test
+	public void testSimplifyingPermutationPreservesMatrix()
+	{
+		// Simplifying a permutation must preserve the full matrix, not just the
+		// last (translation) column.
+		final RealTransform simplified2D = RealViewsSimplifyUtils.simplifyRealTransform( PERMUTATION2D );
+		Assert.assertArrayEquals( PERMUTATION2D.getRowPackedCopy(),
+				( ( AffineGet ) simplified2D ).getRowPackedCopy(), 0.0 );
+
+		final RealTransform simplified3D = RealViewsSimplifyUtils.simplifyRealTransform( PERMUTATION3D );
+		Assert.assertArrayEquals( PERMUTATION3D.getRowPackedCopy(),
+				( ( AffineGet ) simplified3D ).getRowPackedCopy(), 0.0 );
 	}
 
 	@Test
