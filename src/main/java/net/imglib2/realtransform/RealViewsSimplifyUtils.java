@@ -108,7 +108,9 @@ public class RealViewsSimplifyUtils
 			for ( int c = 0; c < n + 1; ++c )
 			{
 				final double val = affineGet.get( r, c );
-				if ( val != 0.0 && ( ( r == c && val != 1.0 ) || ( c != n && val != 1.0 ) ) ) { return false; }
+				if ( c == n ) { continue; } // translation column: any value allowed
+				if ( r == c ) { if ( val != 1.0 ) { return false; } } // diagonal must be 1
+				else if ( val != 0.0 ) { return false; } // off-diagonal must be 0
 			}
 		}
 
