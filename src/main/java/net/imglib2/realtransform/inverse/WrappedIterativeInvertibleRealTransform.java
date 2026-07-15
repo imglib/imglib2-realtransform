@@ -49,15 +49,31 @@ public class WrappedIterativeInvertibleRealTransform< T extends RealTransform > 
 
 	public WrappedIterativeInvertibleRealTransform( final T xfm )
 	{
-		this.forwardTransform = xfm;
+		this(xfm, 0.01);
+	}
 
+	/**
+	 * WrappedIterativeInvertibleRealTransform constructor. Wrapps the given
+	 * transform with a {@link RealTransformFiniteDerivatives} if needed, using
+	 * the provided step.
+	 * 
+	 * @param xfm
+	 *            transformation to wrap
+	 * @param finiteDerivativeStep
+	 *            step size for finite derivatives if needed
+	 */
+	public WrappedIterativeInvertibleRealTransform( final T xfm, double finiteDerivativeStep )
+	{
+		this.forwardTransform = xfm;
 		if( xfm instanceof DifferentiableRealTransform )
 		{
 			differentiableTransform = (DifferentiableRealTransform) xfm;
 		}
 		else
 		{
-			differentiableTransform = new RealTransformFiniteDerivatives( xfm );
+			final RealTransformFiniteDerivatives tformFinite = new RealTransformFiniteDerivatives( xfm );
+			tformFinite.setStep(finiteDerivativeStep);
+			differentiableTransform  = tformFinite;
 		}
 
 		inverseTransform = new InverseRealTransformGradientDescent( xfm.numSourceDimensions(), differentiableTransform );
