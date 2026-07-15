@@ -53,13 +53,30 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 
 	protected double step;
 
+	private int ndims;
+	private double[] p;
+	private double[] q;
+	private double[] qc;
+	private double[][] newjac;
+
 	public RealTransformFiniteDerivatives( final RealTransform transform )
+	{
+		this( transform, 0.01);
+	}
+
+	public RealTransformFiniteDerivatives( final RealTransform transform, double step )
 	{
 		this.transform = transform;
 		int srcD = transform.numSourceDimensions();
 		int tgtD = transform.numTargetDimensions();
 		jacobian = new AffineTransform( srcD > tgtD ? srcD : tgtD );
-		step = 0.01;
+		this.step = step;
+
+		ndims = numSourceDimensions();
+		p = new double[ ndims ];
+		q = new double[ ndims ];
+		qc = new double[ ndims ];
+		newjac = new double[ ndims ][ ndims+1 ];
 	}
 
 	public void setStep( double step )
@@ -89,7 +106,7 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 
 	public RealTransformFiniteDerivatives copy()
 	{
-		return new RealTransformFiniteDerivatives( transform.copy() );
+		return new RealTransformFiniteDerivatives( transform.copy(), step );
 	}
 
 	/**
@@ -102,15 +119,7 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 	 */
 	public AffineTransform jacobian( double[] x )
 	{
-		int ndims = numSourceDimensions();
-		double[] p = new double[ ndims ];
-		double[] q = new double[ ndims ];
-		double[] qc = new double[ ndims ];
-
-		double[][] newjac = new double[ ndims ][ ndims+1 ];
-
 		transform.apply( x, qc );
-
 		for ( int i = 0; i < ndims; i++ )
 		{
 			for ( int j = 0; j < ndims; j++ )
@@ -127,7 +136,6 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 			}
 		}
 		jacobian.set( newjac );
-
 		return jacobian;
 	}
 	
