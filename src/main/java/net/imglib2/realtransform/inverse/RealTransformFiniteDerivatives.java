@@ -64,8 +64,10 @@ public class RealTransformFiniteDerivatives extends AbstractDifferentiableRealTr
 		this( transform, 0.01);
 	}
 
-	public RealTransformFiniteDerivatives( final RealTransform transform, double step )
+
+	private RealTransformFiniteDerivatives( final RealTransform transform, double step )
 	{
+		// could make this public for next feature release
 		this.transform = transform;
 		int srcD = transform.numSourceDimensions();
 		int tgtD = transform.numTargetDimensions();
