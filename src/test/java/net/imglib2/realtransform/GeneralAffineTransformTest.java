@@ -6,22 +6,22 @@ import org.junit.Test;
 
 import net.imglib2.RealPoint;
 
-public class AffineRealTransformTest
+public class GeneralAffineTransformTest
 {
 	private static final double EPS = 1e-9;
 
 	// 3D -> 2D: x' = x + 2z + 1, y' = 3y - 1
-	private static AffineRealTransform projection()
+	private static GeneralAffineTransform projection()
 	{
-		return new AffineRealTransform( 3, 2, new double[] {
+		return new GeneralAffineTransform( 3, 2, new double[] {
 				1, 0, 2, 1,
 				0, 3, 0, -1 } );
 	}
 
 	// 2D -> 3D: x' = x + 1, y' = 2y, z' = x + y + 5
-	private static AffineRealTransform embedding()
+	private static GeneralAffineTransform embedding()
 	{
-		return new AffineRealTransform( 2, 3, new double[] {
+		return new GeneralAffineTransform( 2, 3, new double[] {
 				1, 0, 1,
 				0, 2, 0,
 				1, 1, 5 } );
@@ -59,7 +59,7 @@ public class AffineRealTransformTest
 				1.1, 0.2, -0.3, 4,
 				0.5, 0.9, 0.1, -2,
 				-0.2, 0.3, 1.4, 7 );
-		final AffineRealTransform art = new AffineRealTransform( 3, 3, affine.getRowPackedCopy() );
+		final GeneralAffineTransform art = new GeneralAffineTransform( 3, 3, affine.getRowPackedCopy() );
 
 		final double[] src = { 1.5, -2.5, 3.25 };
 		final double[] expected = new double[ 3 ];

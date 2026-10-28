@@ -48,7 +48,7 @@ import net.imglib2.RealPositionable;
  * The matrix is stored row-major as M rows of N+1 values, with the translation
  * b in the last column of each row.
  */
-public class AffineRealTransform implements RealTransform
+public class GeneralAffineTransform implements RealTransform
 {
 
 	protected final int numSourceDimensions;
@@ -62,7 +62,7 @@ public class AffineRealTransform implements RealTransform
 	 * differ, extra source dimensions are dropped and extra target dimensions
 	 * are set to zero.
 	 */
-	public AffineRealTransform( int numSourceDimensions, int numTargetDimensions )
+	public GeneralAffineTransform( int numSourceDimensions, int numTargetDimensions )
 	{
 		this.numSourceDimensions = numSourceDimensions;
 		this.numTargetDimensions = numTargetDimensions;
@@ -73,7 +73,7 @@ public class AffineRealTransform implements RealTransform
 			matrix[ d * ( numSourceDimensions + 1 ) + d ] = 1;
 	}
 
-	public AffineRealTransform( int numSourceDimensions, int numTargetDimensions, double[] matrix )
+	public GeneralAffineTransform( int numSourceDimensions, int numTargetDimensions, double[] matrix )
 	{
 		int expectedLength = ( numSourceDimensions + 1 ) * numTargetDimensions;
 		if ( matrix.length != expectedLength )
@@ -159,7 +159,7 @@ public class AffineRealTransform implements RealTransform
 	@Override
 	public RealTransform copy()
 	{
-		return new AffineRealTransform( numSourceDimensions, numTargetDimensions, matrix.clone() );
+		return new GeneralAffineTransform( numSourceDimensions, numTargetDimensions, matrix.clone() );
 	}
 
 }
